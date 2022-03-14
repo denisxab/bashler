@@ -111,10 +111,15 @@ with open(name_file,'r') as _f:
 	data = _f.read()
 res=''
 for x in data.split():
-    res+='%s ' % x
+    res+='\"%s\" ' % x
 print(res)
 " $1	
 }
+
+__test_(){
+    __read-line-file-return-bash-for __init__.txt
+}
+
 __write-file(){
 	# Записать текст в файл
 	echo "$1" > $2

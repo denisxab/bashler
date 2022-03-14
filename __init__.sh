@@ -9,7 +9,7 @@ res=''
 for x in os.listdir(os.path.dirname(sys.argv[1])):
     # исключить собственный файл, чтобы небыло рекурсии
     if x not in {'.git', '__init__.sh'}:
-        res+='%s ' % x 
+        res+='\"%s\" ' % x 
 print(res)
 " $0`
 
