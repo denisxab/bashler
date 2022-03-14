@@ -1,9 +1,8 @@
 #!/bin/bash
 
+# Работа с пакетными менеджарами
 
-
-## P = пакетные менеджеры
-p-apt-baseinstall(){
+p-apt-baseinstall() {
 	# Устновить все необходимые программы
 
 	res=~py -c "
@@ -45,41 +44,38 @@ if input('Установить зависемости ? (y/n)') == 'y':
 		)	
 else:
 	print('Отставить!')
-
-
-
-	" $IS_SERVER	
+	" $IS_SERVER
 }
 
-p-apt-install(){
+p-apt-install() {
 	# Установить программу
 	sudo apt install $@
 }
-p-apt-install-file(){
+p-apt-install-file() {
 	# Установить из файла
 	sudo dpkg -i $1
 }
-p-apt-remove(){
+p-apt-remove() {
 	# Удалить программу
 	sudo apt remove $@
 }
-p-apt-update(){
+p-apt-update() {
 	# Обновить ссылки, программы, отчистить лишнее
-	sudo apt update && sudo apt upgrade -y  && sudo apt autoremove && sudo apt clean
+	sudo apt update && sudo apt upgrade -y && sudo apt autoremove && sudo apt clean
 }
-p-snap-update(){
+p-snap-update() {
 	snap refresh
 }
-p-flatpack-update(){
+p-flatpack-update() {
 	flatpak update
 }
-p-full-update(){
+p-full-update() {
 	p-apt-update && p-snap-update && p-flatpack-update
 }
-p-pkg-update(){
+p-pkg-update() {
 	# Обновить все пакеты
 	pkg up
 }
-p-pkg-install(){
+p-pkg-install() {
 	pkg install $@
 }
