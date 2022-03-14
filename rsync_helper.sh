@@ -1,5 +1,4 @@
 #!/bin/bash
-echo "Read: $(pwd)/$0"
 
 # rsync
 __rsync-exlude-folder(){
