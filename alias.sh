@@ -25,4 +25,6 @@ alias glog="git log"
 alias gbra="git branch"
 alias gcd="git checkout $1"
 alias gmer="git merge $1"
+# Разница между коммитами или ветками 
 alias gdif="git diff $1"
+alias gback="git reset --hard"
