@@ -21,6 +21,7 @@ alias ..="cd .."
 # Git
 alias gadd="git add -A && git commit -m $(date +\"%c\")"
 alias gaddp="gadd && git push"
+alias gst="git status"
 alias glog="git log"
 alias gbra="git branch"
 alias gcd="git checkout $1"
