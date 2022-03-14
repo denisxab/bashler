@@ -1,5 +1,7 @@
 #!/bin/bash
 
+alias -g "pp"="-- $1"
+
 --(){
 	# Поиск bash команды в папке bashler
 	# > часть_имени_команды
@@ -102,13 +104,18 @@ else:
 
 __read-line-file-return-bash-for(){
 	# Прочитать файл с переносами строк и вернуть bash массив
-	~py -c "
-name_file=$1
-with open('name_file','r') as _f:
+    ~py -c "
+import sys
+name_file=sys.argv[1]
+with open(name_file,'r') as _f:
 	data = _f.read()
 res=''
 for x in data.split():
-	res+=f'\"{x}\" '
+    res+='%s ' % x
 print(res)
-"	
+" $1	
+}
+__write-file(){
+	# Записать текст в файл
+	echo "$1" > $2
 }

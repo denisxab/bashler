@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-## Docekr
+# Docekr
 -docker-ip(){
 	# Получить	 ip адрес   указанного 	 контейнера
 	# -docker-ip имя_контейнера
