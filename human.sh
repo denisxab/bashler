@@ -24,6 +24,8 @@ av() {
     # [часть_имени_команды]
     #
     ~py -c "
+import sys
+sys.path.insert(0,'$BASHLER_PATH')
 from doc_serach import manger_search_func
 manger_search_func()
     " $@
@@ -35,6 +37,8 @@ aa-dev() {
     # -v                = Поиск по знаечнию
     # -n                = Поиск по имени
     ~py -c "
+import sys
+sys.path.insert(0,'$BASHLER_PATH')
 from doc_serach import search_alias
 search_alias()
     " $@ $(alias)
