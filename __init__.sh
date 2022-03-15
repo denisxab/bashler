@@ -18,7 +18,7 @@ for x in os.listdir(sys.argv[1]):
             print('\"%s\" ' % x )            
 " "$BASHLER_PATH")
 
-echo "$BASHLER_PATH/$list_dir"
+# echo "$BASHLER_PATH/$list_dir"
 
 for x in $(echo $list_dir); do
     cm="source $BASHLER_PATH/$x"
