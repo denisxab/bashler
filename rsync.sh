@@ -1,7 +1,9 @@
 #!/bin/bash
 
+
+
 # rsync
-__rsync-exlude-folder(){
+__rsync-exlude-folder() {
 	# -e папка_1 папка_... = Исключить папки или файлы из сихронизации
 	# можно создать файл .rsyncignore(по типу .gitignore) для хранения исключений
 	~py -c "
@@ -33,41 +35,41 @@ def main(argv:list):
 main(sys.argv)
 	" $@
 }
--rsync-read-file(){
+-rsync-read-file() {
 	# Прочитать сохранить пути сихронизации
-	eval `~py -c "
+	eval $(~py -c "
 import os.path
 file = '.rsyncpath'
 if os.path.exists(file):
     with open(file, 'r') as _f:
         print(_f.read())
-	" $@`
+	" $@)
 }
--rsync-local-folder(){
+-rsync-local-folder() {
 	# Синхронизировать локальные папки
-	# > откуда куда 
+	# > откуда куда
 	# -e папка_1 папка_... 	= Исключить папки или файлы из сихронизации
 	# --dry-run			 	= Показать какие файлы будут сихронезированы без выполени программы
-	exclud_folder=`__rsync-exlude-folder $@`
+	exclud_folder=$(__rsync-exlude-folder $@)
 	rsync -azvh --progress $1 $2 $exclud_folder
 }
--rsync-delete-local-folder(){
+-rsync-delete-local-folder() {
 	# Синхронизировать папки, если в ВЫХОДНОЙ(out) папке отличия, то удалить их
 	# -e папка_1 папка_... = Исключить папки или файлы из сихронизации
-	exclud_folder=`__rsync-exlude-folder $@`
+	exclud_folder=$(__rsync-exlude-folder $@)
 	rsync -azvh --progress --delete $1 $2 $exclud_folder
 }
--rsync-server-folder(){
+-rsync-server-folder() {
 	# Синхронезировать с сервером по SSH
-	# > port username@ip:path localpath 
+	# > port username@ip:path localpath
 	# -e папка_1 папка_... = Исключить папки или файлы из сихронизации
-	exclud_folder=`__rsync-exlude-folder $@`
+	exclud_folder=$(__rsync-exlude-folder $@)
 	rsync -azvh --progress -e "ssh -p $1" $2 $3 $exclud_folder
 }
--rsync-delete-server-folder(){
+-rsync-delete-server-folder() {
 	# Синхронезировать с сервером по SSH, если в ВЫХОДНОЙ(out) папке отличия, то удалить их
-	# > port username@ip:path localpath 
+	# > port username@ip:path localpath
 	# -e папка_1 папка_... = Исключить папки или файлы из сихронизации
-	exclud_folder=`__rsync-exlude-folder $@`
+	exclud_folder=$(__rsync-exlude-folder $@)
 	rsync -azvh --progress --delete -e "ssh -p $1" $2 $3 $exclud_folder
 }

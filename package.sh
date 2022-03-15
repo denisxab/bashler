@@ -51,12 +51,19 @@ p-apt-install() {
 	# Установить программу
 	sudo apt install $@
 }
+
+p-apt-install() {
+	# Установить программу
+	sudo apt install $@
+}
 p-apt-install-file() {
 	# Установить из файла
 	sudo dpkg -i $1
 }
 p-apt-remove() {
+
 	# Удалить программу
+
 	sudo apt remove $@
 }
 p-apt-update() {
@@ -64,7 +71,7 @@ p-apt-update() {
 	sudo apt update && sudo apt upgrade -y && sudo apt autoremove && sudo apt clean
 }
 p-snap-update() {
-	snap refresh
+	snap refreshq
 }
 p-flatpack-update() {
 	flatpak update

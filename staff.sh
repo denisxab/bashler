@@ -1,16 +1,16 @@
 #!/bin/bash
 
-__read-line-file-return-bash-for(){
-	# Прочитать файл с переносами строк и вернуть bash массив
-    # 
+__read-line-file-return-bash-for() {
+    # Прочитать файл с переносами строк и вернуть bash массив
+    #
     # Пример испоильзования
-    # 
+    #
     # list_text=`__read-line-file-return-bash-for sd`
     # for x in `echo $das`
-    # do 
+    # do
     #     echo ") $x"
     # done
-    echo `~py -c "
+    echo $(~py -c "
 import sys
 name_file=sys.argv[1]
 with open(name_file,'r') as _f:
@@ -19,10 +19,10 @@ res=''
 for x in data.split():
     res+='\"%s\" ' % x
 print(res)
-" $1`
+" $1)
 }
 
-__write-file(){
-	# Записать текст в файл
-	echo "$1" > $2
+__write-file() {
+    # Записать текст в файл
+    echo "$1" >$2
 }

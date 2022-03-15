@@ -1,25 +1,24 @@
 #!/bin/bash
 
 
-
 # Папки
-f-dir-copy(){
+f-dir-copy() {
 	# Скопировать папку
 	cp -R $1 $2
 }
-f-dir-rename(){
+f-dir-rename() {
 	# Переименовать папку
 	mv $1 $2
 }
-f-dir-create(){
+f-dir-create() {
 	# Создать папку
 	mkdir $1
 }
-f-dir-remove(){
+f-dir-remove() {
 	# Удалить папку
 	rm -rf $1
 }
--tree(){
+-tree() {
 	# > УровеньВложенности ДиректориюПосмотерть
 	# -a = скрытые файлы
 	# -d = только директории
@@ -32,14 +31,14 @@ f-dir-remove(){
 	# -I = Исключить из списка по патерну
 	tree -a -L $1 -h -F $2
 }
--tree-search(){
+-tree-search() {
 	# Фильтрация вывода
 	# > шаблон_слово
 	tree -a -F | grep $@
 }
--gpg(){
-	# gpg --list-key = Список ключей 
-	
+-gpg() {
+	# gpg --list-key = Список ключей
+
 }
 
 ## D = Диск
@@ -47,28 +46,28 @@ d-size-folder() {
 	# Получить разме файлов в указанной директории
 	du $1 -ach -d 1 | sort -h
 }
-d-size-disk(){
+d-size-disk() {
 	# Использование дисков
 	df -h
 }
-d-list-disk(){
+d-list-disk() {
 	# Все подключенные диски
 	sudo fdisk -l
 }
 ## Git
--git-s(){
+-git-s() {
 	git status
 }
--git-add(){
+-git-add() {
 	git add -A
 }
--git-rm(){
+-git-rm() {
 	# Удалить файл из отслеживания
 	git rm --cached $1
 }
--git-commit(){
+-git-commit() {
 	git commit -m '$1'
 }
--git-log(){
+-git-log() {
 	git log
 }

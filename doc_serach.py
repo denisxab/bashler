@@ -19,7 +19,7 @@ def manger_search_func():
     similar_commands: list[str] = search_func(name_regex, text_all_sh)
 
     # #: Шаблон поиска документации
-    template_comment = '[\n\t ]*#[\\w\\d\t,.\\-_ @:\\>\\<\\(\\)\\[\\]\\`=*]+'
+    template_comment = '[\n\t ]*#[\w\d\t,.\-_ @:\>\<\(\)\[\]\`=*]+'
     if len(similar_commands) == 1:
         search_full_doc(similar_commands[0], template_comment, text_all_sh)
     elif len(similar_commands) > 1:

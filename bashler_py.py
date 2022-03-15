@@ -83,7 +83,7 @@ def search_func(name_regex_bash_fun: str, text_all_sh: str):
     Ищем похожие функции
     '''
     _similar_commands = re.findall(
-        '([\\w\\-_]*%s[\\w\\-_]*)\\(\\){' % name_regex_bash_fun, text_all_sh
+        '([\w\\-_]*%s[\w\-_]*)\(\) *{' % name_regex_bash_fun, text_all_sh
     )
     # Если команда не найдена
     if not _similar_commands:
@@ -99,7 +99,7 @@ def search_full_doc(
     Если есть только одна команда то выводим полную документацию о ней
     '''
     _docstring: re.Match = re.search(
-        '%s\\(\\){\\s((%s)+)' %
+        '%s\(\) *{\s*((%s)+)' %
         (name_bash_fun, _template_comment), text_all_sh)
     if _docstring:
         # Убираем лишние отступы
@@ -122,7 +122,7 @@ def search_shot_doc(
     '''
     for _name_func in similar_commands:
         _command: re.Match = re.search(
-            '%s\\(\\){\\s((%s)+)' %
+            '%s\(\) *{\s((%s)+)' %
             (_name_func, _template_comment), text_all_sh)
         if _command:
             # Берем первый комментарий
