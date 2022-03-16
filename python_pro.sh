@@ -29,3 +29,11 @@ pvenv() {
     # Создать виртальное окуржение
     ~py -m venv venv
 }
+
+poetry_init() {
+    # Звгрузить poetry
+    pip install cachecontrol
+    pipupdate
+    pip install poetry
+    poetry install
+}
