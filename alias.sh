@@ -15,6 +15,7 @@ alias -g gitclones="/home/denis/PycharmProjects/git_clons/gitclones.bin"
 alias -g showlogsmal="/home/denis/PycharmProjects/showlofsmal/showlogsmal.bin"
 alias -g ~py=python3.10
 alias -g ~bpy=bpython
+alias poetry="python -m poetry $@"
 alias ..="cd .."
 ######################################################################################
 

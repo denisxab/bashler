@@ -19,3 +19,13 @@ pepf() {
 
     ~py -m autopep8 --in-place --aggressive --aggressive -v $1
 }
+
+pipupdate() {
+    # Обновить pip
+    ~py -m pip install --upgrade pip
+}
+
+pvenv() {
+    # Создать виртальное окуржение
+    ~py -m venv venv
+}

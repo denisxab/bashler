@@ -47,14 +47,43 @@ else:
 	" $IS_SERVER
 }
 
-p-apt-install() {
-	# Установить программу
-	sudo apt install $@
+pinst() {
+	# Установить пакет в систему
+	case $BASE_SYSTEM_OS in
+	ubuntu)
+		p-apt-install $@
+		;;
+	arch)
+		p-packman-install $@
+		;;
+	*)
+		echo "None"
+		;;
+	esac
+}
+
+prem() {
+	# Удалить пакет из системы
+	case $BASE_SYSTEM_OS in
+	ubuntu)
+		p-apt-remove $@
+		;;
+	arch)
+		p-packman-remove $@
+		;;
+	*)
+		echo "None"
+		;;
+	esac
 }
 
 p-apt-install() {
 	# Установить программу
 	sudo apt install $@
+}
+p-apt-remove() {
+	# Установить программу
+	sudo apt remove $@
 }
 p-apt-install-file() {
 	# Установить из файла
