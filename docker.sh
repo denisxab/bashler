@@ -61,8 +61,9 @@ __docker-create-filename(){
 	echo "Проект: $NAME_PROJ"
 	sudo docker exec -ti $NAME_PROJ /bin/sh;
 }
--docker-show-container(){
+-dshc(){
 	# Посмотреть контейнеры
+	# docker-show-container
 	if [[ $1 == '-w' ]]
 	then
 		 watch -d -n 2 sudo docker ps -a
@@ -71,8 +72,9 @@ __docker-create-filename(){
 	fi
 
 }
--docker-show-image(){
+-dshi(){
 	# Посмотреть образы
+	# docker-show-image
 	if [[ $1 == '-w' ]]
 	then
 		sudo watch -d -n 2 sudo docker images
@@ -80,6 +82,15 @@ __docker-create-filename(){
 		sudo docker images
 	fi
 }
+-dcp(){
+	# Отчитстить контейнеры
+	sudo docker container prune
+}
+-dip(){
+	# Отчитстить образы
+	sudo docker container prune
+}
+
 -docker-compose-select-envfile(){
 	# Сохранить путь к env файлу
 	# -docker-compose-select-env-file ./file/__env.env
