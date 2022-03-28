@@ -10,7 +10,7 @@ alias -s {txt,md,conf,log}=micro
 alias -s {js,py,cs,ts,html}=code
 ######################################################################################
 # Глобальные Alias
-alias -g configer="/home/denis/PycharmProjects/configer/configer.bin"
+alias -g configer="/media/denis/dd19b13d-bd85-46bb-8db9-5b8f6cf7a825/MyProject/PycharmProjects/configer/venv/bin/python3.10 /media/denis/dd19b13d-bd85-46bb-8db9-5b8f6cf7a825/MyProject/PycharmProjects/configer/configer/main.py"
 alias -g gitclones="/media/denis/dd19b13d-bd85-46bb-8db9-5b8f6cf7a825/MyProject/PycharmProjects/git_clons/gitclones.bin"
 alias -g showlogsmal="/home/denis/PycharmProjects/showlofsmal/showlogsmal.bin"
 alias -g ~py=python3.10
