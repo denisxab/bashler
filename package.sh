@@ -48,7 +48,7 @@ else:
 }
 
 pinst() {
-
+	# Установить программу в Linux
 	RES_EXE="$(~py -c '''
 import sys
 import re
@@ -73,18 +73,27 @@ else:
 }
 
 prem() {
-	# Удалить пакет из системы
-	case $BASE_SYSTEM_OS in
-	ubuntu)
-		p-apt-remove $@
-		;;
-	arch)
-		p-packman-remove $@
-		;;
-	*)
-		echo "None"
-		;;
-	esac
+
+	RES_EXE="$(~py -c '''
+import sys
+import re
+os = sys.argv[-1]
+pakage = sys.argv[1]
+if os == "ubuntu":
+	if re.search(".deb$", pakage): 
+		# Удалить из файла
+		print("p-apt-remove")
+	else:
+		# Удалить из интернета
+		print("p-apt-remove")
+elif os == "arch":
+	print("p-packman-remove")
+else:
+	print("None")
+''' $1 $BASE_SYSTEM_OS) $@"
+
+	echo $RES_EXE
+	eval $RES_EXE
 }
 
 p-apt-install() {
