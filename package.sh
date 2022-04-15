@@ -48,18 +48,28 @@ else:
 }
 
 pinst() {
-	# Установить пакет в систему
-	case $BASE_SYSTEM_OS in
-	ubuntu)
-		p-apt-install $@
-		;;
-	arch)
-		p-packman-install $@
-		;;
-	*)
-		echo "None"
-		;;
-	esac
+
+	RES_EXE="$(~py -c '''
+import sys
+import re
+os = sys.argv[-1]
+pakage = sys.argv[1]
+if os == "ubuntu":
+	if re.search(".deb$", pakage): 
+		# Установка из файла
+		print("p-apt-install-file")
+	else:
+		# Установка из интернета
+		print("p-apt-install")
+elif os == "arch":
+	print("p-packman-install")
+
+else:
+	print("None")
+''' $1 $BASE_SYSTEM_OS) $@"
+
+	echo $RES_EXE
+	eval $RES_EXE
 }
 
 prem() {
