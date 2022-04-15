@@ -73,7 +73,6 @@ else:
 }
 
 prem() {
-
 	RES_EXE="$(~py -c '''
 import sys
 import re
