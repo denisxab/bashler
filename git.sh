@@ -1,6 +1,5 @@
 #!/bin/bash
 # Git
-alias gaddp="gadd && git push"
 alias gst="git status"
 alias glog="git log"
 alias gbra="git branch"
@@ -10,10 +9,16 @@ alias gmer="git merge $1"
 alias gdif="git diff $1"
 alias gback="git reset --hard"
 
+
 gadd() {
-    date= eval "date +\"%c\""
+    date=`date +\"%c\"`
     req="git add -A && git commit -m '$date - $1'"
     echo $req
+    eval $req
+}
+
+gaddp(){
+    gadd $@ && git push
 }
 
 garch() {
