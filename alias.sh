@@ -15,6 +15,7 @@ alias -g gitclones="/media/denis/dd19b13d-bd85-46bb-8db9-5b8f6cf7a825/MyProject/
 alias -g showlogsmal="/home/denis/PycharmProjects/showlofsmal/showlogsmal.bin"
 alias -g ~py=python3.10
 alias -g ~bpy=bpython
+alias -g syncthing="/media/denis/dd19b13d-bd85-46bb-8db9-5b8f6cf7a825/AlienApp/aplication/other/syncthing-linux-amd64-v1.20.1/syncthing"
 alias poetry="python -m poetry $@"
 alias ..="cd .."
 ######################################################################################
