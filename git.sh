@@ -18,7 +18,9 @@ gadd() {
 }
 
 gaddp(){
-    gadd $@ && echo 'git push' && git push
+    gadd $@;
+    echo 'git push';  
+    git push;
 }
 
 garch() {
