@@ -6,7 +6,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Thu Jul 21 22:20:26 2022
+# Make data base, printed on Thu Jul 21 22:48:46 2022
 
 # Variables
 
@@ -91,7 +91,7 @@ SNAP_REEXEC =
 # automatic
 @F = $(notdir $@)
 # environment
-VSCODE_PID = 32111
+VSCODE_PID = 42985
 # environment
 XDG_SESSION_TYPE = x11
 # automatic
@@ -247,9 +247,9 @@ SNAP_LIBRARY_PATH = /var/lib/snapd/lib/gl:/var/lib/snapd/lib/gl32:/var/lib/snapd
 
 # Directories
 
-# . (device 42, inode 638345): 22 files, no impossibilities.
+# . (device 42, inode 638345): 12 files, no impossibilities.
 
-# 22 files, no impossibilities in 1 directories.
+# 12 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -278,6 +278,9 @@ all:
 #  File has not been updated.
 
 build:
+ 
+make: *** No rule to make target 'all'.  Stop.
+
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
@@ -292,15 +295,12 @@ build:
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 28 / storage = 259 B / avg = 9 B
-# current buf: size = 8162 B / used = 259 B / count = 28 / avg = 9 B
+# strcache buffers: 1 (0) / strings = 18 / storage = 152 B / avg = 8 B
+# current buf: size = 8162 B / used = 152 B / count = 18 / avg = 8 B
 
-# strcache performance: lookups = 33 / hit rate = 15%
+# strcache performance: lookups = 23 / hit rate = 21%
 # hash-table stats:
- 
-make: *** No rule to make target 'all'.  Stop.
-
-# Load=28/8192=0%, Rehash=0, Collisions=0/33=0%
-# Finished Make data base on Thu Jul 21 22:20:26 2022
+# Load=18/8192=0%, Rehash=0, Collisions=0/23=0%
+# Finished Make data base on Thu Jul 21 22:48:46 2022
 
  

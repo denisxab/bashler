@@ -108,22 +108,6 @@ s-watch(){
 	# Обновление команды через определенный период времяни
 	watch -d -n $@
 }
-# systemctl
-s-sys-is-enable(){
-	sudo systemctl is-enabled $1
-}
-s-sys-r(){
-	sudo systemctl restart $1
-}
-s-sys-s(){
-	sudo systemctl status $1
-}
-s-sys-start(){
-	sudo systemctl start $1
-}
-s-sys-stop(){
-	sudo systemctl stop $1
-}
 
 #!/bin/bash
 
@@ -490,56 +474,6 @@ d-list-disk() {
 	echo $res
 	eval $res
 }
--tree-find() {
-	# Фильтрация вывода
-	# > шаблон_слово
-	tree -a -F | grep $@
-}
-
-## Find
--find() {
-
-	# find [ОткудаИскать...] -name "ЧтоИскать"
-
-	# `*`				= Любой символ до и после
-	# -iname 			= Поиск БЕЗ учета регистра
-	# -name 			= Поиск С учетом регистра
-	# --not -name 		= Поиск НЕ совпадений шаблону
-	# -maxdepth Число 	= Максимальная глубина поиска
-	# -type d			= Поиск только папок
-	# -type f			= Поиск только файлов
-	# -perm 0664		= Поиск по разришению файлов
-
-	# -mtime Дней		= Модифецированные столько дней назад
-	# -atime Дней		= Открытые столько дней назад
-
-	# -not 		= НЕ
-	# -o 		= ИЛИ
-	find $@
-}
--find-e() {
-	# Поиск всех файлов с указаным разширением
-	find . -name *.$1
-}
--find-f() {
-	# Поиск файла или папки по указаному шаблоному имени
-	find . -name $1
-}
--find-t() {
-	# Поиск текста в файлах по указаному шаблону
-	res='grep'
-	if [[ -n $2 ]]; then
-		res+=" --exclude-dir={$2}"
-	fi
-	res+=" -rnw . -e $1"
-	echo $res
-	eval $res
-}
-
-# GPG
-# -gpg() {
-# 	# gpg --list-key = Список ключей
-# }
 
 #!/bin/bash
 
@@ -686,3 +620,81 @@ alias -g syncthing="$DiskData/AlienApp/aplication/other/syncthing-linux-amd64-v1
 alias poetry="python -m poetry $@"
 alias ..="cd .."
 ######################################################################################
+
+#!/bin/bash
+
+# Find
+-find() {
+
+    # find [ОткудаИскать...] -name "ЧтоИскать"
+
+    # `*`				= Любой символ до и после
+    # -iname 			= Поиск БЕЗ учета регистра
+    # -name 			= Поиск С учетом регистра
+    # --not -name 		= Поиск НЕ совпадений шаблону
+    # -maxdepth Число 	= Максимальная глубина поиска
+    # -type d			= Поиск только папок
+    # -type f			= Поиск только файлов
+    # -perm 0664		= Поиск по разришению файлов
+
+    # -mtime Дней		= Модифецированные столько дней назад
+    # -atime Дней		= Открытые столько дней назад
+
+    # -not 		= НЕ
+    # -o 		= ИЛИ
+    find $@
+}
+-find-e() {
+    # Поиск всех файлов с указаным разширением
+    find . -name *.$1
+}
+-find-f() {
+    # Поиск файла или папки по указаному шаблоному имени
+    find . -name $1
+}
+-find-tree() {
+    # Фильтрация вывода
+    # > шаблон_слово
+    tree -a -F | grep $@
+}
+-find-t() {
+    # Поиск текста в файлах по указаному шаблону
+    res='grep'
+    if [[ -n $2 ]]; then
+        res+=" --exclude-dir={$2}"
+    fi
+    res+=" -rnw . -e $1"
+    echo $res
+    eval $res
+}
+
+#!/bin/bash
+
+sy-ie() {
+    # Проверить включена ли служба в автозапуск
+    sudo systemctl is-enabled $1
+}
+sy-e() {
+    # Добвить службу в автозапуск
+    sudo systemctl enabled $1
+}
+sy-d() {
+    # Удалить службу из автозапуска
+    sudo systemctl disable $1
+}
+sy-r() {
+    # Перезапустить службу
+    sudo systemctl restart $1
+}
+sy-s() {
+    # Статус службы
+    sudo systemctl status $1
+}
+sy-str() {
+    # Запустить службы
+    sudo systemctl start $1
+}
+sy-stp() {
+    # Остановить службу
+    sudo systemctl stop $1
+}
