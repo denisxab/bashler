@@ -1,6 +1,46 @@
 #!/bin/bash
 
 # rsync
+
+-rsync-local-folder() {
+	# Синхронизировать локальные папки
+	# > откуда куда
+	# -e папка_1 папка_... 	= Исключить папки или файлы из сихронизации
+	# --dry-run			 	= Показать какие файлы будут сихронезированы без выполени программы
+	exclud_folder=$(__rsync-exlude-folder $@)
+	rsync -azvh --progress $1 $2 $exclud_folder
+}
+-rsync-delete-local-folder() {
+	# Синхронизировать папки, если в ВЫХОДНОЙ(out) папке отличия, то удалить их
+	# -e папка_1 папка_... = Исключить папки или файлы из сихронизации
+	exclud_folder=$(__rsync-exlude-folder $@)
+	rsync -azvh --progress --delete $1 $2 $exclud_folder
+}
+-rsync-server-folder() {
+	# Синхронезировать с сервером по SSH
+	# > port username@ip:path localpath
+	# -e папка_1 папка_... = Исключить папки или файлы из сихронизации
+	exclud_folder=$(__rsync-exlude-folder $@)
+	rsync -azvh --progress -e "ssh -p $1" $2 $3 $exclud_folder
+}
+-rsync-delete-server-folder() {
+	# Синхронезировать с сервером по SSH, если в ВЫХОДНОЙ(out) папке отличия, то удалить их
+	# > port username@ip:path localpath
+	# -e папка_1 папка_... = Исключить папки или файлы из сихронизации
+	exclud_folder=$(__rsync-exlude-folder $@)
+	rsync -azvh --progress --delete -e "ssh -p $1" $2 $3 $exclud_folder
+}
+##############
+-rsync-read-file() {
+	# Прочитать файл с сохранеными путями синхронизации
+	eval $(~py -c "
+import os.path
+file = '.rsyncpath'
+if os.path.exists(file):
+    with open(file, 'r') as _f:
+        print(_f.read())
+	" $@)
+}
 __rsync-exlude-folder() {
 	# -e папка_1 папка_... = Исключить папки или файлы из сихронизации
 	# можно создать файл .rsyncignore(по типу .gitignore) для хранения исключений
@@ -32,73 +72,6 @@ def main(argv:list):
         print('', end='')
 main(sys.argv)
 	" $@
-}
--rsync-read-file() {
-	# Прочитать файл с сохранеными путями синхронизации
-	eval $(~py -c "
-import os.path
-file = '.rsyncpath'
-if os.path.exists(file):
-    with open(file, 'r') as _f:
-        print(_f.read())
-	" $@)
-}
--rsync-local-folder() {
-	# Синхронизировать локальные папки
-	# > откуда куда
-	# -e папка_1 папка_... 	= Исключить папки или файлы из сихронизации
-	# --dry-run			 	= Показать какие файлы будут сихронезированы без выполени программы
-	exclud_folder=$(__rsync-exlude-folder $@)
-	rsync -azvh --progress $1 $2 $exclud_folder
-}
--rsync-delete-local-folder() {
-	# Синхронизировать папки, если в ВЫХОДНОЙ(out) папке отличия, то удалить их
-	# -e папка_1 папка_... = Исключить папки или файлы из сихронизации
-	exclud_folder=$(__rsync-exlude-folder $@)
-	rsync -azvh --progress --delete $1 $2 $exclud_folder
-}
--rsync-server-folder() {
-	# Синхронезировать с сервером по SSH
-	# > port username@ip:path localpath
-	# -e папка_1 папка_... = Исключить папки или файлы из сихронизации
-	exclud_folder=$(__rsync-exlude-folder $@)
-	rsync -azvh --progress -e "ssh -p $1" $2 $3 $exclud_folder
-}
--rsync-delete-server-folder() {
-	# Синхронезировать с сервером по SSH, если в ВЫХОДНОЙ(out) папке отличия, то удалить их
-	# > port username@ip:path localpath
-	# -e папка_1 папка_... = Исключить папки или файлы из сихронизации
-	exclud_folder=$(__rsync-exlude-folder $@)
-	rsync -azvh --progress --delete -e "ssh -p $1" $2 $3 $exclud_folder
-}
-
-#!/bin/bash
-
-__read-line-file-return-bash-for() {
-    # Прочитать файл с переносами строк и вернуть bash массив
-    #
-    # Пример испоильзования
-    #
-    # list_text=`__read-line-file-return-bash-for sd`
-    # for x in `echo $das`
-    # do
-    #     echo ") $x"
-    # done
-    echo $(~py -c "
-import sys
-name_file=sys.argv[1]
-with open(name_file,'r') as _f:
-	data = _f.read()
-res=''
-for x in data.split():
-    res+='\"%s\" ' % x
-print(res)
-" $1)
-}
-
-__write-file() {
-    # Записать текст в файл
-    echo "$1" >$2
 }
 
 #!/bin/bash
@@ -168,10 +141,11 @@ pepd() {
 pepf() {
     # Отформатировать python файл
     # [путь_к_файлу]
-    
+
     ~py -m autopep8 --in-place --aggressive --aggressive -v $1
 }
 
+# PIP
 pipupdate() {
     # Обновить pip
     ~py -m pip install --upgrade pip
@@ -598,7 +572,7 @@ __docker-create-filename() {
 ######################################################################################
 # Мои переменные окурежния
 # Путь к диску с данными
-export DiskData="$DiskData"
+export DiskData="/media/denis/dd19b13d-bd85-46bb-8db9-5b8f6cf7a825"
 # Путь к Python модулям
 export BASHLER_PATH_PY="$BASHLER_PATH/py"
 ######################################################################################
@@ -693,4 +667,33 @@ sy-str() {
 sy-stp() {
     # Остановить службу
     sudo systemctl stop $1
+}
+
+#!/bin/bash
+
+__read-line-file-return-bash-for() {
+    # Прочитать файл с переносами строк и вернуть bash массив
+    #
+    # Пример испоильзования
+    #
+    # list_text=`__read-line-file-return-bash-for sd`
+    # for x in `echo $das`
+    # do
+    #     echo ") $x"
+    # done
+    echo $(~py -c "
+import sys
+name_file=sys.argv[1]
+with open(name_file,'r') as _f:
+	data = _f.read()
+res=''
+for x in data.split():
+    res+='\"%s\" ' % x
+print(res)
+" $1)
+}
+
+__write-file() {
+    # Записать текст в файл
+    echo "$1" >$2
 }
