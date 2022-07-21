@@ -1,5 +1,350 @@
 #!/bin/bash
 
+# rsync
+__rsync-exlude-folder() {
+	# -e папка_1 папка_... = Исключить папки или файлы из сихронизации
+	# можно создать файл .rsyncignore(по типу .gitignore) для хранения исключений
+	~py -c "
+import os.path
+import sys
+
+def main(argv:list):
+    '''
+    >>> main(['sd', 'in', 'out', '-e', 'ewe', 'edde', 'deed'])
+    --exclude=ewe --exclude=edde --exclude=deed
+    '''
+    file = '.rsyncignore'
+    exclude = []
+    # Получаем исключения из консоли
+    exclude.extend(argv[3:])
+    if exclude and exclude.pop(0) == '-e':
+        # Получаем исключения из файла
+        if os.path.exists(file):
+            with open(file, 'r') as _f:
+                exclude.extend(_f.read().split('\n'))
+        res = ''
+        for x in exclude:
+            res += '--exclude=%s ' % x
+        # убрать последний пробел
+        res = res[:-1] if res.endswith(' ') else res
+        print(res)
+    else:
+        print('', end='')
+main(sys.argv)
+	" $@
+}
+-rsync-read-file() {
+	# Прочитать файл с сохранеными путями синхронизации
+	eval $(~py -c "
+import os.path
+file = '.rsyncpath'
+if os.path.exists(file):
+    with open(file, 'r') as _f:
+        print(_f.read())
+	" $@)
+}
+-rsync-local-folder() {
+	# Синхронизировать локальные папки
+	# > откуда куда
+	# -e папка_1 папка_... 	= Исключить папки или файлы из сихронизации
+	# --dry-run			 	= Показать какие файлы будут сихронезированы без выполени программы
+	exclud_folder=$(__rsync-exlude-folder $@)
+	rsync -azvh --progress $1 $2 $exclud_folder
+}
+-rsync-delete-local-folder() {
+	# Синхронизировать папки, если в ВЫХОДНОЙ(out) папке отличия, то удалить их
+	# -e папка_1 папка_... = Исключить папки или файлы из сихронизации
+	exclud_folder=$(__rsync-exlude-folder $@)
+	rsync -azvh --progress --delete $1 $2 $exclud_folder
+}
+-rsync-server-folder() {
+	# Синхронезировать с сервером по SSH
+	# > port username@ip:path localpath
+	# -e папка_1 папка_... = Исключить папки или файлы из сихронизации
+	exclud_folder=$(__rsync-exlude-folder $@)
+	rsync -azvh --progress -e "ssh -p $1" $2 $3 $exclud_folder
+}
+-rsync-delete-server-folder() {
+	# Синхронезировать с сервером по SSH, если в ВЫХОДНОЙ(out) папке отличия, то удалить их
+	# > port username@ip:path localpath
+	# -e папка_1 папка_... = Исключить папки или файлы из сихронизации
+	exclud_folder=$(__rsync-exlude-folder $@)
+	rsync -azvh --progress --delete -e "ssh -p $1" $2 $3 $exclud_folder
+}
+
+#!/bin/bash
+
+__read-line-file-return-bash-for() {
+    # Прочитать файл с переносами строк и вернуть bash массив
+    #
+    # Пример испоильзования
+    #
+    # list_text=`__read-line-file-return-bash-for sd`
+    # for x in `echo $das`
+    # do
+    #     echo ") $x"
+    # done
+    echo $(~py -c "
+import sys
+name_file=sys.argv[1]
+with open(name_file,'r') as _f:
+	data = _f.read()
+res=''
+for x in data.split():
+    res+='\"%s\" ' % x
+print(res)
+" $1)
+}
+
+__write-file() {
+    # Записать текст в файл
+    echo "$1" >$2
+}
+
+#!/bin/bash
+
+## S = система
+s-watch(){
+	# Обновление команды через определенный период времяни
+	watch -d -n $@
+}
+# systemctl
+s-sys-is-enable(){
+	sudo systemctl is-enabled $1
+}
+s-sys-r(){
+	sudo systemctl restart $1
+}
+s-sys-s(){
+	sudo systemctl status $1
+}
+s-sys-start(){
+	sudo systemctl start $1
+}
+s-sys-stop(){
+	sudo systemctl stop $1
+}
+
+#!/bin/bash
+
+# Zsh
+-zsh-hotkey() {
+	echo "	
+Ctrl+a = Переместить курсор в начало команды
+Ctrl+e = Переместить курсор в конец команды
+Ctrl+r = Поиск команды по истории
+Ctrl+c = Прервать команду
+Ctrl+z = Свернуть выполненеи команды (fg = вернуться)
+Ctrl+w = Удалить слово в право
+Ctrl+u = Удалить весь текст в лево
+Ctrl+k = Удалить весь текст в право
+Ctrl+y = Вставить текст
+Ctrl+x затем Ctrl+e = Открыть команду в текстовом редакторе указанным в $(EDITOR), после выхода она вставиться в консоль 
+Ctrl+s =  Поставить на паузу выполение команжы (Ctrl+q возобновить)
+	"
+}
+-zsh-edit() {
+
+	# Открыть редактирование zsh
+	$EDITOR ~/.zshrc
+}
+-zsh-install-plugin() {
+	# Установить плагины Zsh
+	git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions &&
+		git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting &&
+		git clone https://github.com/marlonrichert/zsh-autocomplete.git ~/.oh-my-zsh/custom/plugins/zsh-autocomplete &&
+		mkdir $ZSH_CUSTOM/plugins/poetry &&
+		poetry completions zsh >$ZSH_CUSTOM/plugins/poetry/_poetry
+}
+-zsh-mount-disk() {
+	# Примонтировать повседневные  диски
+
+	# Google Disk
+	google-drive-ocamlfuse /mnt/google_disk
+}
+-zsh-clean-history() {
+	# Отчистить историю команд
+	history -c
+}
+
+#!/bin/bash
+
+# pep 8
+pepd() {
+    #  Отформатировать python файлы в указанной диреткории
+    # [путь_к_папке] = по умолчанию так где сейчас
+
+    dir=$1
+    if [[ -z $dir ]]; then
+
+        dir=$(pwd)
+    fi
+    ~py -m autopep8 --in-place --aggressive --aggressive -v -r $dir
+}
+
+pepf() {
+    # Отформатировать python файл
+    # [путь_к_файлу]
+
+    ~py -m autopep8 --in-place --aggressive --aggressive -v $1
+}
+
+pipupdate() {
+    # Обновить pip
+    ~py -m pip install --upgrade pip
+}
+
+pvenv() {
+    # Создать виртальное окуржение
+    ~py -m venv venv
+}
+
+poetry_init() {
+    # Звгрузить poetry
+    pip install cachecontrol
+    pipupdate
+    pip install poetry
+    poetry install
+}
+
+#!/bin/bash
+
+# Работа с пакетными менеджарами
+
+p-apt-baseinstall() {
+	# Устновить все необходимые программы
+
+	res=~py -c "
+
+import sys
+
+is_server=sys.argv[1]
+
+if is_server = 'yes':
+	print('Server')
+	print('Client')
+
+if input('Установить зависемости ? (y/n)') == 'y':
+	if is_server:
+		os.system(''' 
+		
+	# Обновить пакеты
+	p-apt-update;
+	# Установить пакеты
+	sudo apt install git curl wget vim nginx net-tools make tree;
+
+		''')
+		
+	else:
+		os.system(''' 
+		
+	# Обновим пакеты apt
+	p-apt-update;
+	# Устоновим пакетный менеджер flatpak и snap
+	sudo apt install flatpak snap
+	# Обновить все пакеты в системе
+	p-full-update;
+	# Установить базовые  пакеты
+	sudo apt install git zsh curl micro keepassx net-tools make krusader;
+	# Программы snap
+	sudo snap install code --classic;
+
+		'''
+		)	
+else:
+	print('Отставить!')
+	" $IS_SERVER
+}
+
+pinst() {
+	# Установить программу в Linux
+	RES_EXE="$(~py -c '''
+import sys
+import re
+os = sys.argv[-1]
+pakage = sys.argv[1]
+if os == "ubuntu":
+	if re.search(".deb$", pakage): 
+		# Установка из файла
+		print("p-apt-install-file")
+	else:
+		# Установка из интернета
+		print("p-apt-install")
+elif os == "arch":
+	print("p-packman-install")
+
+else:
+	print("None")
+''' $1 $BASE_SYSTEM_OS) $@"
+
+	echo $RES_EXE
+	eval $RES_EXE
+}
+
+prem() {
+	RES_EXE="$(~py -c '''
+import sys
+import re
+os = sys.argv[-1]
+pakage = sys.argv[1]
+if os == "ubuntu":
+	if re.search(".deb$", pakage): 
+		# Удалить из файла
+		print("p-apt-remove")
+	else:
+		# Удалить из интернета
+		print("p-apt-remove")
+elif os == "arch":
+	print("p-packman-remove")
+else:
+	print("None")
+''' $1 $BASE_SYSTEM_OS) $@"
+
+	echo $RES_EXE
+	eval $RES_EXE
+}
+
+p-apt-install() {
+	# Установить программу
+	sudo apt install $@
+}
+p-apt-remove() {
+	# Установить программу
+	sudo apt remove $@
+}
+p-apt-install-file() {
+	# Установить из файла
+	sudo dpkg -i $1
+}
+p-apt-remove() {
+
+	# Удалить программу
+
+	sudo apt remove $@
+}
+p-apt-update() {
+	# Обновить ссылки, программы, отчистить лишнее
+	sudo apt update && sudo apt upgrade -y && sudo apt autoremove && sudo apt clean
+}
+p-snap-update() {
+	snap refresh
+}
+p-flatpack-update() {
+	flatpak update
+}
+p-full-update() {
+	p-apt-update && p-snap-update && p-flatpack-update
+}
+p-pkg-update() {
+	# Обновить все пакеты
+	pkg up
+}
+p-pkg-install() {
+	pkg install $@
+}
+
+#!/bin/bash
+
 ##################################################
 --() {
     # Поиск документции у функции
@@ -25,7 +370,7 @@ av() {
     #
     ~py -c "
 import sys
-sys.path.insert(0,'$BASHLER_PATH')
+sys.path.insert(0,'$BASHLER_PATH_PY')
 from doc_serach import manger_search_func
 manger_search_func()
     " $@
@@ -38,12 +383,50 @@ aa-dev() {
     # -n                = Поиск по имени
     ~py -c "
 import sys
-sys.path.insert(0,'$BASHLER_PATH')
+sys.path.insert(0,'$BASHLER_PATH_PY')
 from doc_serach import search_alias
 search_alias()
     " $@ $(alias)
 
     alias | grep $1
+}
+
+#!/bin/bash
+
+# Git
+alias gst="git status"
+alias glog="git log"
+alias gbra="git branch"
+alias gcd="git checkout $1"
+alias gmer="git merge $1"
+# Разница между коммитами или ветками
+alias gdif="git diff $1"
+alias grst="git reset --hard"
+
+gadd() {
+    # Создать комит всех изменений
+    date=$(date +\"%c\")
+    req="git add -A && git commit -m '$date - $1'"
+    echo $req
+    eval $req
+}
+gaddp() {
+    # Создать комит всех изменений и выполнить push
+    gadd $@
+    echo 'git push'
+    git push
+}
+garch() {
+    # Сделать архив текущей ветки
+    req="git archive --format zip --output $1.zip "
+    req+=$(git rev-parse --abbrev-ref HEAD)
+    echo $req
+    eval $req
+}
+
+grmh(){
+    # Удалить файл из отслеживания
+	git rm --cached $1
 }
 
 #!/bin/bash
@@ -282,407 +665,24 @@ __docker-create-filename(){
 }
 #!/bin/bash
 
-__read-line-file-return-bash-for() {
-    # Прочитать файл с переносами строк и вернуть bash массив
-    #
-    # Пример испоильзования
-    #
-    # list_text=`__read-line-file-return-bash-for sd`
-    # for x in `echo $das`
-    # do
-    #     echo ") $x"
-    # done
-    echo $(~py -c "
-import sys
-name_file=sys.argv[1]
-with open(name_file,'r') as _f:
-	data = _f.read()
-res=''
-for x in data.split():
-    res+='\"%s\" ' % x
-print(res)
-" $1)
-}
-
-__write-file() {
-    # Записать текст в файл
-    echo "$1" >$2
-}
-
-#!/bin/bash
-
-## S = система
-s-watch(){
-	# Обновление команды через определенный период времяни
-	watch -d -n $@
-}
-# systemctl
-s-sys-is-enable(){
-	sudo systemctl is-enabled $1
-}
-s-sys-r(){
-	sudo systemctl restart $1
-}
-s-sys-s(){
-	sudo systemctl status $1
-}
-s-sys-start(){
-	sudo systemctl start $1
-}
-s-sys-stop(){
-	sudo systemctl stop $1
-}
-
-#!/bin/bash
-
-# Zsh
--zsh-hotkey() {
-	echo "	
-Ctrl+a = Переместить курсор в начало команды
-Ctrl+e = Переместить курсор в конец команды
-Ctrl+r = Поиск команды по истории
-Ctrl+c = Прервать команду
-Ctrl+z = Свернуть выполненеи команды (fg = вернуться)
-Ctrl+w = Удалить слово в право
-Ctrl+u = Удалить весь текст в лево
-Ctrl+k = Удалить весь текст в право
-Ctrl+y = Вставить текст
-Ctrl+x затем Ctrl+e = Открыть команду в текстовом редакторе указанным в $(EDITOR), после выхода она вставиться в консоль 
-Ctrl+s =  Поставить на паузу выполение команжы (Ctrl+q возобновить)
-	"
-}
--zsh-edit() {
-
-	# Открыть редактирование zsh
-	$EDITOR ~/.zshrc
-}
--zsh-install-plugin() {
-	# Установить плагины Zsh
-	git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions &&
-		git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting &&
-		git clone https://github.com/marlonrichert/zsh-autocomplete.git ~/.oh-my-zsh/custom/plugins/zsh-autocomplete &&
-		mkdir $ZSH_CUSTOM/plugins/poetry &&
-		poetry completions zsh >$ZSH_CUSTOM/plugins/poetry/_poetry
-}
--zsh-mount-disk() {
-	# Примонтировать повседневные  диски
-
-	# Google Disk
-	google-drive-ocamlfuse /mnt/google_disk
-}
--zsh-clean-history() {
-	# Отчистить историю команд
-	history -c
-}
-
-#!/bin/bash
-
-# rsync
-__rsync-exlude-folder() {
-	# -e папка_1 папка_... = Исключить папки или файлы из сихронизации
-	# можно создать файл .rsyncignore(по типу .gitignore) для хранения исключений
-	~py -c "
-import os.path
-import sys
-
-def main(argv:list):
-    '''
-    >>> main(['sd', 'in', 'out', '-e', 'ewe', 'edde', 'deed'])
-    --exclude=ewe --exclude=edde --exclude=deed
-    '''
-    file = '.rsyncignore'
-    exclude = []
-    # Получаем исключения из консоли
-    exclude.extend(argv[3:])
-    if exclude and exclude.pop(0) == '-e':
-        # Получаем исключения из файла
-        if os.path.exists(file):
-            with open(file, 'r') as _f:
-                exclude.extend(_f.read().split('\n'))
-        res = ''
-        for x in exclude:
-            res += '--exclude=%s ' % x
-        # убрать последний пробел
-        res = res[:-1] if res.endswith(' ') else res
-        print(res)
-    else:
-        print('', end='')
-main(sys.argv)
-	" $@
-}
--rsync-read-file() {
-	# Прочитать файл с сохранеными путями синхронизации
-	eval $(~py -c "
-import os.path
-file = '.rsyncpath'
-if os.path.exists(file):
-    with open(file, 'r') as _f:
-        print(_f.read())
-	" $@)
-}
--rsync-local-folder() {
-	# Синхронизировать локальные папки
-	# > откуда куда
-	# -e папка_1 папка_... 	= Исключить папки или файлы из сихронизации
-	# --dry-run			 	= Показать какие файлы будут сихронезированы без выполени программы
-	exclud_folder=$(__rsync-exlude-folder $@)
-	rsync -azvh --progress $1 $2 $exclud_folder
-}
--rsync-delete-local-folder() {
-	# Синхронизировать папки, если в ВЫХОДНОЙ(out) папке отличия, то удалить их
-	# -e папка_1 папка_... = Исключить папки или файлы из сихронизации
-	exclud_folder=$(__rsync-exlude-folder $@)
-	rsync -azvh --progress --delete $1 $2 $exclud_folder
-}
--rsync-server-folder() {
-	# Синхронезировать с сервером по SSH
-	# > port username@ip:path localpath
-	# -e папка_1 папка_... = Исключить папки или файлы из сихронизации
-	exclud_folder=$(__rsync-exlude-folder $@)
-	rsync -azvh --progress -e "ssh -p $1" $2 $3 $exclud_folder
-}
--rsync-delete-server-folder() {
-	# Синхронезировать с сервером по SSH, если в ВЫХОДНОЙ(out) папке отличия, то удалить их
-	# > port username@ip:path localpath
-	# -e папка_1 папка_... = Исключить папки или файлы из сихронизации
-	exclud_folder=$(__rsync-exlude-folder $@)
-	rsync -azvh --progress --delete -e "ssh -p $1" $2 $3 $exclud_folder
-}
-
-#!/bin/bash
-
-# Работа с пакетными менеджарами
-
-p-apt-baseinstall() {
-	# Устновить все необходимые программы
-
-	res=~py -c "
-
-import sys
-
-is_server=sys.argv[1]
-
-if is_server = 'yes':
-	print('Server')
-	print('Client')
-
-if input('Установить зависемости ? (y/n)') == 'y':
-	if is_server:
-		os.system(''' 
-		
-	# Обновить пакеты
-	p-apt-update;
-	# Установить пакеты
-	sudo apt install git curl wget vim nginx net-tools make tree;
-
-		''')
-		
-	else:
-		os.system(''' 
-		
-	# Обновим пакеты apt
-	p-apt-update;
-	# Устоновим пакетный менеджер flatpak и snap
-	sudo apt install flatpak snap
-	# Обновить все пакеты в системе
-	p-full-update;
-	# Установить базовые  пакеты
-	sudo apt install git zsh curl micro keepassx net-tools make krusader;
-	# Программы snap
-	sudo snap install code --classic;
-
-		'''
-		)	
-else:
-	print('Отставить!')
-	" $IS_SERVER
-}
-
-pinst() {
-	# Установить программу в Linux
-	RES_EXE="$(~py -c '''
-import sys
-import re
-os = sys.argv[-1]
-pakage = sys.argv[1]
-if os == "ubuntu":
-	if re.search(".deb$", pakage): 
-		# Установка из файла
-		print("p-apt-install-file")
-	else:
-		# Установка из интернета
-		print("p-apt-install")
-elif os == "arch":
-	print("p-packman-install")
-
-else:
-	print("None")
-''' $1 $BASE_SYSTEM_OS) $@"
-
-	echo $RES_EXE
-	eval $RES_EXE
-}
-
-prem() {
-	RES_EXE="$(~py -c '''
-import sys
-import re
-os = sys.argv[-1]
-pakage = sys.argv[1]
-if os == "ubuntu":
-	if re.search(".deb$", pakage): 
-		# Удалить из файла
-		print("p-apt-remove")
-	else:
-		# Удалить из интернета
-		print("p-apt-remove")
-elif os == "arch":
-	print("p-packman-remove")
-else:
-	print("None")
-''' $1 $BASE_SYSTEM_OS) $@"
-
-	echo $RES_EXE
-	eval $RES_EXE
-}
-
-p-apt-install() {
-	# Установить программу
-	sudo apt install $@
-}
-p-apt-remove() {
-	# Установить программу
-	sudo apt remove $@
-}
-p-apt-install-file() {
-	# Установить из файла
-	sudo dpkg -i $1
-}
-p-apt-remove() {
-
-	# Удалить программу
-
-	sudo apt remove $@
-}
-p-apt-update() {
-	# Обновить ссылки, программы, отчистить лишнее
-	sudo apt update && sudo apt upgrade -y && sudo apt autoremove && sudo apt clean
-}
-p-snap-update() {
-	snap refresh
-}
-p-flatpack-update() {
-	flatpak update
-}
-p-full-update() {
-	p-apt-update && p-snap-update && p-flatpack-update
-}
-p-pkg-update() {
-	# Обновить все пакеты
-	pkg up
-}
-p-pkg-install() {
-	pkg install $@
-}
-
-#!/bin/bash
-
-# pep 8
-pepd() {
-    #  Отформатировать python файлы в указанной диреткории
-    # [путь_к_папке] = по умолчанию так где сейчас
-
-    dir=$1
-    if [[ -z $dir ]]; then
-
-        dir=$(pwd)
-    fi
-    ~py -m autopep8 --in-place --aggressive --aggressive -v -r $dir
-}
-
-pepf() {
-    # Отформатировать python файл
-    # [путь_к_файлу]
-
-    ~py -m autopep8 --in-place --aggressive --aggressive -v $1
-}
-
-pipupdate() {
-    # Обновить pip
-    ~py -m pip install --upgrade pip
-}
-
-pvenv() {
-    # Создать виртальное окуржение
-    ~py -m venv venv
-}
-
-poetry_init() {
-    # Звгрузить poetry
-    pip install cachecontrol
-    pipupdate
-    pip install poetry
-    poetry install
-}
-
-#!/bin/bash
-
 ######################################################################################
 # Мои переменные окурежния
 # Путь к диску с данными
-export DiskData="/media/denis/dd19b13d-bd85-46bb-8db9-5b8f6cf7a825"
+export DiskData="$DiskData"
+# Путь к Python модулям
+export BASHLER_PATH_PY="$BASHLER_PATH/py"
 ######################################################################################
 # Открывать файлы с указаным разширенем в указанной программе
 alias -s {txt,md,conf,log}=micro
 alias -s {js,py,cs,ts,html}=code
 ######################################################################################
 # Глобальные Alias
-alias -g configer="/media/denis/dd19b13d-bd85-46bb-8db9-5b8f6cf7a825/MyProject/PycharmProjects/configer/venv/bin/python3.10 /media/denis/dd19b13d-bd85-46bb-8db9-5b8f6cf7a825/MyProject/PycharmProjects/configer/configer/main.py"
-alias -g gitclones="/media/denis/dd19b13d-bd85-46bb-8db9-5b8f6cf7a825/MyProject/PycharmProjects/git_clons/venv/bin/python3.10 /media/denis/dd19b13d-bd85-46bb-8db9-5b8f6cf7a825/MyProject/PycharmProjects/git_clons/git_clons/main.py"
+alias -g configer="$DiskData/MyProject/PycharmProjects/configer/venv/bin/python3.10 $DiskData/MyProject/PycharmProjects/configer/configer/main.py"
+alias -g gitclones="$DiskData/MyProject/PycharmProjects/git_clons/venv/bin/python3.10 $DiskData/MyProject/PycharmProjects/git_clons/git_clons/main.py"
 alias -g showlogsmal="/home/denis/PycharmProjects/showlofsmal/showlogsmal.bin"
 alias -g ~py=python3.10
 alias -g ~bpy=bpython
-alias -g syncthing="/media/denis/dd19b13d-bd85-46bb-8db9-5b8f6cf7a825/AlienApp/aplication/other/syncthing-linux-amd64-v1.20.1/syncthing"
+alias -g syncthing="$DiskData/AlienApp/aplication/other/syncthing-linux-amd64-v1.20.1/syncthing"
 alias poetry="python -m poetry $@"
 alias ..="cd .."
 ######################################################################################
-
-
-#!/bin/bash
-
-# Git
-alias gst="git status"
-alias glog="git log"
-alias gbra="git branch"
-alias gcd="git checkout $1"
-alias gmer="git merge $1"
-# Разница между коммитами или ветками
-alias gdif="git diff $1"
-alias grst="git reset --hard"
-
-gadd() {
-    # Создать комит всех изменений
-    date=$(date +\"%c\")
-    req="git add -A && git commit -m '$date - $1'"
-    echo $req
-    eval $req
-}
-gaddp() {
-    # Создать комит всех изменений и выполнить push
-    gadd $@
-    echo 'git push'
-    git push
-}
-garch() {
-    # Сделать архив текущей ветки
-    req="git archive --format zip --output $1.zip "
-    req+=$(git rev-parse --abbrev-ref HEAD)
-    echo $req
-    eval $req
-}
-
-grmh(){
-    # Удалить файл из отслеживания
-	git rm --cached $1
-}
-
