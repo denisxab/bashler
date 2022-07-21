@@ -155,21 +155,20 @@ Ctrl+s =  Поставить на паузу выполение команжы (
 
 # pep 8
 pepd() {
-    #  Отформатировать python файлы в указанной диреткории
+    # Отформатировать все python файлы в указанной диреткории
     # [путь_к_папке] = по умолчанию так где сейчас
-
     dir=$1
     if [[ -z $dir ]]; then
-
         dir=$(pwd)
     fi
+
     ~py -m autopep8 --in-place --aggressive --aggressive -v -r $dir
 }
 
 pepf() {
     # Отформатировать python файл
     # [путь_к_файлу]
-
+    
     ~py -m autopep8 --in-place --aggressive --aggressive -v $1
 }
 
@@ -194,7 +193,60 @@ poetry_init() {
 #!/bin/bash
 
 # Работа с пакетными менеджарами
+pinst() {
+	# Установить программу в Linux
+	RES_EXE="$(~py -c '''
+import sys
+import re
+os = sys.argv[-1]
+pakage = sys.argv[1]
+if os == "ubuntu":
+	if re.search(".deb$", pakage): 
+		# Установка из файла
+		print("p-apt-install-file")
+	else:
+		# Установка из интернета
+		print("p-apt-install")
+elif os == "arch":
+	print("p-packman-install")
 
+else:
+	print("None")
+''' $1 $BASE_SYSTEM_OS) $@"
+
+	echo $RES_EXE
+	eval $RES_EXE
+}
+
+prem() {
+	# Удалить указаный пакет
+	RES_EXE="$(~py -c '''
+import sys
+import re
+os = sys.argv[-1]
+pakage = sys.argv[1]
+if os == "ubuntu":
+	if re.search(".deb$", pakage): 
+		# Удалить из файла
+		print("p-apt-remove")
+	else:
+		# Удалить из интернета
+		print("p-apt-remove")
+elif os == "arch":
+	print("p-packman-remove")
+else:
+	print("None")
+''' $1 $BASE_SYSTEM_OS) $@"
+
+	echo $RES_EXE
+	eval $RES_EXE
+}
+pupd() {
+	# Обновить все пакеты
+	p-full-update
+}
+
+#############
 p-apt-baseinstall() {
 	# Устновить все необходимые программы
 
@@ -240,54 +292,6 @@ else:
 	" $IS_SERVER
 }
 
-pinst() {
-	# Установить программу в Linux
-	RES_EXE="$(~py -c '''
-import sys
-import re
-os = sys.argv[-1]
-pakage = sys.argv[1]
-if os == "ubuntu":
-	if re.search(".deb$", pakage): 
-		# Установка из файла
-		print("p-apt-install-file")
-	else:
-		# Установка из интернета
-		print("p-apt-install")
-elif os == "arch":
-	print("p-packman-install")
-
-else:
-	print("None")
-''' $1 $BASE_SYSTEM_OS) $@"
-
-	echo $RES_EXE
-	eval $RES_EXE
-}
-
-prem() {
-	RES_EXE="$(~py -c '''
-import sys
-import re
-os = sys.argv[-1]
-pakage = sys.argv[1]
-if os == "ubuntu":
-	if re.search(".deb$", pakage): 
-		# Удалить из файла
-		print("p-apt-remove")
-	else:
-		# Удалить из интернета
-		print("p-apt-remove")
-elif os == "arch":
-	print("p-packman-remove")
-else:
-	print("None")
-''' $1 $BASE_SYSTEM_OS) $@"
-
-	echo $RES_EXE
-	eval $RES_EXE
-}
-
 p-apt-install() {
 	# Установить программу
 	sudo apt install $@
@@ -301,9 +305,7 @@ p-apt-install-file() {
 	sudo dpkg -i $1
 }
 p-apt-remove() {
-
 	# Удалить программу
-
 	sudo apt remove $@
 }
 p-apt-update() {
@@ -477,126 +479,120 @@ d-list-disk() {
 
 #!/bin/bash
 
-
 # Docekr
--docker-ip(){
+-docker-ip() {
 	# Получить	 ip адрес   указанного 	 контейнера
 	# -docker-ip имя_контейнера
-	NAME_PROJ=`__docker-create-filename $@`
+	NAME_PROJ=$(__docker-create-filename $@)
 	echo "Проект: $NAME_PROJ"
 	sudo docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $NAME_PROJ
 }
 
-__docker-create-filename(){	
+__docker-create-filename() {
 	# Взять название проекта из файла
-	if [[ -r .name_docker_container ]]
-	then
+	if [[ -r .name_docker_container ]]; then
 		NAME_PROJ=$(cat .name_docker_container)
 		echo "$NAME_PROJ"
-		return 0 
+		return 0
 	fi
 	NAME_PROJ="$1"
 	__write-file "$NAME_PROJ" .name_docker_container
 	echo "$NAME_PROJ"
 }
--docker-build(){
+-docker-build() {
 	# Создать образ проекта(Нужно находиться на одном уровне с `Dockerfile`)
-	# -docker-build [имя_для_контейнера] 
-	NAME_PROJ=`__docker-create-filename $@`
+	# -docker-build [имя_для_контейнера]
+	NAME_PROJ=$(__docker-create-filename $@)
 	echo "Проект: $NAME_PROJ"
 	WORK_DIR="/usr/src/$NAME_PROJ"
 	image_name="img_$NAME_PROJ"
-	sudo docker build --build-arg WORK_DIR=$WORK_DIR --build-arg NAME_PROJ=$NAME_PROJ -t $image_name .;	
+	sudo docker build --build-arg WORK_DIR=$WORK_DIR --build-arg NAME_PROJ=$NAME_PROJ -t $image_name .
 }
--docker-run(){
+-docker-run() {
 	# Создать и запустить контейнер с проектом
 	# -docker-run [имя_контейнра] [--rm (удалить при выходе контейенр)]
-	NAME_PROJ=`__docker-create-filename $@`
+	NAME_PROJ=$(__docker-create-filename $@)
 	echo "Проект: $NAME_PROJ"
 	container_name="$NAME_PROJ"
 	image_name="img_$NAME_PROJ"
 	sudo docker run --rm -ti --name $container_name $image_name $@
 	#-v $(my_path)/deploy:$(WORK_DIR)/deploy -p $(EXTERNAL_WEB_PORT):$(EXTERNAL_WEB_PORT)
 }
--docker-start(){
+-docker-start() {
 	#  Запустить существубщий контенер
 	# [-a (войти в контейнер)]
-	NAME_PROJ=`__docker-create-filename $@`
+	NAME_PROJ=$(__docker-create-filename $@)
 	echo "Проект: $NAME_PROJ"
 	sudo docker container start $NAME_PROJ
 }
--docker-stop(){
+-docker-stop() {
 	#  Остановить существубщий контенер
-	NAME_PROJ=`__docker-create-filename $@`
+	NAME_PROJ=$(__docker-create-filename $@)
 	echo "Проект: $NAME_PROJ"
-	sudo docker container stop $NAME_PROJ  
+	sudo docker container stop $NAME_PROJ
 }
--docker-exec(){
+-docker-exec() {
 	# Войти в контейнер
 	# -docker-exec [имя_контейнера]
-	NAME_PROJ=`__docker-create-filename $@`
+	NAME_PROJ=$(__docker-create-filename $@)
 	echo "Проект: $NAME_PROJ"
-	sudo docker exec -ti $NAME_PROJ /bin/sh;
+	sudo docker exec -ti $NAME_PROJ /bin/sh
 }
--dshc(){
+-dshc() {
 	# Посмотреть контейнеры
 	# docker-show-container
-	if [[ $1 == '-w' ]]
-	then
-		 watch -d -n 2 sudo docker ps -a
+	if [[ $1 == '-w' ]]; then
+		watch -d -n 2 sudo docker ps -a
 	else
 		sudo docker ps -a
 	fi
 
 }
--dshi(){
+-dshi() {
 	# Посмотреть образы
 	# docker-show-image
-	if [[ $1 == '-w' ]]
-	then
+	if [[ $1 == '-w' ]]; then
 		sudo watch -d -n 2 sudo docker images
 	else
 		sudo docker images
 	fi
 }
--dcp(){
+-dcp() {
 	# Отчитстить контейнеры
 	sudo docker container prune
 }
--dip(){
+-dip() {
 	# Отчитстить образы
 	sudo docker container prune
 }
 
--docker-compose-select-envfile(){
+-docker-compose-select-envfile() {
 	# Сохранить путь к env файлу
 	# -docker-compose-select-env-file ./file/__env.env
 	__write-file $1 .env_path
 }
--docker-compose-build(){
+-docker-compose-build() {
 	# Запустить образы контейнеров
-	if [[ -r .env_path ]]
-	then
-		sudo docker-compose --env-file $(cat .env_path) build;
+	if [[ -r .env_path ]]; then
+		sudo docker-compose --env-file $(cat .env_path) build
 	fi
-	sudo docker-compose build;
+	sudo docker-compose build
 }
--docker-compose-up(){
+-docker-compose-up() {
 	# Запустить контейнеры а после окончанию отчистить удалить их
-	if [[ -r .env_path ]]
-	then
-		sudo docker-compose --env-file $(cat .env_path) up && sudo docker-compose --env-file $(cat .env_path) rm -fsv;
+	if [[ -r .env_path ]]; then
+		sudo docker-compose --env-file $(cat .env_path) up && sudo docker-compose --env-file $(cat .env_path) rm -fsv
 	fi
-	sudo docker-compose  up && sudo docker-compose rm -fsv
+	sudo docker-compose up && sudo docker-compose rm -fsv
 }
--docker-compose-rm(){
+-docker-compose-rm() {
 	# Удалить ненужные контейнеры
-	if [[ -r .env_path ]]
-	then
-		sudo docker-compose --env-file $(cat .env_path) rm -fsv;
+	if [[ -r .env_path ]]; then
+		sudo docker-compose --env-file $(cat .env_path) rm -fsv
 	fi
-	sudo docker-compose rm -fsv;
+	sudo docker-compose rm -fsv
 }
+
 #!/bin/bash
 
 ######################################################################################

@@ -1,7 +1,60 @@
 #!/bin/bash
 
 # Работа с пакетными менеджарами
+pinst() {
+	# Установить программу в Linux
+	RES_EXE="$(~py -c '''
+import sys
+import re
+os = sys.argv[-1]
+pakage = sys.argv[1]
+if os == "ubuntu":
+	if re.search(".deb$", pakage): 
+		# Установка из файла
+		print("p-apt-install-file")
+	else:
+		# Установка из интернета
+		print("p-apt-install")
+elif os == "arch":
+	print("p-packman-install")
 
+else:
+	print("None")
+''' $1 $BASE_SYSTEM_OS) $@"
+
+	echo $RES_EXE
+	eval $RES_EXE
+}
+
+prem() {
+	# Удалить указаный пакет
+	RES_EXE="$(~py -c '''
+import sys
+import re
+os = sys.argv[-1]
+pakage = sys.argv[1]
+if os == "ubuntu":
+	if re.search(".deb$", pakage): 
+		# Удалить из файла
+		print("p-apt-remove")
+	else:
+		# Удалить из интернета
+		print("p-apt-remove")
+elif os == "arch":
+	print("p-packman-remove")
+else:
+	print("None")
+''' $1 $BASE_SYSTEM_OS) $@"
+
+	echo $RES_EXE
+	eval $RES_EXE
+}
+pupd() {
+	# Обновить все пакеты
+	p-full-update
+}
+
+#############
 p-apt-baseinstall() {
 	# Устновить все необходимые программы
 
@@ -47,54 +100,6 @@ else:
 	" $IS_SERVER
 }
 
-pinst() {
-	# Установить программу в Linux
-	RES_EXE="$(~py -c '''
-import sys
-import re
-os = sys.argv[-1]
-pakage = sys.argv[1]
-if os == "ubuntu":
-	if re.search(".deb$", pakage): 
-		# Установка из файла
-		print("p-apt-install-file")
-	else:
-		# Установка из интернета
-		print("p-apt-install")
-elif os == "arch":
-	print("p-packman-install")
-
-else:
-	print("None")
-''' $1 $BASE_SYSTEM_OS) $@"
-
-	echo $RES_EXE
-	eval $RES_EXE
-}
-
-prem() {
-	RES_EXE="$(~py -c '''
-import sys
-import re
-os = sys.argv[-1]
-pakage = sys.argv[1]
-if os == "ubuntu":
-	if re.search(".deb$", pakage): 
-		# Удалить из файла
-		print("p-apt-remove")
-	else:
-		# Удалить из интернета
-		print("p-apt-remove")
-elif os == "arch":
-	print("p-packman-remove")
-else:
-	print("None")
-''' $1 $BASE_SYSTEM_OS) $@"
-
-	echo $RES_EXE
-	eval $RES_EXE
-}
-
 p-apt-install() {
 	# Установить программу
 	sudo apt install $@
@@ -108,9 +113,7 @@ p-apt-install-file() {
 	sudo dpkg -i $1
 }
 p-apt-remove() {
-
 	# Удалить программу
-
 	sudo apt remove $@
 }
 p-apt-update() {
