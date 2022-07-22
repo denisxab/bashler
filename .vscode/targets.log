@@ -6,7 +6,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Thu Jul 21 22:48:46 2022
+# Make data base, printed on Fri Jul 22 20:53:18 2022
 
 # Variables
 
@@ -15,11 +15,17 @@ GDK_BACKEND = x11
 # environment
 LC_ALL = C
 # environment
+NO_AT_BRIDGE = 1
+# environment
 GTK_RC_FILES = /etc/gtk/gtkrc:/home/denis/.gtkrc:/home/denis/.config/gtkrc
 # environment
 SNAP_INSTANCE_KEY = 
 # environment
+KONSOLE_DBUS_SERVICE = :1.71
+# environment
 VSCODE_CWD = /home/denis
+# environment
+WINDOWID = 0
 # default
 MAKE_COMMAND := make
 # environment
@@ -33,6 +39,8 @@ SNAP_INSTANCE_NAME = code
 # environment
 GDK_PIXBUF_MODULEDIR = /snap/code/102/usr/lib/x86_64-linux-gnu/gdk-pixbuf-2.0/2.10.0/loaders
 # environment
+KONSOLE_VERSION = 210801
+# environment
 VSCODE_HANDLES_UNCAUGHT_ERRORS = true
 # default
 .VARIABLES := 
@@ -41,9 +49,13 @@ PWD = /home/denis/bashler
 # automatic
 %D = $(patsubst %/,%,$(dir $%))
 # environment
+LSCOLORS = Gxfxcxdxbxegedabagacad
+# environment
 XDG_DATA_DIRS = /usr/share/plasma:/home/denis/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:/usr/local/share:/usr/share
 # environment
 OLDPWD = /home/denis
+# environment
+BASE_SYSTEM_OS = ubuntu
 # automatic
 ^D = $(patsubst %/,%,$(dir $^))
 # automatic
@@ -60,6 +72,8 @@ XAUTHORITY = /home/denis/.Xauthority
 .LOADED := 
 # default
 .INCLUDE_DIRS = /usr/local/include /usr/include /usr/include
+# environment
+COLORFGBG = 15;0
 # makefile
 MAKEFLAGS = pqrR
 # makefile
@@ -73,7 +87,7 @@ PAM_KWALLET5_LOGIN = /run/user/1000/kwallet5.socket
 # environment
 MFLAGS = -pqrR
 # environment
-SSH_AUTH_SOCK = /tmp/ssh-SP6RjDYd4o2P/agent.2547
+SSH_AUTH_SOCK = /tmp/ssh-GV4mzh52pVoy/agent.3043
 # default
 .SHELLFLAGS := -c
 # environment
@@ -91,13 +105,17 @@ SNAP_REEXEC =
 # automatic
 @F = $(notdir $@)
 # environment
-VSCODE_PID = 42985
+ZSH = /home/denis/.oh-my-zsh
+# environment
+VSCODE_PID = 7325
 # environment
 XDG_SESSION_TYPE = x11
+# environment
+BASHLER_PATH_PY = /home/denis/bashler/py
 # automatic
 ?D = $(patsubst %/,%,$(dir $?))
 # environment
-SESSION_MANAGER = local/denis-Vostro-14-5410:@/tmp/.ICE-unix/2832,unix/denis-Vostro-14-5410:/tmp/.ICE-unix/2832
+SESSION_MANAGER = local/denis-Vostro-14-5410:@/tmp/.ICE-unix/3333,unix/denis-Vostro-14-5410:/tmp/.ICE-unix/3333
 # automatic
 *F = $(notdir $*)
 # environment
@@ -117,6 +135,8 @@ MAKECMDGOALS := all
 # environment
 SHLVL = 0
 # environment
+PROFILEHOME = 
+# environment
 MAKELEVEL := 0
 # default
 MAKE = $(MAKE_COMMAND)
@@ -135,6 +155,8 @@ SNAP_USER_COMMON = /home/denis/snap/code/common
 # environment
 SNAP = /snap/code/102
 # environment
+INVOCATION_ID = a0e2d739ebc541208b9558903e9d43a0
+# environment
 SNAP_REVISION = 102
 # environment
 SNAP_REAL_HOME = /home/denis
@@ -146,14 +168,20 @@ KDE_APPLICATIONS_AS_SCOPE = 1
 XDG_SEAT = seat0
 # environment
 XDG_CURRENT_DESKTOP = KDE
+# environment
+LS_COLORS = rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:
 # automatic
 +F = $(notdir $+)
 # environment
 XDG_SEAT_PATH = /org/freedesktop/DisplayManager/Seat0
 # environment
+LESS = -R
+# environment
 DESKTOP_SESSION = plasma
 # environment
 ORIGINAL_XDG_CURRENT_DESKTOP = KDE
+# environment
+DiskData = /media/denis/dd19b13d-bd85-46bb-8db9-5b8f6cf7a825
 # 'override' directive
 GNUMAKEFLAGS := 
 # environment
@@ -167,7 +195,9 @@ XDG_VTNR = 1
 # makefile
 .DEFAULT_GOAL := build
 # environment
-SYSTEMD_EXEC_PID = 2515
+SYSTEMD_EXEC_PID = 3020
+# environment
+EDITOR = micro
 # environment
 DISPLAY = :0
 # environment
@@ -183,13 +213,25 @@ SNAP_DATA = /var/snap/code/102
 # environment
 SNAP_CONTEXT = QpRjOl8Qc3dYYrnZIYBAP1Jn2Rj5He7PjB1-Ep1Sb-rj4FVtRvi3
 # environment
-SSH_AGENT_PID = 2673
+KONSOLE_DBUS_SESSION = /Sessions/1
+# environment
+MANAGERPID = 3020
+# environment
+ZSH_THEME = gnzh
+# environment
+SSH_AGENT_PID = 3162
+# environment
+PAGER = less
 # environment
 XDG_RUNTIME_DIR = /run/user/1000
 # environment
 GPG_AGENT_INFO = /run/user/1000/gnupg/S.gpg-agent:0:1
 # environment
+COLORTERM = truecolor
+# environment
 GDK_PIXBUF_MODULE_FILE = /home/denis/snap/code/common/.cache/gdk-pixbuf-loaders.cache
+# environment
+JOURNAL_STREAM = 8:40504
 # environment
 XDG_SESSION_CLASS = user
 # environment
@@ -199,15 +241,19 @@ GTK2_RC_FILES = /etc/gtk-2.0/gtkrc:/home/denis/.gtkrc-2.0:/home/denis/.config/gt
 # environment
 HOME = /home/denis
 # environment
+IS_SERVER = no
+# environment
 ELECTRON_RUN_AS_NODE = 1
 # environment
 VSCODE_IPC_HOOK = /run/user/1000/vscode-5e0b0481-1.69.2-main.sock
+# environment
+TERM = xterm-256color
 # environment
 SNAP_NAME = code
 # environment
 GSETTINGS_SCHEMA_DIR = /snap/code/102/usr/share/glib-2.0/schemas
 # environment
-XDG_SESSION_ID = 3
+XDG_SESSION_ID = 5
 # environment
 XCURSOR_SIZE = 24
 # environment
@@ -229,9 +275,17 @@ ELECTRON_NO_ATTACH_CONSOLE = 1
 # environment
 SNAP_COMMON = /var/snap/code/common
 # environment
+SHELL_SESSION_ID = 7102f23c42d042b2b139cc1b137cdbfc
+# environment
 KDE_SESSION_VERSION = 5
 # default
 .FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell nocomment grouped-target extra-prereqs archives jobserver output-sync check-symlink load
+# environment
+BASHLER_PATH = /home/denis/bashler
+# environment
+DIRHISTORY_SIZE = 30
+# environment
+FIREBIRD_UDF = /usr/lib/x86_64-linux-gnu/firebird/3.0/UDF/
 # environment
 KDE_FULL_SESSION = true
 # environment
@@ -239,7 +293,10 @@ SNAP_USER_DATA = /home/denis/snap/code/102
 # environment
 SNAP_LIBRARY_PATH = /var/lib/snapd/lib/gl:/var/lib/snapd/lib/gl32:/var/lib/snapd/void
 # variable set hash-table stats:
-# Load=114/1024=11%, Rehash=0, Collisions=3/144=2%
+# Load=141/1024=14%, Rehash=0, Collisions=13/171=8%
+
+ 
+make: *** No rule to make target 'all'.  Stop.
 
 # Pattern-specific Variable Values
 
@@ -278,9 +335,6 @@ all:
 #  File has not been updated.
 
 build:
- 
-make: *** No rule to make target 'all'.  Stop.
-
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
@@ -301,6 +355,6 @@ make: *** No rule to make target 'all'.  Stop.
 # strcache performance: lookups = 23 / hit rate = 21%
 # hash-table stats:
 # Load=18/8192=0%, Rehash=0, Collisions=0/23=0%
-# Finished Make data base on Thu Jul 21 22:48:46 2022
+# Finished Make data base on Fri Jul 22 20:53:18 2022
 
  
