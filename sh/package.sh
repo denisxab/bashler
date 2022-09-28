@@ -121,7 +121,7 @@ p-apt-update() {
 	sudo apt update && sudo apt upgrade -y && sudo apt autoremove && sudo apt clean
 }
 p-snap-update() {
-	snap refresh
+	snap refresh --list
 }
 p-flatpack-update() {
 	flatpak update
