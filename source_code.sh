@@ -23,6 +23,54 @@ alias ..="cd .."
 ######################################################################################
 #!/bin/bash
 
+##################################################
+--() {
+    # Поиск документции у функции
+    ---dev $@ | less
+}
+an() {
+    # Поиск алиасов по имени
+    aa-dev $@ -n | less
+}
+av() {
+    # Поиск алиасов по значению
+    aa-dev $@ -v | less
+}
+##################################################
+
+##################################################
+# Реализацию писать через постфикс -dev
+
+---dev() {
+    # Поиск bash команды в папке bashler
+    #
+    # [часть_имени_команды]
+    #
+    ~py -c "
+import sys
+sys.path.insert(0,'$BASHLER_PATH_PY')
+from doc_serach import manger_search_func
+manger_search_func()
+    " $@
+}
+aa-dev() {
+    # Посик алисов по значению и имени
+    #
+    # [часть_алиаса]
+    # -v                = Поиск по знаечнию
+    # -n                = Поиск по имени
+    ~py -c "
+import sys
+sys.path.insert(0,'$BASHLER_PATH_PY')
+from doc_serach import search_alias
+search_alias()
+    " $@ $(alias)
+
+    alias | grep $1
+}
+
+#!/bin/bash
+
 # rsync
 
 -rsync-local-folder() {
@@ -95,96 +143,6 @@ def main(argv:list):
         print('', end='')
 main(sys.argv)
 	" $@
-}
-
-#!/bin/bash
-
-## S = система
-s-watch(){
-	# Обновление команды через определенный период времяни
-	watch -d -n $@
-}
-
-#!/bin/bash
-
-# Zsh
--zsh-hotkey() {
-	echo "	
-Ctrl+a = Переместить курсор в начало команды
-Ctrl+e = Переместить курсор в конец команды
-Ctrl+r = Поиск команды по истории
-Ctrl+c = Прервать команду
-Ctrl+z = Свернуть выполненеи команды (fg = вернуться)
-Ctrl+w = Удалить слово в право
-Ctrl+u = Удалить весь текст в лево
-Ctrl+k = Удалить весь текст в право
-Ctrl+y = Вставить текст
-Ctrl+x затем Ctrl+e = Открыть команду в текстовом редакторе указанным в $(EDITOR), после выхода она вставиться в консоль 
-Ctrl+s =  Поставить на паузу выполение команжы (Ctrl+q возобновить)
-	"
-}
--zsh-edit() {
-
-	# Открыть редактирование zsh
-	$EDITOR ~/.zshrc
-}
--zsh-install-plugin() {
-	# Установить плагины Zsh
-	git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions &&
-		git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting &&
-		git clone https://github.com/marlonrichert/zsh-autocomplete.git ~/.oh-my-zsh/custom/plugins/zsh-autocomplete &&
-		mkdir $ZSH_CUSTOM/plugins/poetry &&
-		poetry completions zsh >$ZSH_CUSTOM/plugins/poetry/_poetry
-}
--zsh-mount-disk() {
-	# Примонтировать повседневные  диски
-
-	# Google Disk
-	google-drive-ocamlfuse /mnt/google_disk
-}
--zsh-clean-history() {
-	# Отчистить историю команд
-	history -c
-}
-
-#!/bin/bash
-
-# pep 8
-pepd() {
-    # Отформатировать все python файлы в указанной диреткории
-    # [путь_к_папке] = по умолчанию так где сейчас
-    dir=$1
-    if [[ -z $dir ]]; then
-        dir=$(pwd)
-    fi
-
-    ~py -m autopep8 --in-place --aggressive --aggressive -v -r $dir
-}
-
-pepf() {
-    # Отформатировать python файл
-    # [путь_к_файлу]
-
-    ~py -m autopep8 --in-place --aggressive --aggressive -v $1
-}
-
-# PIP
-pipupdate() {
-    # Обновить pip
-    ~py -m pip install --upgrade pip
-}
-
-pvenv() {
-    # Создать виртальное окуржение
-    ~py -m venv venv
-}
-
-poetry_init() {
-    # Звгрузить poetry
-    pip install cachecontrol
-    pipupdate
-    pip install poetry
-    poetry install
 }
 
 #!/bin/bash
@@ -310,7 +268,7 @@ p-apt-update() {
 	sudo apt update && sudo apt upgrade -y && sudo apt autoremove && sudo apt clean
 }
 p-snap-update() {
-	snap refresh
+	snap refresh --list
 }
 p-flatpack-update() {
 	flatpak update
@@ -328,150 +286,70 @@ p-pkg-install() {
 
 #!/bin/bash
 
-##################################################
---() {
-    # Поиск документции у функции
-    ---dev $@ | less
-}
-an() {
-    # Поиск алиасов по имени
-    aa-dev $@ -n | less
-}
-av() {
-    # Поиск алиасов по значению
-    aa-dev $@ -v | less
-}
-##################################################
-
-##################################################
-# Реализацию писать через постфикс -dev
-
----dev() {
-    # Поиск bash команды в папке bashler
-    #
-    # [часть_имени_команды]
-    #
-    ~py -c "
-import sys
-sys.path.insert(0,'$BASHLER_PATH_PY')
-from doc_serach import manger_search_func
-manger_search_func()
-    " $@
-}
-aa-dev() {
-    # Посик алисов по значению и имени
-    #
-    # [часть_алиаса]
-    # -v                = Поиск по знаечнию
-    # -n                = Поиск по имени
-    ~py -c "
-import sys
-sys.path.insert(0,'$BASHLER_PATH_PY')
-from doc_serach import search_alias
-search_alias()
-    " $@ $(alias)
-
-    alias | grep $1
+## S = система
+s-watch(){
+	# Обновление команды через определенный период времяни
+	watch -d -n $@
 }
 
 #!/bin/bash
 
-# Git
-alias gst="git status"
-alias glog="git log"
-alias gbra="git branch"
-alias gcd="git checkout $1"
-alias gmer="git merge $1"
-# Разница между коммитами или ветками
-alias gdif="git diff $1"
-alias grst="git reset --hard"
-
-gadd() {
-    # Создать комит всех изменений
-    date=$(date +\"%c\")
-    req="git add -A && git commit -m '$date - $1'"
-    echo $req
-    eval $req
-}
-gaddp() {
-    # Создать комит всех изменений и выполнить push
-    gadd $@
-    echo 'git push'
-    git push
-}
-garch() {
-    # Сделать архив текущей ветки
-    req="git archive --format zip --output $1.zip "
-    req+=$(git rev-parse --abbrev-ref HEAD)
-    echo $req
-    eval $req
+__read-line-file-return-bash-for() {
+    # Прочитать файл с переносами строк и вернуть bash массив
+    #
+    # Пример испоильзования
+    #
+    # list_text=`__read-line-file-return-bash-for sd`
+    # for x in `echo $das`
+    # do
+    #     echo ") $x"
+    # done
+    echo $(~py -c "
+import sys
+name_file=sys.argv[1]
+with open(name_file,'r') as _f:
+	data = _f.read()
+res=''
+for x in data.split():
+    res+='\"%s\" ' % x
+print(res)
+" $1)
 }
 
-grmh(){
-    # Удалить файл из отслеживания
-	git rm --cached $1
+__write-file() {
+    # Записать текст в файл
+    echo "$1" >$2
 }
 
 #!/bin/bash
 
-## Действия с папками
-f-dir-copy() {
-	# Скопировать папку
-	cp -R $1 $2
+sy-ie() {
+    # Проверить включена ли служба в автозапуск
+    sudo systemctl is-enabled $1
 }
-f-dir-rename() {
-	# Переименовать папку
-	mv $1 $2
+sy-e() {
+    # Добвить службу в автозапуск
+    sudo systemctl enabled $1
 }
-f-dir-create() {
-	# Создать папку
-	mkdir $1
+sy-d() {
+    # Удалить службу из автозапуска
+    sudo systemctl disable $1
 }
-f-dir-remove() {
-	# Удалить папку
-	rm -rf $1
+sy-r() {
+    # Перезапустить службу
+    sudo systemctl restart $1
 }
-
-## Размер Диска и использование его
-d-size-folder() {
-	# Получить разме файлов в указанной директории
-	du $1 -ach -d 1 | sort -h
+sy-s() {
+    # Статус службы
+    sudo systemctl status $1
 }
-d-size-disk() {
-	# Использование дисков
-	df -h $@
+sy-str() {
+    # Запустить службы
+    sudo systemctl start $1
 }
-d-list-disk() {
-	# Все подключенные диски
-	sudo fdisk -l
-}
-## Tree
--tree() {
-	# > УровеньВложенности ДиректориюПосмотерть
-	# -a = скрытые файлы
-	# -d = только директории
-	# -f = показать относительный путь для файлов
-	# -L = уровень вложенности
-	# -P = поиск по шаблону (* сделать на python)
-	# -h = Вывести размер файлов и папок
-	# -Q = Заключать названия в двойные кавычки
-	# -F = Добовлять символы отличия для папок, файлов и сокетов
-	# -I = Исключить из списка по патерну
-	res='tree -a -L'
-
-	if [[ -z $1 ]]; then
-		res+=' 3'
-	else
-		res+=" $1"
-	fi
-	res+=' -h -F'
-	if [[ -z $2 ]]; then
-		res+=' ./'
-	else
-		res+=" $2"
-	fi
-	echo $res
-	eval $res
+sy-stp() {
+    # Остановить службу
+    sudo systemctl stop $1
 }
 
 #!/bin/bash
@@ -592,6 +470,148 @@ __docker-create-filename() {
 
 #!/bin/bash
 
+## Действия с папками
+f-dir-copy() {
+	# Скопировать папку
+	cp -R $1 $2
+}
+f-dir-rename() {
+	# Переименовать папку
+	mv $1 $2
+}
+f-dir-create() {
+	# Создать папку
+	mkdir $1
+}
+f-dir-remove() {
+	# Удалить папку
+	rm -rf $1
+}
+
+## Размер Диска и использование его
+d-size-folder() {
+	# Получить разме файлов в указанной директории
+	du $1 -ach -d 1 | sort -h
+}
+d-size-disk() {
+	# Использование дисков
+	df -h $@
+}
+d-list-disk() {
+	# Все подключенные диски
+	sudo fdisk -l
+}
+## Tree
+-tree() {
+	# > УровеньВложенности ДиректориюПосмотерть
+	# -a = скрытые файлы
+	# -d = только директории
+	# -f = показать относительный путь для файлов
+	# -L = уровень вложенности
+	# -P = поиск по шаблону (* сделать на python)
+	# -h = Вывести размер файлов и папок
+	# -Q = Заключать названия в двойные кавычки
+	# -F = Добовлять символы отличия для папок, файлов и сокетов
+	# -I = Исключить из списка по патерну
+	res='tree -a -L'
+
+	if [[ -z $1 ]]; then
+		res+=' 3'
+	else
+		res+=" $1"
+	fi
+	res+=' -h -F'
+	if [[ -z $2 ]]; then
+		res+=' ./'
+	else
+		res+=" $2"
+	fi
+	echo $res
+	eval $res
+}
+
+#!/bin/bash
+
+# Zsh
+-zsh-hotkey() {
+	echo "	
+Ctrl+a = Переместить курсор в начало команды
+Ctrl+e = Переместить курсор в конец команды
+Ctrl+r = Поиск команды по истории
+Ctrl+c = Прервать команду
+Ctrl+z = Свернуть выполненеи команды (fg = вернуться)
+Ctrl+w = Удалить слово в право
+Ctrl+u = Удалить весь текст в лево
+Ctrl+k = Удалить весь текст в право
+Ctrl+y = Вставить текст
+Ctrl+x затем Ctrl+e = Открыть команду в текстовом редакторе указанным в $(EDITOR), после выхода она вставиться в консоль 
+Ctrl+s =  Поставить на паузу выполение команжы (Ctrl+q возобновить)
+	"
+}
+-zsh-edit() {
+
+	# Открыть редактирование zsh
+	$EDITOR ~/.zshrc
+}
+-zsh-install-plugin() {
+	# Установить плагины Zsh
+	git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions &&
+		git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting &&
+		git clone https://github.com/marlonrichert/zsh-autocomplete.git ~/.oh-my-zsh/custom/plugins/zsh-autocomplete &&
+		mkdir $ZSH_CUSTOM/plugins/poetry &&
+		poetry completions zsh >$ZSH_CUSTOM/plugins/poetry/_poetry
+}
+-zsh-mount-disk() {
+	# Примонтировать повседневные  диски
+
+	# Google Disk
+	google-drive-ocamlfuse /mnt/google_disk
+}
+-zsh-clean-history() {
+	# Отчистить историю команд
+	history -c
+}
+
+#!/bin/bash
+
+# Git
+alias gst="git status"
+alias glog="git log"
+alias gbra="git branch"
+alias gcd="git checkout $1"
+alias gmer="git merge $1"
+# Разница между коммитами или ветками
+alias gdif="git diff $1"
+alias grst="git reset --hard"
+
+gadd() {
+    # Создать комит всех изменений
+    date=$(date +\"%c\")
+    req="git add -A && git commit -m '$date - $1'"
+    echo $req
+    eval $req
+}
+gaddp() {
+    # Создать комит всех изменений и выполнить push
+    gadd $@
+    echo 'git push'
+    git push
+}
+garch() {
+    # Сделать архив текущей ветки
+    req="git archive --format zip --output $1.zip "
+    req+=$(git rev-parse --abbrev-ref HEAD)
+    echo $req
+    eval $req
+}
+
+grmh(){
+    # Удалить файл из отслеживания
+	git rm --cached $1
+}
+
+#!/bin/bash
+
 # Find
 -find() {
 
@@ -639,60 +659,40 @@ __docker-create-filename() {
 
 #!/bin/bash
 
-sy-ie() {
-    # Проверить включена ли служба в автозапуск
-    sudo systemctl is-enabled $1
-}
-sy-e() {
-    # Добвить службу в автозапуск
-    sudo systemctl enabled $1
-}
-sy-d() {
-    # Удалить службу из автозапуска
-    sudo systemctl disable $1
-}
-sy-r() {
-    # Перезапустить службу
-    sudo systemctl restart $1
-}
-sy-s() {
-    # Статус службы
-    sudo systemctl status $1
-}
-sy-str() {
-    # Запустить службы
-    sudo systemctl start $1
-}
-sy-stp() {
-    # Остановить службу
-    sudo systemctl stop $1
+# pep 8
+pepd() {
+    # Отформатировать все python файлы в указанной диреткории
+    # [путь_к_папке] = по умолчанию так где сейчас
+    dir=$1
+    if [[ -z $dir ]]; then
+        dir=$(pwd)
+    fi
+
+    ~py -m autopep8 --in-place --aggressive --aggressive -v -r $dir
 }
 
-#!/bin/bash
+pepf() {
+    # Отформатировать python файл
+    # [путь_к_файлу]
 
-__read-line-file-return-bash-for() {
-    # Прочитать файл с переносами строк и вернуть bash массив
-    #
-    # Пример испоильзования
-    #
-    # list_text=`__read-line-file-return-bash-for sd`
-    # for x in `echo $das`
-    # do
-    #     echo ") $x"
-    # done
-    echo $(~py -c "
-import sys
-name_file=sys.argv[1]
-with open(name_file,'r') as _f:
-	data = _f.read()
-res=''
-for x in data.split():
-    res+='\"%s\" ' % x
-print(res)
-" $1)
+    ~py -m autopep8 --in-place --aggressive --aggressive -v $1
 }
 
-__write-file() {
-    # Записать текст в файл
-    echo "$1" >$2
+# PIP
+pipupdate() {
+    # Обновить pip
+    ~py -m pip install --upgrade pip
+}
+
+pvenv() {
+    # Создать виртальное окуржение
+    ~py -m venv venv
+}
+
+poetry_init() {
+    # Звгрузить poetry
+    pip install cachecontrol
+    pipupdate
+    pip install poetry
+    poetry install
 }
