@@ -52,9 +52,13 @@ else:
 	echo $RES_EXE
 	eval $RES_EXE
 }
+
 pupd() {
 	# Обновить все пакеты
 	p-full-update
+}
+pupdp(){
+	p-pkg-update
 }
 
 #############
@@ -113,6 +117,9 @@ p-pkg-install(){
 p-pkg-remove(){
 	pkg uninstall $@
 }
+p-pkg-update(){
+	pkg update && pkg upgrade -y && pkg autoclean && apt autoremove
+}
 p-apt-remove() {
 	# Установить программу
 	sudo apt remove $@
@@ -137,10 +144,6 @@ p-flatpack-update() {
 }
 p-full-update() {
 	p-apt-update && p-snap-update && p-flatpack-update
-}
-p-pkg-update() {
-	# Обновить все пакеты
-	pkg up
 }
 p-pkg-install() {
 	pkg install $@
