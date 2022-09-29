@@ -17,7 +17,8 @@ if os == "ubuntu":
 		print("p-apt-install")
 elif os == "arch":
 	print("p-packman-install")
-
+elif os == "termux":
+	print("p-pkg-install")
 else:
 	print("None")
 ''' $1 $BASE_SYSTEM_OS) $@"
@@ -42,6 +43,8 @@ if os == "ubuntu":
 		print("p-apt-remove")
 elif os == "arch":
 	print("p-packman-remove")
+elif os == "termux":
+	print("p-pkg-remove")
 else:
 	print("None")
 ''' $1 $BASE_SYSTEM_OS) $@"
@@ -103,6 +106,12 @@ else:
 p-apt-install() {
 	# Установить программу
 	sudo apt install $@
+}
+p-pkg-install(){
+	pkg install $@
+}
+p-pkg-remove(){
+	pkg uninstall $@
 }
 p-apt-remove() {
 	# Установить программу
