@@ -153,8 +153,13 @@ pinst() {
 	RES_EXE="$(~py -c '''
 import sys
 import re
+from pathlib import Path
+import os
+
 os = sys.argv[-1]
 pakage = sys.argv[1]
+home = os.environ["HOME"]
+
 if os == "ubuntu":
 	if re.search(".deb$", pakage): 
 		# Установка из файла
@@ -168,6 +173,10 @@ elif os == "termux":
 	print("p-pkg-install")
 else:
 	print("None")
+
+# Сохранения прогарммы которая была скачена
+Path(f"{home}/.bashler_pinst").write_text(f"{pakage}")
+
 ''' $1 $BASE_SYSTEM_OS) $@"
 
 	echo $RES_EXE
