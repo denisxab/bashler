@@ -151,36 +151,56 @@ main(sys.argv)
 pinst() {
 	# Установить программу в Linux
 	RES_EXE="$(~py -c '''
+import json
 import sys
 import re
 from pathlib import Path
 import os
 
-os = sys.argv[-1]
+platform = sys.argv[-1]
 pakage = sys.argv[1]
-home = os.environ["HOME"]
 
-if os == "ubuntu":
+# Установка программы
+if platform == "ubuntu":
 	if re.search(".deb$", pakage): 
 		# Установка из файла
 		print("p-apt-install-file")
 	else:
 		# Установка из интернета
 		print("p-apt-install")
-elif os == "arch":
+elif platform == "arch":
 	print("p-packman-install")
-elif os == "termux":
+elif platform == "termux":
 	print("p-pkg-install")
 else:
 	print("None")
-
-# Сохранения прогарммы которая была скачена
-Path(f"{home}/.bashler_pinst").write_text(f"{pakage}")
-
 ''' $1 $BASE_SYSTEM_OS) $@"
 
 	echo $RES_EXE
-	eval $RES_EXE
+	eval $RES_EXE && ~py -c '''
+# Добавить программу в `.bashler_pinst`
+import json
+import sys
+import re
+from pathlib import Path
+import os
+
+platform = sys.argv[-1]
+pakage = sys.argv[1]
+
+# Чтение файла `.bashler_pinst`
+home = os.environ["HOME"]
+path_bashler_pinst =  Path(f"{home}/.bashler_pinst")
+text = path_bashler_pinst.read_text()
+if not text:
+    text  = "{}"
+dict_app = json.loads(text)
+# Добавляем приложение
+dict_app[pakage] = ""
+# Запись в файл `.bashler_pinst`
+with open(path_bashler_pinst, "w") as _jsonFile:
+	json.dump(dict_app, _jsonFile, skipkeys=False, sort_keys=True, indent=4, ensure_ascii=False)
+''' $1 $BASE_SYSTEM_OS
 }
 
 prem() {
@@ -206,7 +226,30 @@ else:
 ''' $1 $BASE_SYSTEM_OS) $@"
 
 	echo $RES_EXE
-	eval $RES_EXE
+	eval $RES_EXE && ~py -c '''
+# Добавить программу в `.bashler_pinst`
+import json
+import sys
+import re
+from pathlib import Path
+import os
+
+platform = sys.argv[-1]
+pakage = sys.argv[1]
+
+# Чтение файла `.bashler_pinst`
+home = os.environ["HOME"]
+path_bashler_pinst =  Path(f"{home}/.bashler_pinst")
+text = path_bashler_pinst.read_text()
+if not text:
+    text  = "{}"
+dict_app = json.loads(text)
+# Убрать приложение
+dict_app.pop(pakage)
+# Запись в файл `.bashler_pinst`
+with open(path_bashler_pinst, "w") as _jsonFile:
+	json.dump(dict_app, _jsonFile, skipkeys=False, sort_keys=True, indent=4, ensure_ascii=False)
+''' $1 $BASE_SYSTEM_OS
 }
 
 pupd() {
@@ -292,7 +335,7 @@ p-apt-remove() {
 	# Установить программу
 	sudo apt remove $@
 }
-p-pkg-remove(){
+p-pkg-remove() {
 	pkg uninstall $@
 }
 # -------------------------
@@ -300,7 +343,7 @@ p-apt-update() {
 	# Обновить ссылки, программы, отчистить лишнее
 	sudo apt update && sudo apt upgrade -y && sudo apt autoremove && sudo apt clean
 }
-p-pkg-update(){
+p-pkg-update() {
 	pkg update && pkg upgrade -y && pkg autoclean && apt autoremove
 }
 p-packman-update() {
