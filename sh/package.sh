@@ -55,10 +55,23 @@ else:
 
 pupd() {
 	# Обновить все пакеты
-	p-full-update
-}
-pupdp(){
-	p-pkg-update
+	RES_EXE="$(~py -c '''
+import sys
+import re
+os = sys.argv[-1]
+pakage = sys.argv[1]
+if os == "ubuntu":
+	print("p-full-update")
+elif os == "arch":
+	print("p-packman-update")
+elif os == "termux":
+	print("p-pkg-update")
+else:
+	print("None")
+''' $1 $BASE_SYSTEM_OS) $@"
+
+	echo $RES_EXE
+	eval $RES_EXE
 }
 
 #############
@@ -106,35 +119,36 @@ else:
 	print('Отставить!')
 	" $IS_SERVER
 }
-
+# -------------------------
 p-apt-install() {
 	# Установить программу
 	sudo apt install $@
 }
-p-pkg-install(){
+p-pkg-install() {
 	pkg install $@
-}
-p-pkg-remove(){
-	pkg uninstall $@
-}
-p-pkg-update(){
-	pkg update && pkg upgrade -y && pkg autoclean && apt autoremove
-}
-p-apt-remove() {
-	# Установить программу
-	sudo apt remove $@
 }
 p-apt-install-file() {
 	# Установить из файла
 	sudo dpkg -i $1
 }
+# -------------------------
 p-apt-remove() {
-	# Удалить программу
+	# Установить программу
 	sudo apt remove $@
 }
+p-pkg-remove(){
+	pkg uninstall $@
+}
+# -------------------------
 p-apt-update() {
 	# Обновить ссылки, программы, отчистить лишнее
 	sudo apt update && sudo apt upgrade -y && sudo apt autoremove && sudo apt clean
+}
+p-pkg-update(){
+	pkg update && pkg upgrade -y && pkg autoclean && apt autoremove
+}
+p-packman-update() {
+	sudo pacman -Syu
 }
 p-snap-update() {
 	snap refresh --list
@@ -145,6 +159,4 @@ p-flatpack-update() {
 p-full-update() {
 	p-apt-update && p-snap-update && p-flatpack-update
 }
-p-pkg-install() {
-	pkg install $@
-}
+# -------------------------

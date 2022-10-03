@@ -71,6 +71,253 @@ search_alias()
 
 #!/bin/bash
 
+# rsync
+
+-rsync-local-folder() {
+	# Синхронизировать локальные папки
+	# > откуда куда
+	# -e папка_1 папка_... 	= Исключить папки или файлы из сихронизации
+	# --dry-run			 	= Показать какие файлы будут сихронезированы без выполени программы
+	exclud_folder=$(__rsync-exlude-folder $@)
+	rsync -azvh --progress $1 $2 $exclud_folder
+}
+-rsync-delete-local-folder() {
+	# Синхронизировать папки, если в ВЫХОДНОЙ(out) папке отличия, то удалить их
+	# -e папка_1 папка_... = Исключить папки или файлы из сихронизации
+	exclud_folder=$(__rsync-exlude-folder $@)
+	rsync -azvh --progress --delete $1 $2 $exclud_folder
+}
+-rsync-server-folder() {
+	# Синхронезировать с сервером по SSH
+	# > port username@ip:path localpath
+	# -e папка_1 папка_... = Исключить папки или файлы из сихронизации
+	exclud_folder=$(__rsync-exlude-folder $@)
+	rsync -azvh --progress -e "ssh -p $1" $2 $3 $exclud_folder
+}
+-rsync-delete-server-folder() {
+	# Синхронезировать с сервером по SSH, если в ВЫХОДНОЙ(out) папке отличия, то удалить их
+	# > port username@ip:path localpath
+	# -e папка_1 папка_... = Исключить папки или файлы из сихронизации
+	exclud_folder=$(__rsync-exlude-folder $@)
+	rsync -azvh --progress --delete -e "ssh -p $1" $2 $3 $exclud_folder
+}
+##############
+-rsync-read-file() {
+	# Прочитать файл с сохранеными путями синхронизации
+	eval $(~py -c "
+import os.path
+file = '.rsyncpath'
+if os.path.exists(file):
+    with open(file, 'r') as _f:
+        print(_f.read())
+	" $@)
+}
+__rsync-exlude-folder() {
+	# -e папка_1 папка_... = Исключить папки или файлы из сихронизации
+	# можно создать файл .rsyncignore(по типу .gitignore) для хранения исключений
+	~py -c "
+import os.path
+import sys
+
+def main(argv:list):
+    '''
+    >>> main(['sd', 'in', 'out', '-e', 'ewe', 'edde', 'deed'])
+    --exclude=ewe --exclude=edde --exclude=deed
+    '''
+    file = '.rsyncignore'
+    exclude = []
+    # Получаем исключения из консоли
+    exclude.extend(argv[3:])
+    if exclude and exclude.pop(0) == '-e':
+        # Получаем исключения из файла
+        if os.path.exists(file):
+            with open(file, 'r') as _f:
+                exclude.extend(_f.read().split('\n'))
+        res = ''
+        for x in exclude:
+            res += '--exclude=%s ' % x
+        # убрать последний пробел
+        res = res[:-1] if res.endswith(' ') else res
+        print(res)
+    else:
+        print('', end='')
+main(sys.argv)
+	" $@
+}
+
+#!/bin/bash
+
+# Работа с пакетными менеджарами
+pinst() {
+	# Установить программу в Linux
+	RES_EXE="$(~py -c '''
+import sys
+import re
+os = sys.argv[-1]
+pakage = sys.argv[1]
+if os == "ubuntu":
+	if re.search(".deb$", pakage): 
+		# Установка из файла
+		print("p-apt-install-file")
+	else:
+		# Установка из интернета
+		print("p-apt-install")
+elif os == "arch":
+	print("p-packman-install")
+elif os == "termux":
+	print("p-pkg-install")
+else:
+	print("None")
+''' $1 $BASE_SYSTEM_OS) $@"
+
+	echo $RES_EXE
+	eval $RES_EXE
+}
+
+prem() {
+	# Удалить указаный пакет
+	RES_EXE="$(~py -c '''
+import sys
+import re
+os = sys.argv[-1]
+pakage = sys.argv[1]
+if os == "ubuntu":
+	if re.search(".deb$", pakage): 
+		# Удалить из файла
+		print("p-apt-remove")
+	else:
+		# Удалить из интернета
+		print("p-apt-remove")
+elif os == "arch":
+	print("p-packman-remove")
+elif os == "termux":
+	print("p-pkg-remove")
+else:
+	print("None")
+''' $1 $BASE_SYSTEM_OS) $@"
+
+	echo $RES_EXE
+	eval $RES_EXE
+}
+
+pupd() {
+	# Обновить все пакеты
+	RES_EXE="$(~py -c '''
+import sys
+import re
+os = sys.argv[-1]
+pakage = sys.argv[1]
+if os == "ubuntu":
+	print("p-full-update")
+elif os == "arch":
+	print("p-packman-update")
+elif os == "termux":
+	print("p-pkg-update")
+else:
+	print("None")
+''' $1 $BASE_SYSTEM_OS) $@"
+
+	echo $RES_EXE
+	eval $RES_EXE
+}
+
+#############
+p-apt-baseinstall() {
+	# Устновить все необходимые программы
+
+	res=~py -c "
+
+import sys
+
+is_server=sys.argv[1]
+
+if is_server = 'yes':
+	print('Server')
+	print('Client')
+
+if input('Установить зависемости ? (y/n)') == 'y':
+	if is_server:
+		os.system(''' 
+		
+	# Обновить пакеты
+	p-apt-update;
+	# Установить пакеты
+	sudo apt install git curl wget vim nginx net-tools make tree;
+
+		''')
+		
+	else:
+		os.system(''' 
+		
+	# Обновим пакеты apt
+	p-apt-update;
+	# Устоновим пакетный менеджер flatpak и snap
+	sudo apt install flatpak snap
+	# Обновить все пакеты в системе
+	p-full-update;
+	# Установить базовые  пакеты
+	sudo apt install git zsh curl micro keepassx net-tools make krusader;
+	# Программы snap
+	sudo snap install code --classic;
+
+		'''
+		)	
+else:
+	print('Отставить!')
+	" $IS_SERVER
+}
+# -------------------------
+p-apt-install() {
+	# Установить программу
+	sudo apt install $@
+}
+p-pkg-install() {
+	pkg install $@
+}
+p-apt-install-file() {
+	# Установить из файла
+	sudo dpkg -i $1
+}
+# -------------------------
+p-apt-remove() {
+	# Установить программу
+	sudo apt remove $@
+}
+p-pkg-remove(){
+	pkg uninstall $@
+}
+# -------------------------
+p-apt-update() {
+	# Обновить ссылки, программы, отчистить лишнее
+	sudo apt update && sudo apt upgrade -y && sudo apt autoremove && sudo apt clean
+}
+p-pkg-update(){
+	pkg update && pkg upgrade -y && pkg autoclean && apt autoremove
+}
+p-packman-update() {
+	sudo pacman -Syu
+}
+p-snap-update() {
+	snap refresh --list
+}
+p-flatpack-update() {
+	flatpak update
+}
+p-full-update() {
+	p-apt-update && p-snap-update && p-flatpack-update
+}
+# -------------------------
+
+#!/bin/bash
+
+## S = система
+s-watch(){
+	# Обновление команды через определенный период времяни
+	watch -d -n $@
+}
+
+#!/bin/bash
+
 __read-line-file-return-bash-for() {
     # Прочитать файл с переносами строк и вернуть bash массив
     #
@@ -127,68 +374,6 @@ sy-str() {
 sy-stp() {
     # Остановить службу
     sudo systemctl stop $1
-}
-
-#!/bin/bash
-
-## Действия с папками
-f-dir-copy() {
-	# Скопировать папку
-	cp -R $1 $2
-}
-f-dir-rename() {
-	# Переименовать папку
-	mv $1 $2
-}
-f-dir-create() {
-	# Создать папку
-	mkdir $1
-}
-f-dir-remove() {
-	# Удалить папку
-	rm -rf $1
-}
-
-## Размер Диска и использование его
-d-size-folder() {
-	# Получить разме файлов в указанной директории
-	du $1 -ach -d 1 | sort -h
-}
-d-size-disk() {
-	# Использование дисков
-	df -h $@
-}
-d-list-disk() {
-	# Все подключенные диски
-	sudo fdisk -l
-}
-## Tree
--tree() {
-	# > УровеньВложенности ДиректориюПосмотерть
-	# -a = скрытые файлы
-	# -d = только директории
-	# -f = показать относительный путь для файлов
-	# -L = уровень вложенности
-	# -P = поиск по шаблону (* сделать на python)
-	# -h = Вывести размер файлов и папок
-	# -Q = Заключать названия в двойные кавычки
-	# -F = Добовлять символы отличия для папок, файлов и сокетов
-	# -I = Исключить из списка по патерну
-	res='tree -a -L'
-
-	if [[ -z $1 ]]; then
-		res+=' 3'
-	else
-		res+=" $1"
-	fi
-	res+=' -h -F'
-	if [[ -z $2 ]]; then
-		res+=' ./'
-	else
-		res+=" $2"
-	fi
-	echo $res
-	eval $res
 }
 
 #!/bin/bash
@@ -309,201 +494,64 @@ __docker-create-filename() {
 
 #!/bin/bash
 
-# pep 8
-pepd() {
-    # Отформатировать все python файлы в указанной диреткории
-    # [путь_к_папке] = по умолчанию так где сейчас
-    dir=$1
-    if [[ -z $dir ]]; then
-        dir=$(pwd)
-    fi
-
-    ~py -m autopep8 --in-place --aggressive --aggressive -v -r $dir
+## Действия с папками
+f-dir-copy() {
+	# Скопировать папку
+	cp -R $1 $2
+}
+f-dir-rename() {
+	# Переименовать папку
+	mv $1 $2
+}
+f-dir-create() {
+	# Создать папку
+	mkdir $1
+}
+f-dir-remove() {
+	# Удалить папку
+	rm -rf $1
 }
 
-pepf() {
-    # Отформатировать python файл
-    # [путь_к_файлу]
-
-    ~py -m autopep8 --in-place --aggressive --aggressive -v $1
+## Размер Диска и использование его
+d-size-folder() {
+	# Получить разме файлов в указанной директории
+	du $1 -ach -d 1 | sort -h
 }
-
-# PIP
-pipupdate() {
-    # Обновить pip
-    ~py -m pip install --upgrade pip
+d-size-disk() {
+	# Использование дисков
+	df -h $@
 }
-
-pvenv() {
-    # Создать виртальное окуржение
-    ~py -m venv venv
+d-list-disk() {
+	# Все подключенные диски
+	sudo fdisk -l
 }
+## Tree
+-tree() {
+	# > УровеньВложенности ДиректориюПосмотерть
+	# -a = скрытые файлы
+	# -d = только директории
+	# -f = показать относительный путь для файлов
+	# -L = уровень вложенности
+	# -P = поиск по шаблону (* сделать на python)
+	# -h = Вывести размер файлов и папок
+	# -Q = Заключать названия в двойные кавычки
+	# -F = Добовлять символы отличия для папок, файлов и сокетов
+	# -I = Исключить из списка по патерну
+	res='tree -a -L'
 
-poetry_init() {
-    # Звгрузить poetry
-    pip install cachecontrol
-    pipupdate
-    pip install poetry
-    poetry install
-}
-
-#!/bin/bash
-
-## S = система
-s-watch(){
-	# Обновление команды через определенный период времяни
-	watch -d -n $@
-}
-
-#!/bin/bash
-
-# Работа с пакетными менеджарами
-pinst() {
-	# Установить программу в Linux
-	RES_EXE="$(~py -c '''
-import sys
-import re
-os = sys.argv[-1]
-pakage = sys.argv[1]
-if os == "ubuntu":
-	if re.search(".deb$", pakage): 
-		# Установка из файла
-		print("p-apt-install-file")
-	else:
-		# Установка из интернета
-		print("p-apt-install")
-elif os == "arch":
-	print("p-packman-install")
-elif os == "termux":
-	print("p-pkg-install")
-else:
-	print("None")
-''' $1 $BASE_SYSTEM_OS) $@"
-
-	echo $RES_EXE
-	eval $RES_EXE
-}
-
-prem() {
-	# Удалить указаный пакет
-	RES_EXE="$(~py -c '''
-import sys
-import re
-os = sys.argv[-1]
-pakage = sys.argv[1]
-if os == "ubuntu":
-	if re.search(".deb$", pakage): 
-		# Удалить из файла
-		print("p-apt-remove")
-	else:
-		# Удалить из интернета
-		print("p-apt-remove")
-elif os == "arch":
-	print("p-packman-remove")
-elif os == "termux":
-	print("p-pkg-remove")
-else:
-	print("None")
-''' $1 $BASE_SYSTEM_OS) $@"
-
-	echo $RES_EXE
-	eval $RES_EXE
-}
-
-pupd() {
-	# Обновить все пакеты
-	p-full-update
-}
-pupdp(){
-	p-pkg-update
-}
-
-#############
-p-apt-baseinstall() {
-	# Устновить все необходимые программы
-
-	res=~py -c "
-
-import sys
-
-is_server=sys.argv[1]
-
-if is_server = 'yes':
-	print('Server')
-	print('Client')
-
-if input('Установить зависемости ? (y/n)') == 'y':
-	if is_server:
-		os.system(''' 
-		
-	# Обновить пакеты
-	p-apt-update;
-	# Установить пакеты
-	sudo apt install git curl wget vim nginx net-tools make tree;
-
-		''')
-		
-	else:
-		os.system(''' 
-		
-	# Обновим пакеты apt
-	p-apt-update;
-	# Устоновим пакетный менеджер flatpak и snap
-	sudo apt install flatpak snap
-	# Обновить все пакеты в системе
-	p-full-update;
-	# Установить базовые  пакеты
-	sudo apt install git zsh curl micro keepassx net-tools make krusader;
-	# Программы snap
-	sudo snap install code --classic;
-
-		'''
-		)	
-else:
-	print('Отставить!')
-	" $IS_SERVER
-}
-
-p-apt-install() {
-	# Установить программу
-	sudo apt install $@
-}
-p-pkg-install(){
-	pkg install $@
-}
-p-pkg-remove(){
-	pkg uninstall $@
-}
-p-pkg-update(){
-	pkg update && pkg upgrade -y && pkg autoclean && apt autoremove
-}
-p-apt-remove() {
-	# Установить программу
-	sudo apt remove $@
-}
-p-apt-install-file() {
-	# Установить из файла
-	sudo dpkg -i $1
-}
-p-apt-remove() {
-	# Удалить программу
-	sudo apt remove $@
-}
-p-apt-update() {
-	# Обновить ссылки, программы, отчистить лишнее
-	sudo apt update && sudo apt upgrade -y && sudo apt autoremove && sudo apt clean
-}
-p-snap-update() {
-	snap refresh --list
-}
-p-flatpack-update() {
-	flatpak update
-}
-p-full-update() {
-	p-apt-update && p-snap-update && p-flatpack-update
-}
-p-pkg-install() {
-	pkg install $@
+	if [[ -z $1 ]]; then
+		res+=' 3'
+	else
+		res+=" $1"
+	fi
+	res+=' -h -F'
+	if [[ -z $2 ]]; then
+		res+=' ./'
+	else
+		res+=" $2"
+	fi
+	echo $res
+	eval $res
 }
 
 #!/bin/bash
@@ -546,6 +594,44 @@ Ctrl+s =  Поставить на паузу выполение команжы (
 -zsh-clean-history() {
 	# Отчистить историю команд
 	history -c
+}
+
+#!/bin/bash
+
+# Git
+alias gst="git status"
+alias glog="git log"
+alias gbra="git branch"
+alias gcd="git checkout $1"
+alias gmer="git merge $1"
+# Разница между коммитами или ветками
+alias gdif="git diff $1"
+alias grst="git reset --hard"
+
+gadd() {
+    # Создать комит всех изменений
+    date=$(date +\"%c\")
+    req="git add -A && git commit -m '$date - $1'"
+    echo $req
+    eval $req
+}
+gaddp() {
+    # Создать комит всех изменений и выполнить push
+    gadd $@
+    echo 'git push'
+    git push
+}
+garch() {
+    # Сделать архив текущей ветки
+    req="git archive --format zip --output $1.zip "
+    req+=$(git rev-parse --abbrev-ref HEAD)
+    echo $req
+    eval $req
+}
+
+grmh(){
+    # Удалить файл из отслеживания
+	git rm --cached $1
 }
 
 #!/bin/bash
@@ -597,114 +683,40 @@ Ctrl+s =  Поставить на паузу выполение команжы (
 
 #!/bin/bash
 
-# rsync
+# pep 8
+pepd() {
+    # Отформатировать все python файлы в указанной диреткории
+    # [путь_к_папке] = по умолчанию так где сейчас
+    dir=$1
+    if [[ -z $dir ]]; then
+        dir=$(pwd)
+    fi
 
--rsync-local-folder() {
-	# Синхронизировать локальные папки
-	# > откуда куда
-	# -e папка_1 папка_... 	= Исключить папки или файлы из сихронизации
-	# --dry-run			 	= Показать какие файлы будут сихронезированы без выполени программы
-	exclud_folder=$(__rsync-exlude-folder $@)
-	rsync -azvh --progress $1 $2 $exclud_folder
-}
--rsync-delete-local-folder() {
-	# Синхронизировать папки, если в ВЫХОДНОЙ(out) папке отличия, то удалить их
-	# -e папка_1 папка_... = Исключить папки или файлы из сихронизации
-	exclud_folder=$(__rsync-exlude-folder $@)
-	rsync -azvh --progress --delete $1 $2 $exclud_folder
-}
--rsync-server-folder() {
-	# Синхронезировать с сервером по SSH
-	# > port username@ip:path localpath
-	# -e папка_1 папка_... = Исключить папки или файлы из сихронизации
-	exclud_folder=$(__rsync-exlude-folder $@)
-	rsync -azvh --progress -e "ssh -p $1" $2 $3 $exclud_folder
-}
--rsync-delete-server-folder() {
-	# Синхронезировать с сервером по SSH, если в ВЫХОДНОЙ(out) папке отличия, то удалить их
-	# > port username@ip:path localpath
-	# -e папка_1 папка_... = Исключить папки или файлы из сихронизации
-	exclud_folder=$(__rsync-exlude-folder $@)
-	rsync -azvh --progress --delete -e "ssh -p $1" $2 $3 $exclud_folder
-}
-##############
--rsync-read-file() {
-	# Прочитать файл с сохранеными путями синхронизации
-	eval $(~py -c "
-import os.path
-file = '.rsyncpath'
-if os.path.exists(file):
-    with open(file, 'r') as _f:
-        print(_f.read())
-	" $@)
-}
-__rsync-exlude-folder() {
-	# -e папка_1 папка_... = Исключить папки или файлы из сихронизации
-	# можно создать файл .rsyncignore(по типу .gitignore) для хранения исключений
-	~py -c "
-import os.path
-import sys
-
-def main(argv:list):
-    '''
-    >>> main(['sd', 'in', 'out', '-e', 'ewe', 'edde', 'deed'])
-    --exclude=ewe --exclude=edde --exclude=deed
-    '''
-    file = '.rsyncignore'
-    exclude = []
-    # Получаем исключения из консоли
-    exclude.extend(argv[3:])
-    if exclude and exclude.pop(0) == '-e':
-        # Получаем исключения из файла
-        if os.path.exists(file):
-            with open(file, 'r') as _f:
-                exclude.extend(_f.read().split('\n'))
-        res = ''
-        for x in exclude:
-            res += '--exclude=%s ' % x
-        # убрать последний пробел
-        res = res[:-1] if res.endswith(' ') else res
-        print(res)
-    else:
-        print('', end='')
-main(sys.argv)
-	" $@
+    ~py -m autopep8 --in-place --aggressive --aggressive -v -r $dir
 }
 
-#!/bin/bash
+pepf() {
+    # Отформатировать python файл
+    # [путь_к_файлу]
 
-# Git
-alias gst="git status"
-alias glog="git log"
-alias gbra="git branch"
-alias gcd="git checkout $1"
-alias gmer="git merge $1"
-# Разница между коммитами или ветками
-alias gdif="git diff $1"
-alias grst="git reset --hard"
-
-gadd() {
-    # Создать комит всех изменений
-    date=$(date +\"%c\")
-    req="git add -A && git commit -m '$date - $1'"
-    echo $req
-    eval $req
-}
-gaddp() {
-    # Создать комит всех изменений и выполнить push
-    gadd $@
-    echo 'git push'
-    git push
-}
-garch() {
-    # Сделать архив текущей ветки
-    req="git archive --format zip --output $1.zip "
-    req+=$(git rev-parse --abbrev-ref HEAD)
-    echo $req
-    eval $req
+    ~py -m autopep8 --in-place --aggressive --aggressive -v $1
 }
 
-grmh(){
-    # Удалить файл из отслеживания
-	git rm --cached $1
+# PIP
+pipupdate() {
+    # Обновить pip
+    ~py -m pip install --upgrade pip
+}
+
+pvenv() {
+    # Создать виртальное окуржение
+    ~py -m venv venv
+}
+
+poetry_init() {
+    # Звгрузить poetry
+    pip install cachecontrol
+    pipupdate
+    pip install poetry
+    poetry install
 }
