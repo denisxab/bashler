@@ -1,34 +1,42 @@
 #!/bin/bash
 
-# rsync
-
 -rsync-local-folder() {
 	# Синхронизировать локальные папки
 	# > откуда куда
 	# -e папка_1 папка_... 	= Исключить папки или файлы из сихронизации
 	# --dry-run			 	= Показать какие файлы будут сихронезированы без выполени программы
 	exclud_folder=$(__rsync-exlude-folder $@)
-	rsync -azvh --progress $1 $2 $exclud_folder
+	res="rsync -azvh --progress $1 $2 $exclud_folder"
+	echo res
+	eval res
 }
 -rsync-delete-local-folder() {
 	# Синхронизировать папки, если в ВЫХОДНОЙ(out) папке отличия, то удалить их
 	# -e папка_1 папка_... = Исключить папки или файлы из сихронизации
 	exclud_folder=$(__rsync-exlude-folder $@)
-	rsync -azvh --progress --delete $1 $2 $exclud_folder
+	res="rsync -azvh --progress --delete $1 $2 $exclud_folder"
+	echo res
+	eval res
 }
 -rsync-server-folder() {
 	# Синхронезировать с сервером по SSH
 	# > port username@ip:path localpath
 	# -e папка_1 папка_... = Исключить папки или файлы из сихронизации
 	exclud_folder=$(__rsync-exlude-folder $@)
-	rsync -azvh --progress -e "ssh -p $1" $2 $3 $exclud_folder
+	SSH_RES="ssh -p $1"
+	res="rsync -azvh --progress -e $SSH_RES $2 $3 $exclud_folder"
+	echo res
+	eval res
 }
 -rsync-delete-server-folder() {
 	# Синхронезировать с сервером по SSH, если в ВЫХОДНОЙ(out) папке отличия, то удалить их
 	# > port username@ip:path localpath
 	# -e папка_1 папка_... = Исключить папки или файлы из сихронизации
 	exclud_folder=$(__rsync-exlude-folder $@)
-	rsync -azvh --progress --delete -e "ssh -p $1" $2 $3 $exclud_folder
+	SSH_RES="ssh -p $1"
+	res="rsync -azvh --progress --delete -e $SSH_RES $2 $3 $exclud_folder"
+	echo res
+	eval res
 }
 ##############
 -rsync-read-file() {
