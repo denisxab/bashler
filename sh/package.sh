@@ -204,6 +204,7 @@ p-packman-update() {
 }
 p-snap-update() {
 	snap refresh --list
+	snap refresh
 }
 p-flatpack-update() {
 	flatpak update
