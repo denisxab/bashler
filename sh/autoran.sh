@@ -1,7 +1,14 @@
 #!/bin/bash
 
+autorun-bashler-force() {
+    # Принудтельно перезапустить команды
+    tmp_path="/tmp/autorun_bashler"
+    rm -rf $tmp_path
+    autorun-bashler
+}
+
 autorun-bashler() {
-    # Логика автозапска программ
+    # Логика запска программ
     tmp_path="/tmp/autorun_bashler"
     exists_tmp_path="$tmp_path/.run_autorun_bashler"
 
@@ -14,7 +21,7 @@ autorun-bashler() {
     fi
 
     if [[ -f $exists_tmp_path ]]; then
-        echo "Уже запущенно"
+        echo "Уже запущенно. Файл существует $exists_tmp_path"
     else
         if [[ -f $AUTORUN_BASHLER ]]; then
             echo $AUTORUN_BASHLER
