@@ -23,6 +23,53 @@ alias ..="cd .."
 ######################################################################################
 #!/bin/bash
 
+autorun-bashler() {
+    # Логика автозапска программ
+    tmp_path="/tmp/autorun_bashler"
+    exists_tmp_path="$tmp_path/.run_autorun_bashler"
+
+    if [[ -d $tmp_path ]]; then
+        echo "Папка существует $tmp_path"
+    else
+        # Создаем католог в /tmp
+        mkdir $tmp_path
+        echo "Создана папка $tmp_path"
+    fi
+
+    if [[ -f $exists_tmp_path ]]; then
+        echo "Уже запущенно"
+    else
+        if [[ -f $AUTORUN_BASHLER ]]; then
+            echo $AUTORUN_BASHLER
+
+            list_dir="$(~py -c '''
+import json
+from pathlib import Path
+import os
+p_AUTORUN_BASHLER = Path(os.environ["AUTORUN_BASHLER"])
+q = """ " """.replace(" ","")
+r = json.loads(p_AUTORUN_BASHLER.read_text())
+res = ""
+for script in r:
+    res += f"{script} "
+print(res)
+''')"
+            for x in $(echo $list_dir); do
+                echo $x
+                # Фоновый запуск
+                nohup $x >/dev/null &
+            done
+
+            touch $exists_tmp_path
+        else
+            echo "Путь не существует $AUTORUN_BASHLER"
+        fi
+    fi
+
+}
+
+#!/bin/bash
+
 ##################################################
 --() {
     # Поиск документции у функции
@@ -71,35 +118,43 @@ search_alias()
 
 #!/bin/bash
 
-# rsync
-
 -rsync-local-folder() {
 	# Синхронизировать локальные папки
 	# > откуда куда
 	# -e папка_1 папка_... 	= Исключить папки или файлы из сихронизации
 	# --dry-run			 	= Показать какие файлы будут сихронезированы без выполени программы
 	exclud_folder=$(__rsync-exlude-folder $@)
-	rsync -azvh --progress $1 $2 $exclud_folder
+	res="rsync -azvh --progress $1 $2 $exclud_folder"
+	echo res
+	eval res
 }
 -rsync-delete-local-folder() {
 	# Синхронизировать папки, если в ВЫХОДНОЙ(out) папке отличия, то удалить их
 	# -e папка_1 папка_... = Исключить папки или файлы из сихронизации
 	exclud_folder=$(__rsync-exlude-folder $@)
-	rsync -azvh --progress --delete $1 $2 $exclud_folder
+	res="rsync -azvh --progress --delete $1 $2 $exclud_folder"
+	echo res
+	eval res
 }
 -rsync-server-folder() {
 	# Синхронезировать с сервером по SSH
 	# > port username@ip:path localpath
 	# -e папка_1 папка_... = Исключить папки или файлы из сихронизации
 	exclud_folder=$(__rsync-exlude-folder $@)
-	rsync -azvh --progress -e "ssh -p $1" $2 $3 $exclud_folder
+	SSH_RES="ssh -p $1"
+	res="rsync -azvh --progress -e $SSH_RES $2 $3 $exclud_folder"
+	echo res
+	eval res
 }
 -rsync-delete-server-folder() {
 	# Синхронезировать с сервером по SSH, если в ВЫХОДНОЙ(out) папке отличия, то удалить их
 	# > port username@ip:path localpath
 	# -e папка_1 папка_... = Исключить папки или файлы из сихронизации
 	exclud_folder=$(__rsync-exlude-folder $@)
-	rsync -azvh --progress --delete -e "ssh -p $1" $2 $3 $exclud_folder
+	SSH_RES="ssh -p $1"
+	res="rsync -azvh --progress --delete -e $SSH_RES $2 $3 $exclud_folder"
+	echo res
+	eval res
 }
 ##############
 -rsync-read-file() {
