@@ -1,0 +1,4 @@
+[
+	"syncthing",
+	"google-drive-ocamlfuse /mnt/google_disk"
+]
