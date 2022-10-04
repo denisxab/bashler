@@ -24,17 +24,18 @@ import json
 from pathlib import Path
 import os
 p_AUTORUN_BASHLER = Path(os.environ["AUTORUN_BASHLER"])
-q = """ " """.replace(" ","")
 r = json.loads(p_AUTORUN_BASHLER.read_text())
 res = ""
 for script in r:
-    res += f"{script} "
+    res += f"{script}\n"
 print(res)
 ''')"
+            IFS=$'\n'
             for x in $(echo $list_dir); do
-                echo $x
                 # Фоновый запуск
-                nohup $x >/dev/null &
+                res="nohup $x >/dev/null &"
+                echo $res
+                eval $res
             done
 
             touch $exists_tmp_path
