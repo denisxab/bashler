@@ -1,14 +1,7 @@
 #!/bin/bash
 
-autorun-bashler-force() {
-    # Принудтельно перезапустить команды
-    tmp_path="/tmp/autorun_bashler"
-    rm -rf $tmp_path
-    autorun-bashler
-}
-
 autorun-bashler() {
-    # Логика запска программ
+    # Логика запуска программ
     tmp_path="/tmp/autorun_bashler"
     exists_tmp_path="$tmp_path/.run_autorun_bashler"
 
@@ -50,4 +43,10 @@ print(res)
         fi
     fi
 
+}
+autorun-bashler-force() {
+    # Принудтельно перезапустить программ
+    tmp_path="/tmp/autorun_bashler"
+    rm -rf $tmp_path
+    autorun-bashler
 }
