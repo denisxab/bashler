@@ -44,3 +44,18 @@
     echo $res
     eval $res
 }
+
+-find-c() {
+    # TODO Доделать дни для поиска, тестировал в /media/denis/dd19b13d-bd85-46bb-8db9-5b8f6cf7a825/Dowload/srinchot/
+    # Файлы в директории `$1` которые не изменялись более `$2` дней
+    day=$(expr $2 - 1)
+    if [[ $2 -eq 0 ]]; then
+        day=0
+    fi
+    if [[ day -gt 0 ]]; then
+        day="+$day"
+    fi
+    res="find $1 -mtime $day  -printf '%TY-%Tm-%Td %TT %p\n' | sort -r"
+    echo $res
+    eval $res
+}

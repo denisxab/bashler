@@ -55,7 +55,6 @@ print(res)
 ''')"
             IFS=$'\n'
             for x in $(echo $list_dir); do
-                # echo "> $x"
                 # Фоновый запуск
                 res="nohup $x >/dev/null &"
                 echo $res
@@ -793,6 +792,20 @@ grmh(){
         res+=" --exclude-dir={$2}"
     fi
     res+=" -rnw . -e $1"
+    echo $res
+    eval $res
+}
+
+-find-c() {
+    # Файлы в директории `$1` которые не изменялись более `$2` дней
+    day=$(expr $2 - 1)
+    if [[ $2 -eq 0 ]]; then
+        day=0
+    fi
+    if [[ day -gt 0 ]]; then
+        day="+$day"
+    fi
+    res="find $1 -mtime $day  -printf '%TY-%Tm-%Td %TT %p\n' | sort -r"
     echo $res
     eval $res
 }
