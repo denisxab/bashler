@@ -45,17 +45,20 @@
     eval $res
 }
 
--find-c() {
-    # TODO Доделать дни для поиска, тестировал в /media/denis/dd19b13d-bd85-46bb-8db9-5b8f6cf7a825/Dowload/srinchot/
-    # Файлы в директории `$1` которые не изменялись более `$2` дней
+-find-chage-more() {
+    # Поиск файлов в директории `$1` которые изменялись более `$2` дней
     day=$(expr $2 - 1)
+
     if [[ $2 -eq 0 ]]; then
         day=0
-    fi
-    if [[ day -gt 0 ]]; then
+    else
+        # 0 Изменялись сегодня
+        # +0 Изменялись вчера и далее
+        # +1 Изменялись позавчера и далее
         day="+$day"
     fi
-    res="find $1 -mtime $day  -printf '%TY-%Tm-%Td %TT %p\n' | sort -r"
+    # %TY-%Tm-%Td %TT %p\n
+    res="find $1 -mtime $day  -printf '\033[92m%TY-%Tm-%Td %TT\033[0m\t\033[93m%p\033[0m\n' | sort -r"
     echo $res
-    eval $res
+    eval $res | less
 }
