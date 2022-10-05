@@ -798,6 +798,10 @@ grmh(){
 
 -find-chage-more() {
     # Поиск файлов в директории `$1` которые изменялись более `$2` дней
+    # `$1` Путь к паке в которой искать
+    # `$2` Сколько дней назад изменялось, если нужно сегодня то укажите 0
+    # `$3` Во сколько директория можно углубляться, по умолчанию во все
+
     day=$(expr $2 - 1)
 
     if [[ $2 -eq 0 ]]; then
@@ -808,10 +812,18 @@ grmh(){
         # +1 Изменялись позавчера и далее
         day="+$day"
     fi
+
+    maxdepth='-maxdepth'
+    if [[ -z $3 ]]; then
+        maxdepth=""
+    else
+        maxdepth="$maxdepth $3"
+    fi
+
     # %TY-%Tm-%Td %TT %p\n
-    res="find $1 -mtime $day  -printf '\033[92m%TY-%Tm-%Td %TT\033[0m\t\033[93m%p\033[0m\n' | sort -r"
+    res="find $1 $maxdepth -mtime $day -printf '\033[92m%TY-%Tm-%Td %TT\033[0m\t\033[93m%p\033[0m\n' | sort -r"
     echo $res
-    eval $res | less
+    eval $res
 }
 
 #!/bin/bash
