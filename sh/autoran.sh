@@ -51,3 +51,4 @@ autorun-bashler-force() {
     rm -rf $tmp_path
     autorun-bashler
 }
+

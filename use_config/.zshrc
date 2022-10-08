@@ -12,6 +12,8 @@ export BASE_SYSTEM_OS="ubuntu"
 export AUTORUN_BASHLER="$HOME/.autorun_bashler"
 # Другое
 export FIREBIRD_UDF="/usr/lib/x86_64-linux-gnu/firebird/3.0/UDF/"
+# Путь к директории для автозапуска программ при страте системы
+export AUTORUN_PATH="$HOME/.config/й" 
 ######################################################################################
 
 ######################################################################################
