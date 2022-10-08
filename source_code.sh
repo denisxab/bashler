@@ -394,7 +394,8 @@ p-pkg-install() {
 }
 p-apt-install-file() {
 	# Установить из файла
-	sudo dpkg -i $1
+	# sudo dpkg -i $1
+	p-apt-install $1
 }
 # -------------------------
 p-apt-remove() {
