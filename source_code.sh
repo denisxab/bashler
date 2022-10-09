@@ -18,7 +18,6 @@ alias -g showlogsmal="/home/denis/PycharmProjects/showlofsmal/showlogsmal.bin"
 alias -g ~py=python3.10
 alias -g ~bpy=bpython
 alias -g syncthing="$DiskData/AlienApp/aplication/other/syncthing-linux-amd64-v1.20.1/syncthing"
-alias poetry="python -m poetry $@"
 alias ..="cd .."
 # замена ls на NNN
 alias ls='nnn -de'
@@ -860,14 +859,81 @@ pimport() {
 }
 
 # PIP
-pipupdate() {
+# Установаить пакет
+pipin() {
+    # Если актевировано окружение то установить пакет в него
+    res=""
+    if [[ -n $VIRTUAL_ENV ]]; then
+        res="$VIRTUAL_ENV/bin/python -m pip install $1"
+    else
+        res="~py -m pip install $1"
+    fi
+    echo $res
+    eval $res && ~py -c '''
+import pathlib
+import sys
+import re
+
+path_self = sys.argv[1]
+package = sys.argv[2]
+
+requirements = pathlib.Path(path_self) / "requirements.txt"
+
+if requirements.exists():
+    if_exist = re.search(f"{package}[ \t><=!\n]", requirements.read_text())
+    if not if_exist:
+        with requirements.open("a") as f:
+            f.write(f"{package}\n")
+else:
+    requirements.write_text(package)
+    ''' $(pwd) $1
+}
+# Удалить пакет
+piprm() {
+    # Если актевировано окружение то удляем пакет из него
+    res=""
+    if [[ -n $VIRTUAL_ENV ]]; then
+        res="$VIRTUAL_ENV/bin/python -m pip uninstall $1"
+    else
+        res="~py -m pip uninstall $1"
+    fi
+    echo $res
+    eval $res && ~py -c '''
+import pathlib
+import sys
+import re
+
+path_self = sys.argv[1]
+package = sys.argv[2]
+
+requirements = pathlib.Path(path_self) / "requirements.txt"
+
+if requirements.exists():
+    rt = requirements.read_text()
+    rtn = re.sub(f"{package}[ \t><=!\n]","", rt)
+    requirements.write_text(rtn)
+    ''' $(pwd) $1
+}
+# Обновить сам pip
+pipup-self() {
     # Обновить pip
     ~py -m pip install --upgrade pip
 }
+# Poetry
+poetry-() {
+    res=""
+    if [[ -n $VIRTUAL_ENV ]]; then
+        res="$VIRTUAL_ENV/bin/python -m poetry $@"
+    else
+        res="~py -m poetry $@"
+    fi
+    echo $res
+    eval $res
+}
 
 # Venv
-pvenv() {
-    # Создать виртальное окуржение
+# Создать окружение
+pcvenv() {
     if [[ -z $1 ]]; then
         b_dirname='venv'
     else
@@ -875,6 +941,22 @@ pvenv() {
     fi
     res="~py -m venv $b_dirname"
     echo $res
+    eval $res
+}
+# Актевировать окружение
+pavenv() {
+    if [[ -z $1 ]]; then
+        b_dirname='./venv/bin/activate'
+    else
+        b_dirname=$1
+    fi
+    res="source $b_dirname"
+    echo $res
+    eval $res
+}
+# Деактевировать окружение
+pdvenv() {
+    deactivate
 }
 
 # Poetry

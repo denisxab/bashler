@@ -18,7 +18,6 @@ alias -g showlogsmal="/home/denis/PycharmProjects/showlofsmal/showlogsmal.bin"
 alias -g ~py=python3.10
 alias -g ~bpy=bpython
 alias -g syncthing="$DiskData/AlienApp/aplication/other/syncthing-linux-amd64-v1.20.1/syncthing"
-alias poetry="python -m poetry $@"
 alias ..="cd .."
 # замена ls на NNN
 alias ls='nnn -de'
