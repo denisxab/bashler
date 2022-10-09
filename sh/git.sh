@@ -30,8 +30,25 @@ garch() {
     echo $req
     eval $req
 }
-
-grmh(){
+grmh() {
     # Удалить файл из отслеживания
-	git rm --cached $1
+    git rm --cached $1
+}
+
+gremot-up-token() {
+    # Обновить токен в URL
+    # $1 = Токен
+    git_url=$(git remote get-url origin)
+    new_token=$1
+    new_url=$(~py -c '''
+import sys
+import re
+gir_url = sys.argv[1]
+new_token = sys.argv[2]
+res=new_token.join(re.search("(.+:).+(@.+)",gir_url).group(1,2))
+print(res)
+    ''' $git_url $new_token)
+    res="git remote set-url origin $new_url"
+    echo $res
+    eval $res
 }
