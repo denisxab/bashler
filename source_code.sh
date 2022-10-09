@@ -16,7 +16,7 @@ alias -g configer="$DiskData/MyProject/PycharmProjects/configer/venv/bin/python3
 alias -g gitclones="$DiskData/MyProject/PycharmProjects/git_clons/venv/bin/python3.10 $DiskData/MyProject/PycharmProjects/git_clons/git_clons/main.py"
 alias -g showlogsmal="/home/denis/PycharmProjects/showlofsmal/showlogsmal.bin"
 alias -g ~py=python3.10
-alias -g ~bpy=bpython
+alias -g ~bpy="~py -m bpython"
 alias -g syncthing="$DiskData/AlienApp/aplication/other/syncthing-linux-amd64-v1.20.1/syncthing"
 alias ..="cd .."
 # замена ls на NNN
