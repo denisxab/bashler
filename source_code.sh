@@ -17,7 +17,7 @@ alias -g gitclones="$DiskData/MyProject/PycharmProjects/git_clons/venv/bin/pytho
 alias -g showlogsmal="/home/denis/PycharmProjects/showlofsmal/showlogsmal.bin"
 alias -g ~py=python3.10
 alias -g ~bpy="~py -m bpython"
-alias -g syncthing="$DiskData/AlienApp/aplication/other/syncthing-linux-amd64-v1.20.1/syncthing"
+alias -g syncthing="$DiskData/AlienApp/aplication/other/Syncthing/syncthing-linux-amd64-v1.20.1/syncthing"
 alias ..="cd .."
 # замена ls на NNN
 alias ls='nnn -de'
@@ -794,7 +794,7 @@ print(res)
 }
 -find-e() {
     # Поиск всех файлов с указаным разширением
-    find . -name *.$1
+    find . -name "*.$1"
 }
 -find-f() {
     # Поиск файла или папки по указаному шаблоному имени
