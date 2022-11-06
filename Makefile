@@ -1,3 +1,3 @@
 
 build:
-	~py _build.py  
+	python3.11 _build.py  

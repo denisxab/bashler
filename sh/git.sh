@@ -32,7 +32,19 @@ garch() {
 }
 grmh() {
     # Удалить файл из отслеживания
-    git rm --cached $1
+    res=`git rm --cached -r $1`
+    echo $res
+    eval $res
+}
+
+gitignore(){
+    template='''__pycache__
+log
+venv
+/html
+.vscode
+'''
+    echo $template > '.gitignore'
 }
 
 gremot-up-token() {
