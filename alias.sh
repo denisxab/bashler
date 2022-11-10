@@ -22,5 +22,5 @@ alias -g ~bpy="~py -m bpython"
 alias -g syncthing="$DiskData/AlienApp/aplication/other/Syncthing/syncthing-linux-amd64-v1.20.1/syncthing"
 alias ..="cd .."
 # замена ls на NNN
-alias ls='nnn -de'
+alias nnn='nnn -de'
 ######################################################################################
