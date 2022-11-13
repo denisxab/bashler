@@ -11,7 +11,10 @@ export BASHLER_PATH_PY="$BASHLER_PATH/py"
 alias -s {txt,md,conf,log}=micro
 alias -s {js,py,cs,ts,html}=code
 ######################################################################################
+# 
 # Глобальные Alias
+# 
+# Алиасы для программ
 alias -g configer="$DiskData/MyProject/PycharmProjects/configer/venv/bin/python3.10 $DiskData/MyProject/PycharmProjects/configer/configer/main.py"
 alias -g gitclones="$DiskData/MyProject/PycharmProjects/git_clons/venv/bin/python3.10 $DiskData/MyProject/PycharmProjects/git_clons/git_clons/main.py"
 alias -g pytots="$DiskData/MyProject/python_to_ts_type/venv/bin/python3.11 $DiskData/MyProject/python_to_ts_type/main.py"
@@ -20,6 +23,8 @@ alias -g ~py=python3.11
 alias -g pip="~py -m pip"
 alias -g ~bpy="~py -m bpython"
 alias -g syncthing="$DiskData/AlienApp/aplication/other/Syncthing/syncthing-linux-amd64-v1.20.1/syncthing"
+alias -g dbeaver="snap run dbeaver-ce"
+# 
 alias ..="cd .."
 # замена ls на NNN
 alias nnn='nnn -de'
