@@ -43,6 +43,7 @@ log
 venv
 /html
 .vscode
+/dist
 '''
     echo $template > '.gitignore'
 }
