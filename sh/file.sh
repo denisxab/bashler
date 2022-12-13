@@ -59,3 +59,33 @@ d-list-disk() {
 	echo $res
 	eval $res
 }
+
+## Python
+
+-p-joinfile() {
+	# Объеденить текс всех файлов из указанной директории
+	# 1 - Путь к папке
+	# 2 - Кодировка файлов
+	# 3 - Разделитель при записи в итоговый файл
+
+	res=$(~py -c '''
+import pathlib
+import sys
+
+# Путь к папке
+dir=sys.argv[1]
+# Кодировка файлов
+encode=sys.argv[2] # "windows-1251"
+# Разделитель при записи в итоговый файл
+sep=sys.argv[3] # "\n"
+
+res_text = []
+p = pathlib.Path(dir).resolve()
+for x in p.glob("*.txt"):
+    res_text.append(x.read_text(encode))
+
+(p / "join.out").write_text(sep.join(res_text))
+
+    ''' "$1" "$2" "$3")
+	echo $res
+}
