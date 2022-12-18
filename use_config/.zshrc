@@ -3,17 +3,15 @@
 
 ######################################################################################
 # Можем настраивать различные варинты для клиента и сервера
-export IS_SERVER="no"
-# Путь к Bahler
-export BASHLER_PATH='/media/denis/dd19b13d-bd85-46bb-8db9-5b8f6cf7a825/MyProject/bashler/'
+export IS_SERVER="yes"
 # ОС (ubuntu/arch/termix)
 export BASE_SYSTEM_OS="ubuntu"
+# Путь к Bahler
+export BASHLER_PATH='/media/denis/dd19b13d-bd85-46bb-8db9-5b8f6cf7a825/MyProject/bashler/'
 # Путь к файлу автозапуска
 export AUTORUN_BASHLER="$HOME/.autorun_bashler"
-# Другое
+######### Другое ####################################
 export FIREBIRD_UDF="/usr/lib/x86_64-linux-gnu/firebird/3.0/UDF/"
-# Путь к директории для автозапуска программ при страте системы
-export AUTORUN_PATH="$HOME/.config/й" 
 ######################################################################################
 
 ######################################################################################

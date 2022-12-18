@@ -175,20 +175,23 @@ ssh-keygen() {
 }
 -ssh-restart() {
     # Перезапутсить SSH сервер
+    res=''
     if [[ $BASE_SYSTEM_OS == "termix" ]]; then
-        -ssh-stop && -ssh-start
+        res="-ssh-stop && -ssh-start"
         printf "Termix - SSH перезагружен "
-    elif [[ $IS_SERVER == "ubuntu" ]]; then
-        sudo systemctl restart shhd
+    elif [[ $BASE_SYSTEM_OS == "ubuntu" ]]; then
+        res="sudo systemctl restart shhd"
         printf "Ubuntu - SSH перезагружен "
     fi
+    echo $res
+    eval $res
 }
 -ssh-start() {
     # Запустить SSH сервер
     if [[ $BASE_SYSTEM_OS == "termix" ]]; then
         sshd
         printf "Termix - SSH перезагружен "
-    elif [[ $IS_SERVER == "ubuntu" ]]; then
+    elif [[ $BASE_SYSTEM_OS == "ubuntu" ]]; then
         sudo systemctl start shhd
         printf "Ubuntu - SSH перезагружен "
     fi
@@ -198,7 +201,7 @@ ssh-keygen() {
     if [[ $BASE_SYSTEM_OS == "termix" ]]; then
         pkill sshd
         printf "Termix - SSH перезагружен "
-    elif [[ $IS_SERVER == "ubuntu" ]]; then
+    elif [[ $BASE_SYSTEM_OS == "ubuntu" ]]; then
         sudo systemctl stop shhd
         printf "Ubuntu - SSH перезагружен "
     fi

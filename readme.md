@@ -13,7 +13,15 @@ make build
 Для того чтобы ваши функции и алиасы были доступны во всех оболочка вам нужно импортировать файл `source_code.sh` в `~/.zshrc`
 
 ```bash
+# Можем настраивать различные варинты для клиента и сервера
+export IS_SERVER="yes"
+# ОС (ubuntu/arch/termix)
+export BASE_SYSTEM_OS="ubuntu"
+# Путь к Bahler
 export BASHLER_PATH=~/bashler
+# Путь к файлу автозапуска
+export AUTORUN_BASHLER="$HOME/.autorun_bashler"
+
 
 -zsh-full-reload(){
     # Перезагрузить полностью zsh
