@@ -468,26 +468,6 @@ pupd() {
 	eval $res
 }
 
-# pupd() {
-# 	# Обновить все пакеты
-# 	RES_EXE="$(~py -c '''
-# import sys
-# import re
-# os = sys.argv[-1]
-# pakage = sys.argv[1]
-# if os == "ubuntu":
-# 	print("p-full-update")
-# elif os == "arch":
-# 	print("p-packman-update")
-# elif os == "termux":
-# 	print("p-pkg-update")
-# else:
-# 	print("None")
-# ''' $1 $BASE_SYSTEM_OS) $@"
-# 	echo $RES_EXE
-# 	eval $RES_EXE
-# }
-
 #############
 p-apt-baseinstall() {
 	# Устновить все необходимые программы
