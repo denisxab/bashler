@@ -108,24 +108,36 @@ with open(path_bashler_pinst, "w") as _jsonFile:
 
 pupd() {
 	# Обновить все пакеты
-	RES_EXE="$(~py -c '''
-import sys
-import re
-os = sys.argv[-1]
-pakage = sys.argv[1]
-if os == "ubuntu":
-	print("p-full-update")
-elif os == "arch":
-	print("p-packman-update")
-elif os == "termux":
-	print("p-pkg-update")
-else:
-	print("None")
-''' $1 $BASE_SYSTEM_OS) $@"
-
-	echo $RES_EXE
-	eval $RES_EXE
+	res=''
+	if [[ $BASE_SYSTEM_OS == "termix" ]]; then
+		res="p-pkg-update"
+	elif [[ $BASE_SYSTEM_OS == "ubuntu" ]]; then
+		res="p-apt-update && p-snap-update && p-flatpack-update"
+	elif [[ $BASE_SYSTEM_OS == "ubuntu" ]]; then
+		res="p-packman-update"
+	fi
+	eval $res
 }
+
+# pupd() {
+# 	# Обновить все пакеты
+# 	RES_EXE="$(~py -c '''
+# import sys
+# import re
+# os = sys.argv[-1]
+# pakage = sys.argv[1]
+# if os == "ubuntu":
+# 	print("p-full-update")
+# elif os == "arch":
+# 	print("p-packman-update")
+# elif os == "termux":
+# 	print("p-pkg-update")
+# else:
+# 	print("None")
+# ''' $1 $BASE_SYSTEM_OS) $@"
+# 	echo $RES_EXE
+# 	eval $RES_EXE
+# }
 
 #############
 p-apt-baseinstall() {
@@ -144,17 +156,14 @@ if is_server = 'yes':
 if input('Установить зависемости ? (y/n)') == 'y':
 	if is_server:
 		os.system(''' 
-		
 	# Обновить пакеты
 	p-apt-update;
 	# Установить пакеты
 	sudo apt install git curl wget vim nginx net-tools make tree;
-
 		''')
 		
 	else:
 		os.system(''' 
-		
 	# Обновим пакеты apt
 	p-apt-update;
 	# Устоновим пакетный менеджер flatpak и snap
@@ -165,7 +174,6 @@ if input('Установить зависемости ? (y/n)') == 'y':
 	sudo apt install git zsh curl micro keepassx net-tools make krusader;
 	# Программы snap
 	sudo snap install code --classic;
-
 		'''
 		)	
 else:
@@ -199,19 +207,21 @@ p-apt-update() {
 	sudo apt update && sudo apt upgrade -y && sudo apt autoremove && sudo apt clean
 }
 p-pkg-update() {
+	# Обнавления для Termix
 	pkg update && pkg upgrade -y && pkg autoclean && apt autoremove
 }
 p-packman-update() {
+	# Обновления для Pacman
 	sudo pacman -Syu
 }
 p-snap-update() {
+	# Обнавить программы из Snap
 	snap refresh --list
 	snap refresh
 }
 p-flatpack-update() {
+	# Обнавить программы из flatpak
 	flatpak update
 }
-p-full-update() {
-	p-apt-update && p-snap-update && p-flatpack-update
-}
+
 # -------------------------

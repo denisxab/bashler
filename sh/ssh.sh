@@ -65,8 +65,8 @@
     # Поключиться по SSH. Взять данные для подлючения из файла
     # $1 - ПроизвольноеИмя из файла для ssh
 
-
-    res=~py -c '''
+    # Получаем данные для подключения по `ПроизвольноеИмя`
+    res=$(~py -c '''
 import pathlib
 import sys
 import json
@@ -85,9 +85,13 @@ else:
     raise KeyError(
         f"Не найдено SSH подключение по имени - {name_connect_from_conf}"
     )
-    ''' $BASHLER_REMOTE_PATH $1
-    echo $res
-    # ssh -p $SSH_TERMIX_PORT "$SSH_TERMIX_NAME@$SSH_TERMIX_HOST"
+    ''' $BASHLER_REMOTE_PATH $1)
+    user=$(echo $res | cut -d "|" -f 1)
+    host=$(echo $res | cut -d "|" -f 2)
+    port=$(echo $res | cut -d "|" -f 3)
+    echo "$user@$host:$port"
+    # Подключение по сереру
+    ssh -p $port "$user@$host"
 }
 -ssh-copy-key-cf() {
     # Скопироввать SSH ключ. Взять данные для подлючения из файла

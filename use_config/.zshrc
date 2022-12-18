@@ -11,7 +11,7 @@ export BASHLER_PATH='/media/denis/dd19b13d-bd85-46bb-8db9-5b8f6cf7a825/MyProject
 # Путь к файлу автозапуска
 export AUTORUN_BASHLER="$HOME/.autorun_bashler"
 # Путь к найтрокам удаленного доступа
-export BASHLER_REMOTE_PATH="$HONE/.bashler_remote"
+export BASHLER_REMOTE_PATH="$HOME/.bashler_remote"
 ######### Другое ####################################
 export FIREBIRD_UDF="/usr/lib/x86_64-linux-gnu/firebird/3.0/UDF/"
 ######################################################################################
