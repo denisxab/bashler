@@ -14,10 +14,10 @@ ssh-keygen() {
     res=''
     if [[ $BASE_SYSTEM_OS == "termix" ]]; then
         res="-ssh-stop && -ssh-start"
-        printf "Termix - SSH перезагружен "
+        echo "Termix - SSH перезагружен "
     elif [[ $BASE_SYSTEM_OS == "ubuntu" ]]; then
         res="sudo systemctl restart shhd"
-        printf "Ubuntu - SSH перезагружен "
+        echo "Ubuntu - SSH перезагружен"
     fi
     echo $res
     eval $res
@@ -25,22 +25,27 @@ ssh-keygen() {
 -ssh-start() {
     # Запустить SSH сервер
     if [[ $BASE_SYSTEM_OS == "termix" ]]; then
-        sshd
-        printf "Termix - SSH перезагружен "
+        res="sshd"
+        echo "Termix - SSH перезагружен "
     elif [[ $BASE_SYSTEM_OS == "ubuntu" ]]; then
-        sudo systemctl start shhd
-        printf "Ubuntu - SSH перезагружен "
+        res="sudo systemctl start shhd"
+        echo "Ubuntu - SSH перезагружен "
     fi
+    echo $res
+    eval $res
+}
 }
 -ssh-stop() {
     # Остановить SSH сервер
     if [[ $BASE_SYSTEM_OS == "termix" ]]; then
-        pkill sshd
-        printf "Termix - SSH перезагружен "
+        res="pkill sshd"
+        echo "Termix - SSH перезагружен "
     elif [[ $BASE_SYSTEM_OS == "ubuntu" ]]; then
-        sudo systemctl stop shhd
-        printf "Ubuntu - SSH перезагружен "
+        res="sudo systemctl stop shhd"
+        echo "Ubuntu - SSH перезагружен "
     fi
+    echo $res
+    eval $res
 }
 
 # SSH - Подключение к серверу
