@@ -169,7 +169,7 @@ export SSH_TERMIX_HOST='10.0.0.3'
 export SSH_TERMIX_PORT=8022
 
 # SSH - Сервер
-ssh-keygen() {
+-ssh-keygen() {
     # Сгенерировать ssh ключи
     ssh-keygen
 }
@@ -188,6 +188,7 @@ ssh-keygen() {
 }
 -ssh-start() {
     # Запустить SSH сервер
+    res=''
     if [[ $BASE_SYSTEM_OS == "termix" ]]; then
         res="sshd"
         echo "Termix - SSH перезагружен "
@@ -198,9 +199,10 @@ ssh-keygen() {
     echo $res
     eval $res
 }
-}
+
 -ssh-stop() {
     # Остановить SSH сервер
+    res=''
     if [[ $BASE_SYSTEM_OS == "termix" ]]; then
         res="pkill sshd"
         echo "Termix - SSH перезагружен "
