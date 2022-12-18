@@ -164,6 +164,73 @@ export Wireguard_VPN_CONF="wg0"
 
 #!/bin/bash
 
+export SSH_TERMIX_NAME=u0a417
+export SSH_TERMIX_HOST='10.0.0.3'
+export SSH_TERMIX_PORT=8022
+
+# SSH - Сервер
+ssh-keygen() {
+    # Сгенерировать ssh ключи
+    ssh-keygen
+}
+-ssh-restart() {
+    # Перезапутсить SSH сервер
+    if [[ $BASE_SYSTEM_OS == "termix" ]]; then
+        -ssh-stop && -ssh-start
+        printf "Termix - SSH перезагружен "
+    elif [[ $IS_SERVER == "ubuntu" ]]; then
+        sudo systemctl restart shhd
+        printf "Ubuntu - SSH перезагружен "
+    fi
+}
+-ssh-start() {
+    # Запустить SSH сервер
+    if [[ $BASE_SYSTEM_OS == "termix" ]]; then
+        sshd
+        printf "Termix - SSH перезагружен "
+    elif [[ $IS_SERVER == "ubuntu" ]]; then
+        sudo systemctl start shhd
+        printf "Ubuntu - SSH перезагружен "
+    fi
+}
+-ssh-stop() {
+    # Остановить SSH сервер
+    if [[ $BASE_SYSTEM_OS == "termix" ]]; then
+        pkill sshd
+        printf "Termix - SSH перезагружен "
+    elif [[ $IS_SERVER == "ubuntu" ]]; then
+        sudo systemctl stop shhd
+        printf "Ubuntu - SSH перезагружен "
+    fi
+}
+
+# SSH - Подключение к серверу
+-ssh-c() {
+    # Поключиться по SSH
+    # $1 - Имя пользователя
+    # $2 - Host(ip) сервера
+    # $3 - Порт
+    port=22
+    if [[ -z $3 ]]; then
+        port=$3
+    fi
+    #
+    res=ssh -p 22 "$1@$2"
+    echo res
+    eval res
+}
+## Termix
+-ssh-c-termix() {
+    # Поключиться по SSH к Termix
+    ssh -p $SSH_TERMIX_PORT "$SSH_TERMIX_NAME@$SSH_TERMIX_HOST"
+}
+-ssh-copy-key-termix() {
+    # Скопироввать SSH ключ на Termix
+    ssh-copy-id -p $SSH_TERMIX_PORT "$SSH_TERMIX_NAME@$SSH_TERMIX_HOST"
+}
+
+#!/bin/bash
+
 -rsync-local-folder() {
 	# Синхронизировать локальные папки
 	# > откуда куда
