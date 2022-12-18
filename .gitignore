@@ -1,3 +1,4 @@
 .vscode
 __pycache__
 py/__pycache__
+test_exe.py

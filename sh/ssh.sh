@@ -1,9 +1,5 @@
 #!/bin/bash
 
-export SSH_TERMIX_NAME=u0a417
-export SSH_TERMIX_HOST='10.0.0.3'
-export SSH_TERMIX_PORT=8022
-
 # SSH - Сервер
 -ssh-keygen() {
     # Сгенерировать ssh ключи
@@ -65,12 +61,36 @@ export SSH_TERMIX_PORT=8022
     echo res
     eval res
 }
-## Termix
--ssh-c-termix() {
-    # Поключиться по SSH к Termix
-    ssh -p $SSH_TERMIX_PORT "$SSH_TERMIX_NAME@$SSH_TERMIX_HOST"
+-ssh-cf() {
+    # Поключиться по SSH. Взять данные для подлючения из файла
+    # $1 - ПроизвольноеИмя из файла для ssh
+
+
+    res=~py -c '''
+import pathlib
+import sys
+import json
+
+path_to_remote_file = sys.argv[1]
+name_connect_from_conf = sys.argv[2]
+
+text_conf = pathlib.Path(path_to_remote_file).read_text()
+json_conf = json.loads(text_conf)
+
+conf = json_conf["ssh"].get(name_connect_from_conf)
+
+if conf:
+    print(conf["user"], conf["host"], conf["port"], sep="|")
+else:
+    raise KeyError(
+        f"Не найдено SSH подключение по имени - {name_connect_from_conf}"
+    )
+    ''' $BASHLER_REMOTE_PATH $1
+    echo $res
+    # ssh -p $SSH_TERMIX_PORT "$SSH_TERMIX_NAME@$SSH_TERMIX_HOST"
 }
--ssh-copy-key-termix() {
-    # Скопироввать SSH ключ на Termix
+-ssh-copy-key-cf() {
+    # Скопироввать SSH ключ. Взять данные для подлючения из файла
+    # $1 - ПроизвольноеИмя из файла для ssh
     ssh-copy-id -p $SSH_TERMIX_PORT "$SSH_TERMIX_NAME@$SSH_TERMIX_HOST"
 }

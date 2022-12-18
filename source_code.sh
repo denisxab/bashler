@@ -11,9 +11,9 @@ export BASHLER_PATH_PY="$BASHLER_PATH/py"
 alias -s {txt,md,conf,log}=micro
 alias -s {js,py,cs,ts,html}=code
 ######################################################################################
-# 
+#
 # Глобальные Alias
-# 
+#
 # Алиасы для программ
 alias -g configer="$DiskData/MyProject/PycharmProjects/configer/venv/bin/python3.10 $DiskData/MyProject/PycharmProjects/configer/configer/main.py"
 alias -g gitclones="$DiskData/MyProject/PycharmProjects/git_clons/venv/bin/python3.10 $DiskData/MyProject/PycharmProjects/git_clons/git_clons/main.py"
@@ -24,7 +24,7 @@ alias -g pip="~py -m pip"
 alias -g ~bpy="~py -m bpython"
 alias -g syncthing="$DiskData/AlienApp/aplication/other/Syncthing/syncthing-linux-amd64-v1.20.1/syncthing"
 alias -g dbeaver="snap run dbeaver-ce"
-# 
+#
 alias ..="cd .."
 # замена ls на NNN
 alias nnn='nnn -de'
@@ -82,7 +82,6 @@ autorun-bashler-force() {
     rm -rf $tmp_path
     autorun-bashler
 }
-
 
 #!/bin/bash
 
@@ -242,47 +241,47 @@ export SSH_TERMIX_PORT=8022
 #!/bin/bash
 
 -rsync-local-folder() {
-	# Синхронизировать локальные папки
-	# > откуда куда
-	# -e папка_1 папка_... 	= Исключить папки или файлы из сихронизации
-	# --dry-run			 	= Показать какие файлы будут сихронезированы без выполени программы
-	exclud_folder=$(__rsync-exlude-folder $@)
-	res="rsync -azvh --progress $1 $2 $exclud_folder"
-	echo res
-	eval res
+    # Синхронизировать локальные папки
+    # > откуда куда
+    # -e папка_1 папка_... 	= Исключить папки или файлы из сихронизации
+    # --dry-run			 	= Показать какие файлы будут сихронезированы без выполени программы
+    exclud_folder=$(__rsync-exlude-folder $@)
+    res="rsync -azvh --progress $1 $2 $exclud_folder"
+    echo res
+    eval res
 }
 -rsync-delete-local-folder() {
-	# Синхронизировать папки, если в ВЫХОДНОЙ(out) папке отличия, то удалить их
-	# -e папка_1 папка_... = Исключить папки или файлы из сихронизации
-	exclud_folder=$(__rsync-exlude-folder $@)
-	res="rsync -azvh --progress --delete $1 $2 $exclud_folder"
-	echo res
-	eval res
+    # Синхронизировать папки, если в ВЫХОДНОЙ(out) папке отличия, то удалить их
+    # -e папка_1 папка_... = Исключить папки или файлы из сихронизации
+    exclud_folder=$(__rsync-exlude-folder $@)
+    res="rsync -azvh --progress --delete $1 $2 $exclud_folder"
+    echo res
+    eval res
 }
 -rsync-server-folder() {
-	# Синхронезировать с сервером по SSH
-	# > port username@ip:path localpath
-	# -e папка_1 папка_... = Исключить папки или файлы из сихронизации
-	exclud_folder=$(__rsync-exlude-folder $@)
-	SSH_RES="ssh -p $1"
-	res="rsync -azvh --progress -e $SSH_RES $2 $3 $exclud_folder"
-	echo res
-	eval res
+    # Синхронезировать с сервером по SSH
+    # > port username@ip:path localpath
+    # -e папка_1 папка_... = Исключить папки или файлы из сихронизации
+    exclud_folder=$(__rsync-exlude-folder $@)
+    SSH_RES="ssh -p $1"
+    res="rsync -azvh --progress -e $SSH_RES $2 $3 $exclud_folder"
+    echo res
+    eval res
 }
 -rsync-delete-server-folder() {
-	# Синхронезировать с сервером по SSH, если в ВЫХОДНОЙ(out) папке отличия, то удалить их
-	# > port username@ip:path localpath
-	# -e папка_1 папка_... = Исключить папки или файлы из сихронизации
-	exclud_folder=$(__rsync-exlude-folder $@)
-	SSH_RES="ssh -p $1"
-	res="rsync -azvh --progress --delete -e $SSH_RES $2 $3 $exclud_folder"
-	echo res
-	eval res
+    # Синхронезировать с сервером по SSH, если в ВЫХОДНОЙ(out) папке отличия, то удалить их
+    # > port username@ip:path localpath
+    # -e папка_1 папка_... = Исключить папки или файлы из сихронизации
+    exclud_folder=$(__rsync-exlude-folder $@)
+    SSH_RES="ssh -p $1"
+    res="rsync -azvh --progress --delete -e $SSH_RES $2 $3 $exclud_folder"
+    echo res
+    eval res
 }
 ##############
 -rsync-read-file() {
-	# Прочитать файл с сохранеными путями синхронизации
-	eval $(~py -c "
+    # Прочитать файл с сохранеными путями синхронизации
+    eval $(~py -c "
 import os.path
 file = '.rsyncpath'
 if os.path.exists(file):
@@ -291,9 +290,9 @@ if os.path.exists(file):
 	" $@)
 }
 __rsync-exlude-folder() {
-	# -e папка_1 папка_... = Исключить папки или файлы из сихронизации
-	# можно создать файл .rsyncignore(по типу .gitignore) для хранения исключений
-	~py -c "
+    # -e папка_1 папка_... = Исключить папки или файлы из сихронизации
+    # можно создать файл .rsyncignore(по типу .gitignore) для хранения исключений
+    ~py -c "
 import os.path
 import sys
 
@@ -328,8 +327,8 @@ main(sys.argv)
 # Работа с пакетными менеджарами
 
 pinst() {
-	# Установить программу в Linux
-	RES_EXE="$(~py -c '''
+    # Установить программу в Linux
+    RES_EXE="$(~py -c '''
 import json
 import sys
 import re
@@ -355,8 +354,8 @@ else:
 	print("None")
 ''' $1 $BASE_SYSTEM_OS) $@"
 
-	echo $RES_EXE
-	eval $RES_EXE && ~py -c '''
+    echo $RES_EXE
+    eval $RES_EXE && ~py -c '''
 # Добавить программу в `.bashler_pinst`
 import json
 import sys
@@ -383,8 +382,8 @@ with open(path_bashler_pinst, "w") as _jsonFile:
 }
 
 prem() {
-	# Удалить указаный пакет
-	RES_EXE="$(~py -c '''
+    # Удалить указаный пакет
+    RES_EXE="$(~py -c '''
 import sys
 import re
 os = sys.argv[-1]
@@ -404,8 +403,8 @@ else:
 	print("None")
 ''' $1 $BASE_SYSTEM_OS) $@"
 
-	echo $RES_EXE
-	eval $RES_EXE && ~py -c '''
+    echo $RES_EXE
+    eval $RES_EXE && ~py -c '''
 # Добавить программу в `.bashler_pinst`
 import json
 import sys
@@ -432,8 +431,8 @@ with open(path_bashler_pinst, "w") as _jsonFile:
 }
 
 pupd() {
-	# Обновить все пакеты
-	RES_EXE="$(~py -c '''
+    # Обновить все пакеты
+    RES_EXE="$(~py -c '''
 import sys
 import re
 os = sys.argv[-1]
@@ -448,15 +447,15 @@ else:
 	print("None")
 ''' $1 $BASE_SYSTEM_OS) $@"
 
-	echo $RES_EXE
-	eval $RES_EXE
+    echo $RES_EXE
+    eval $RES_EXE
 }
 
 #############
 p-apt-baseinstall() {
-	# Устновить все необходимые программы
+    # Устновить все необходимые программы
 
-	res=~py -c "
+    res=~py -c "
 
 import sys
 
@@ -499,54 +498,54 @@ else:
 }
 # -------------------------
 p-apt-install() {
-	# Установить программу
-	sudo apt install $@
+    # Установить программу
+    sudo apt install $@
 }
 p-pkg-install() {
-	pkg install $@
+    pkg install $@
 }
 p-apt-install-file() {
-	# Установить из файла
-	# sudo dpkg -i $1
-	p-apt-install $1
+    # Установить из файла
+    # sudo dpkg -i $1
+    p-apt-install $1
 }
 # -------------------------
 p-apt-remove() {
-	# Установить программу
-	sudo apt remove $@
+    # Установить программу
+    sudo apt remove $@
 }
 p-pkg-remove() {
-	pkg uninstall $@
+    pkg uninstall $@
 }
 # -------------------------
 p-apt-update() {
-	# Обновить ссылки, программы, отчистить лишнее
-	sudo apt update && sudo apt upgrade -y && sudo apt autoremove && sudo apt clean
+    # Обновить ссылки, программы, отчистить лишнее
+    sudo apt update && sudo apt upgrade -y && sudo apt autoremove && sudo apt clean
 }
 p-pkg-update() {
-	pkg update && pkg upgrade -y && pkg autoclean && apt autoremove
+    pkg update && pkg upgrade -y && pkg autoclean && apt autoremove
 }
 p-packman-update() {
-	sudo pacman -Syu
+    sudo pacman -Syu
 }
 p-snap-update() {
-	snap refresh --list
-	snap refresh
+    snap refresh --list
+    snap refresh
 }
 p-flatpack-update() {
-	flatpak update
+    flatpak update
 }
 p-full-update() {
-	p-apt-update && p-snap-update && p-flatpack-update
+    p-apt-update && p-snap-update && p-flatpack-update
 }
 # -------------------------
 
 #!/bin/bash
 
 ## S = система
-s-watch(){
-	# Обновление команды через определенный период времяни
-	watch -d -n $@
+s-watch() {
+    # Обновление команды через определенный период времяни
+    watch -d -n $@
 }
 
 #!/bin/bash
@@ -613,189 +612,189 @@ sy-stp() {
 
 # Docekr
 -docker-ip() {
-	# Получить	 ip адрес   указанного 	 контейнера
-	# -docker-ip имя_контейнера
-	NAME_PROJ=$(__docker-create-filename $@)
-	echo "Проект: $NAME_PROJ"
-	sudo docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $NAME_PROJ
+    # Получить	 ip адрес   указанного 	 контейнера
+    # -docker-ip имя_контейнера
+    NAME_PROJ=$(__docker-create-filename $@)
+    echo "Проект: $NAME_PROJ"
+    sudo docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $NAME_PROJ
 }
 
 __docker-create-filename() {
-	# Взять название проекта из файла
-	if [[ -r .name_docker_container ]]; then
-		NAME_PROJ=$(cat .name_docker_container)
-		echo "$NAME_PROJ"
-		return 0
-	fi
-	NAME_PROJ="$1"
-	__write-file "$NAME_PROJ" .name_docker_container
-	echo "$NAME_PROJ"
+    # Взять название проекта из файла
+    if [[ -r .name_docker_container ]]; then
+        NAME_PROJ=$(cat .name_docker_container)
+        echo "$NAME_PROJ"
+        return 0
+    fi
+    NAME_PROJ="$1"
+    __write-file "$NAME_PROJ" .name_docker_container
+    echo "$NAME_PROJ"
 }
 -docker-build() {
-	# Создать образ проекта(Нужно находиться на одном уровне с `Dockerfile`)
-	# -docker-build [имя_для_контейнера]
-	NAME_PROJ=$(__docker-create-filename $@)
-	echo "Проект: $NAME_PROJ"
-	WORK_DIR="/usr/src/$NAME_PROJ"
-	image_name="img_$NAME_PROJ"
-	sudo docker build --build-arg WORK_DIR=$WORK_DIR --build-arg NAME_PROJ=$NAME_PROJ -t $image_name .
+    # Создать образ проекта(Нужно находиться на одном уровне с `Dockerfile`)
+    # -docker-build [имя_для_контейнера]
+    NAME_PROJ=$(__docker-create-filename $@)
+    echo "Проект: $NAME_PROJ"
+    WORK_DIR="/usr/src/$NAME_PROJ"
+    image_name="img_$NAME_PROJ"
+    sudo docker build --build-arg WORK_DIR=$WORK_DIR --build-arg NAME_PROJ=$NAME_PROJ -t $image_name .
 }
 -docker-run() {
-	# Создать и запустить контейнер с проектом
-	# -docker-run [имя_контейнра] [--rm (удалить при выходе контейенр)]
-	NAME_PROJ=$(__docker-create-filename $@)
-	echo "Проект: $NAME_PROJ"
-	container_name="$NAME_PROJ"
-	image_name="img_$NAME_PROJ"
-	sudo docker run --rm -ti --name $container_name $image_name $@
-	#-v $(my_path)/deploy:$(WORK_DIR)/deploy -p $(EXTERNAL_WEB_PORT):$(EXTERNAL_WEB_PORT)
+    # Создать и запустить контейнер с проектом
+    # -docker-run [имя_контейнра] [--rm (удалить при выходе контейенр)]
+    NAME_PROJ=$(__docker-create-filename $@)
+    echo "Проект: $NAME_PROJ"
+    container_name="$NAME_PROJ"
+    image_name="img_$NAME_PROJ"
+    sudo docker run --rm -ti --name $container_name $image_name $@
+    #-v $(my_path)/deploy:$(WORK_DIR)/deploy -p $(EXTERNAL_WEB_PORT):$(EXTERNAL_WEB_PORT)
 }
 -docker-start() {
-	#  Запустить существубщий контенер
-	# [-a (войти в контейнер)]
-	NAME_PROJ=$(__docker-create-filename $@)
-	echo "Проект: $NAME_PROJ"
-	sudo docker container start $NAME_PROJ
+    #  Запустить существубщий контенер
+    # [-a (войти в контейнер)]
+    NAME_PROJ=$(__docker-create-filename $@)
+    echo "Проект: $NAME_PROJ"
+    sudo docker container start $NAME_PROJ
 }
 -docker-stop() {
-	#  Остановить существубщий контенер
-	NAME_PROJ=$(__docker-create-filename $@)
-	echo "Проект: $NAME_PROJ"
-	sudo docker container stop $NAME_PROJ
+    #  Остановить существубщий контенер
+    NAME_PROJ=$(__docker-create-filename $@)
+    echo "Проект: $NAME_PROJ"
+    sudo docker container stop $NAME_PROJ
 }
 -docker-exec() {
-	# Войти в контейнер
-	# -docker-exec [имя_контейнера]
-	NAME_PROJ=$(__docker-create-filename $@)
-	echo "Проект: $NAME_PROJ"
-	sudo docker exec -ti $NAME_PROJ /bin/sh
+    # Войти в контейнер
+    # -docker-exec [имя_контейнера]
+    NAME_PROJ=$(__docker-create-filename $@)
+    echo "Проект: $NAME_PROJ"
+    sudo docker exec -ti $NAME_PROJ /bin/sh
 }
 -dshc() {
-	# Посмотреть контейнеры
-	# docker-show-container
-	if [[ $1 == '-w' ]]; then
-		watch -d -n 2 sudo docker ps -a
-	else
-		sudo docker ps -a
-	fi
+    # Посмотреть контейнеры
+    # docker-show-container
+    if [[ $1 == '-w' ]]; then
+        watch -d -n 2 sudo docker ps -a
+    else
+        sudo docker ps -a
+    fi
 
 }
 -dshi() {
-	# Посмотреть образы
-	# docker-show-image
-	if [[ $1 == '-w' ]]; then
-		sudo watch -d -n 2 sudo docker images
-	else
-		sudo docker images
-	fi
+    # Посмотреть образы
+    # docker-show-image
+    if [[ $1 == '-w' ]]; then
+        sudo watch -d -n 2 sudo docker images
+    else
+        sudo docker images
+    fi
 }
 -dcp() {
-	# Отчитстить контейнеры
-	sudo docker container prune
+    # Отчитстить контейнеры
+    sudo docker container prune
 }
 -dip() {
-	# Отчитстить образы
-	sudo docker container prune
+    # Отчитстить образы
+    sudo docker container prune
 }
 
 -docker-compose-select-envfile() {
-	# Сохранить путь к env файлу
-	# -docker-compose-select-env-file ./file/__env.env
-	__write-file $1 .env_path
+    # Сохранить путь к env файлу
+    # -docker-compose-select-env-file ./file/__env.env
+    __write-file $1 .env_path
 }
 -docker-compose-build() {
-	# Запустить образы контейнеров
-	if [[ -r .env_path ]]; then
-		sudo docker-compose --env-file $(cat .env_path) build
-	fi
-	sudo docker-compose build
+    # Запустить образы контейнеров
+    if [[ -r .env_path ]]; then
+        sudo docker-compose --env-file $(cat .env_path) build
+    fi
+    sudo docker-compose build
 }
 -docker-compose-up() {
-	# Запустить контейнеры а после окончанию отчистить удалить их
-	if [[ -r .env_path ]]; then
-		sudo docker-compose --env-file $(cat .env_path) up && sudo docker-compose --env-file $(cat .env_path) rm -fsv
-	fi
-	sudo docker-compose up && sudo docker-compose rm -fsv
+    # Запустить контейнеры а после окончанию отчистить удалить их
+    if [[ -r .env_path ]]; then
+        sudo docker-compose --env-file $(cat .env_path) up && sudo docker-compose --env-file $(cat .env_path) rm -fsv
+    fi
+    sudo docker-compose up && sudo docker-compose rm -fsv
 }
 -docker-compose-rm() {
-	# Удалить ненужные контейнеры
-	if [[ -r .env_path ]]; then
-		sudo docker-compose --env-file $(cat .env_path) rm -fsv
-	fi
-	sudo docker-compose rm -fsv
+    # Удалить ненужные контейнеры
+    if [[ -r .env_path ]]; then
+        sudo docker-compose --env-file $(cat .env_path) rm -fsv
+    fi
+    sudo docker-compose rm -fsv
 }
 
 #!/bin/bash
 
 ## Действия с папками
 f-dir-copy() {
-	# Скопировать папку
-	cp -R $1 $2
+    # Скопировать папку
+    cp -R $1 $2
 }
 f-dir-rename() {
-	# Переименовать папку
-	mv $1 $2
+    # Переименовать папку
+    mv $1 $2
 }
 f-dir-create() {
-	# Создать папку
-	mkdir $1
+    # Создать папку
+    mkdir $1
 }
 f-dir-remove() {
-	# Удалить папку
-	rm -rf $1
+    # Удалить папку
+    rm -rf $1
 }
 
 ## Размер Диска и использование его
 d-size-folder() {
-	# Получить разме файлов в указанной директории
-	du $1 -ach -d 1 | sort -h
+    # Получить разме файлов в указанной директории
+    du $1 -ach -d 1 | sort -h
 }
 d-size-disk() {
-	# Использование дисков
-	df -h $@
+    # Использование дисков
+    df -h $@
 }
 d-list-disk() {
-	# Все подключенные диски
-	sudo fdisk -l
+    # Все подключенные диски
+    sudo fdisk -l
 }
 ## Tree
 -tree() {
-	# > УровеньВложенности ДиректориюПосмотерть
-	# -a = скрытые файлы
-	# -d = только директории
-	# -f = показать относительный путь для файлов
-	# -L = уровень вложенности
-	# -P = поиск по шаблону (* сделать на python)
-	# -h = Вывести размер файлов и папок
-	# -Q = Заключать названия в двойные кавычки
-	# -F = Добовлять символы отличия для папок, файлов и сокетов
-	# -I = Исключить из списка по патерну
-	res='tree -a -L'
+    # > УровеньВложенности ДиректориюПосмотерть
+    # -a = скрытые файлы
+    # -d = только директории
+    # -f = показать относительный путь для файлов
+    # -L = уровень вложенности
+    # -P = поиск по шаблону (* сделать на python)
+    # -h = Вывести размер файлов и папок
+    # -Q = Заключать названия в двойные кавычки
+    # -F = Добовлять символы отличия для папок, файлов и сокетов
+    # -I = Исключить из списка по патерну
+    res='tree -a -L'
 
-	if [[ -z $1 ]]; then
-		res+=' 3'
-	else
-		res+=" $1"
-	fi
-	res+=' -h -F'
-	if [[ -z $2 ]]; then
-		res+=' ./'
-	else
-		res+=" $2"
-	fi
-	echo $res
-	eval $res
+    if [[ -z $1 ]]; then
+        res+=' 3'
+    else
+        res+=" $1"
+    fi
+    res+=' -h -F'
+    if [[ -z $2 ]]; then
+        res+=' ./'
+    else
+        res+=" $2"
+    fi
+    echo $res
+    eval $res
 }
 
 ## Python
 
 -p-joinfile() {
-	# Объеденить текс всех файлов из указанной директории
-	# 1 - Путь к папке
-	# 2 - Кодировка файлов
-	# 3 - Разделитель при записи в итоговый файл
+    # Объеденить текс всех файлов из указанной директории
+    # 1 - Путь к папке
+    # 2 - Кодировка файлов
+    # 3 - Разделитель при записи в итоговый файл
 
-	res=$(~py -c '''
+    res=$(~py -c '''
 import pathlib
 import sys
 
@@ -814,14 +813,14 @@ for x in p.glob("*.txt"):
 (p / "join.out").write_text(sep.join(res_text))
 
     ''' "$1" "$2" "$3")
-	echo $res
+    echo $res
 }
 
 #!/bin/bash
 
 # Zsh
 -zsh-hotkey() {
-	echo "	
+    echo "	
 Ctrl+a = Переместить курсор в начало команды
 Ctrl+e = Переместить курсор в конец команды
 Ctrl+r = Поиск команды по истории
@@ -836,26 +835,26 @@ Ctrl+s =  Поставить на паузу выполение команжы (
 	"
 }
 -zsh-edit() {
-	# Открыть редактирование zsh
-	$EDITOR ~/.zshrc
+    # Открыть редактирование zsh
+    $EDITOR ~/.zshrc
 }
 -zsh-install-plugin() {
-	# Установить плагины Zsh
-	git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions &&
-		git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting &&
-		git clone https://github.com/marlonrichert/zsh-autocomplete.git ~/.oh-my-zsh/custom/plugins/zsh-autocomplete &&
-		mkdir $ZSH_CUSTOM/plugins/poetry &&
-		poetry completions zsh >$ZSH_CUSTOM/plugins/poetry/_poetry
+    # Установить плагины Zsh
+    git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions &&
+        git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting &&
+        git clone https://github.com/marlonrichert/zsh-autocomplete.git ~/.oh-my-zsh/custom/plugins/zsh-autocomplete &&
+        mkdir $ZSH_CUSTOM/plugins/poetry &&
+        poetry completions zsh >$ZSH_CUSTOM/plugins/poetry/_poetry
 }
 -zsh-mount-disk() {
-	# Примонтировать повседневные  диски
+    # Примонтировать повседневные  диски
 
-	# Google Disk
-	google-drive-ocamlfuse /mnt/google_disk
+    # Google Disk
+    google-drive-ocamlfuse /mnt/google_disk
 }
 -zsh-clean-history() {
-	# Отчистить историю команд
-	history -c
+    # Отчистить историю команд
+    history -c
 }
 
 #!/bin/bash
@@ -892,12 +891,12 @@ garch() {
 }
 grmh() {
     # Удалить файл из отслеживания
-    res=`git rm --cached -r $1`
+    res=$(git rm --cached -r $1)
     echo $res
     eval $res
 }
 
-gitignore(){
+gitignore() {
     template='''__pycache__
 log
 venv
@@ -905,7 +904,7 @@ venv
 .vscode
 /dist
 '''
-    echo $template > '.gitignore'
+    echo $template >'.gitignore'
 }
 
 gremot-up-token() {
