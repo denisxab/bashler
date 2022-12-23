@@ -64,7 +64,26 @@
 -ssh-cf() {
     # Поключиться по SSH. Взять данные для подлючения из файла
     # $1 - ПроизвольноеИмя из файла для ssh
+    res=`-ssh-parse-conf $1`
+    user=$(echo $res | cut -d "|" -f 1)
+    host=$(echo $res | cut -d "|" -f 2)
+    port=$(echo $res | cut -d "|" -f 3)
+    echo "$user@$host:$port"
+    # Подключение по сереру
+    ssh -p $port "$user@$host"
+}
+-ssh-copy-key-cf() {
+    # Скопироввать SSH ключ. Взять данные для подлючения из файла
+    # $1 - ПроизвольноеИмя из файла для ssh
+    res=`-ssh-parse-conf $1`
+    user=$(echo $res | cut -d "|" -f 1)
+    host=$(echo $res | cut -d "|" -f 2)
+    port=$(echo $res | cut -d "|" -f 3)
+    echo "$user@$host:$port"
+    ssh-copy-id -p $port "$user@$host"
+}
 
+-ssh-parse-conf(){
     # Получаем данные для подключения по `ПроизвольноеИмя`
     res=$(~py -c '''
 import pathlib
@@ -86,15 +105,7 @@ else:
         f"Не найдено SSH подключение по имени - {name_connect_from_conf}"
     )
     ''' $BASHLER_REMOTE_PATH $1)
-    user=$(echo $res | cut -d "|" -f 1)
-    host=$(echo $res | cut -d "|" -f 2)
-    port=$(echo $res | cut -d "|" -f 3)
-    echo "$user@$host:$port"
-    # Подключение по сереру
-    ssh -p $port "$user@$host"
-}
--ssh-copy-key-cf() {
-    # Скопироввать SSH ключ. Взять данные для подлючения из файла
-    # $1 - ПроизвольноеИмя из файла для ssh
-    ssh-copy-id -p $SSH_TERMIX_PORT "$SSH_TERMIX_NAME@$SSH_TERMIX_HOST"
+
+    echo $res
+	return 0 # Выйти из функции 0 хорошо 1 плохо
 }
