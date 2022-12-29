@@ -65,6 +65,7 @@ json_conf = json.loads(pathlib.Path(path_to_remote_file).read_text())
 conf_rsync = json_conf["rsync"].get(name_connect_from_conf)
 res = []
 
+q = chr(34) # Знак двойных кавычек
 if conf_rsync:
     # Конфигурация SSH которая указана в Rsync
     conf_ssh = json_conf["ssh"].get(conf_rsync["ssh"])
@@ -75,7 +76,17 @@ if conf_rsync:
         for _path in conf_rsync["sync_dir"]:
             # Формируем команды
             res.append(
-                f"""-rsync-server {_path["in"]} {user}@{host}:{_path["out"]} -p {port} {"-d_" if _path.get("d") else ""}"""
+                "-rsync-server {path_in} {user}@{host}:{path_out} -p {port} {d} {e}".format(
+                    path_in=_path["in"],
+                    user=user,
+                    host=host,
+                    path_out=_path["out"],
+                    port=port,
+                    d="-d_" if _path.get("d") else "",
+                    e="-e {q}{f}{q}".format(q=q, f=f"{q} {q}".join(
+                        _path["e"])
+                    ) if _path.get("e") else ""
+                )
             )
 else:
     raise KeyError(
