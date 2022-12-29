@@ -37,20 +37,22 @@
 	# -e папка_1 папка_... = Исключить папки или файлы из сихронизации
 	#
 	# rsync -azvh --progress ./firebird_book1 root@5.63.154.238:/home/ubuntu/test -e "ssh -p 22"
-	
+
 	#
 	# Парсим командную строку
 	#
 	parms=$(__pypars $@)
-	echo $parms
+	# echo $parms
 	eval $parms
 	#
 	# Исключение папок
 	#
 	exclud_folder=""
-	for key in "${e[@]}"; do
-		exclud_folder="$exclud_folder --exclude=$key"
-	done
+	if [[ -n ${e[@]} ]]; then
+		for key in "${e[@]}"; do
+			exclud_folder="$exclud_folder --exclude=$key"
+		done
+	fi
 	# Порт
 	SSH_RES=""
 	if [[ -n $3 ]] && [[ ${3:0:2} != '-e' ]]; then
@@ -58,7 +60,7 @@
 	fi
 	res="rsync -azvh --progress --delete ${_p[1]} ${_p[2]} $SSH_RES $exclud_folder"
 	echo $res
-	# eval $res
+	eval $res
 }
 
 ##############
