@@ -330,14 +330,26 @@ else:
 			exclud_folder="$exclud_folder --exclude=$key"
 		done
 	fi
+	#
 	# Порт
+	#
 	SSH_RES=""
 	if [[ -n $3 ]] && [[ ${3:0:2} != '-e' ]]; then
 		SSH_RES="-e \"ssh -p ${p[1]}\""
 	fi
-	res="rsync -azvh --progress --delete ${_p[1]} ${_p[2]} $SSH_RES $exclud_folder"
+	#
+	# Нужно ли удалять файлы и папки в `out` если их нет в `in`
+	# 
+	is_delete=""
+	if [[ ${_f[*]} =~ "d" ]]; then
+		is_delete='--delete'
+	fi
+	#
+	# Формируем и выполняем запрос
+	#
+	res="rsync -azvh --progress $is_delete ${_p[1]} ${_p[2]} $SSH_RES $exclud_folder"
 	echo $res
-	# eval $res
+	eval $res
 }
 
 ##############
