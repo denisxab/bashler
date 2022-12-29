@@ -7,7 +7,7 @@ export IS_SERVER="yes"
 # ОС (ubuntu/arch/termix)
 export BASE_SYSTEM_OS="ubuntu"
 # Путь к Bahler
-export BASHLER_PATH='/media/denis/dd19b13d-bd85-46bb-8db9-5b8f6cf7a825/MyProject/bashler'
+export BASHLER_PATH="/media/denis/dd19b13d-bd85-46bb-8db9-5b8f6cf7a825/MyProject/bashler"
 # Путь к файлу автозапуска
 export AUTORUN_BASHLER="$HOME/.autorun_bashler"
 # Путь к найтрокам удаленного доступа

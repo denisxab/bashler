@@ -4,6 +4,10 @@
 # Мои переменные окурежния
 # Путь к диску с данными
 export DiskData="/media/denis/dd19b13d-bd85-46bb-8db9-5b8f6cf7a825"
+# Если не указн путь к Bashler то брем путь по умолчанию
+if [[ -z $BASHLER_PATH ]]; then
+    export BASHLER_PATH="$HOME/bashler"
+fi
 # Путь к Python модулям
 export BASHLER_PATH_PY="$BASHLER_PATH/py"
 # Путь к парсеру комадной строки
