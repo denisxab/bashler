@@ -5,7 +5,7 @@ import re
 """ 
 :Шаблон командной строки:
 
-Позиционный1 Позиционный2 -Флаг2? -Флаг2? -Именованный1 Значение1 Значение2 -Именованный1 Значение1 Значение2
+Позиционный1 Позиционный2 -Флаг2_ -Флаг2_ -Именованный1 Значение1 Значение2 -Именованный1 Значение1 Значение2
 """
 
 class TArgs(typing.TypedDict):
@@ -15,7 +15,7 @@ class TArgs(typing.TypedDict):
     position_args: list[str]
     # Именованные аргументы, те что начинаются на `-Символы`
     named_args: dict[str, str]
-    # Флаги, те что начинаются на `-Символы?`
+    # Флаги, те что начинаются на `-Символы_`
     flags: list[str]
 
 
@@ -25,7 +25,7 @@ def parse_args(in_path, argv: list[str]):
     #
     flags = []
     for i, x in enumerate(argv):
-        if (r := re.search("-([\w\d]+)\?", x)):
+        if (r := re.search("-([\w\d]+)_", x)):
             flags.append(r.group(1))
             argv[i] = None
     #
@@ -37,7 +37,7 @@ def parse_args(in_path, argv: list[str]):
         if not x:
             continue
         # Берем название ключа
-        if (r := re.search("\A-([\w\d]+)(?!\?)\Z", x)):
+        if (r := re.search("\A-([\w\d]+)(?!_)\Z", x)):
             last_key = r.group(1)
             named_args[last_key] = []
             argv[i] = None

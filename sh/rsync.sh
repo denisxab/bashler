@@ -28,21 +28,21 @@
 	echo $res
 	eval $res
 }
--rsync-delete-server-folder() {
+-rsync-server() {
 	# Синхронезировать с сервером по SSH, если в ВЫХОДНОЙ(out) папке отличия, то удалить их
 	#
-	# $1 - localpath
-	# $2 - username@ip:pat
-	# -p - port
+	# $1 = localpath
+	# $2 = username@ip:pat
+	# -p = port
 	# -e папка_1 папка_... = Исключить папки или файлы из сихронизации
-	#
+	# -d = Удаляить файлы и папки в `out` если их нет в `in`
 	# rsync -azvh --progress ./firebird_book1 root@5.63.154.238:/home/ubuntu/test -e "ssh -p 22"
 
 	#
 	# Парсим командную строку
 	#
 	parms=$(__pypars $@)
-	# echo $parms
+	echo $parms
 	eval $parms
 	#
 	# Исключение папок
@@ -60,7 +60,7 @@
 	fi
 	res="rsync -azvh --progress --delete ${_p[1]} ${_p[2]} $SSH_RES $exclud_folder"
 	echo $res
-	eval $res
+	# eval $res
 }
 
 ##############
