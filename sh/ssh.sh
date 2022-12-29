@@ -64,7 +64,7 @@
 -ssh-cf() {
     # Поключиться по SSH. Взять данные для подлючения из файла
     # $1 - ПроизвольноеИмя из файла для ssh
-    res=`-ssh-parse-conf $1`
+    res=$(-ssh-parse-conf $1)
     user=$(echo $res | cut -d "|" -f 1)
     host=$(echo $res | cut -d "|" -f 2)
     port=$(echo $res | cut -d "|" -f 3)
@@ -75,7 +75,7 @@
 -ssh-copy-key-cf() {
     # Скопироввать SSH ключ. Взять данные для подлючения из файла
     # $1 - ПроизвольноеИмя из файла для ssh
-    res=`-ssh-parse-conf $1`
+    res=$(-ssh-parse-conf $1)
     user=$(echo $res | cut -d "|" -f 1)
     host=$(echo $res | cut -d "|" -f 2)
     port=$(echo $res | cut -d "|" -f 3)
@@ -83,8 +83,11 @@
     ssh-copy-id -p $port "$user@$host"
 }
 
--ssh-parse-conf(){
-    # Получаем данные для подключения по `ПроизвольноеИмя`
+-ssh-parse-conf() {
+    # Получаем данные для подключения по `ПроизвольноеИмяПодключения_SSH`
+    #
+    # $1 = ПроизвольноеИмяПодключения_SSH
+    #
     res=$(~py -c '''
 import pathlib
 import sys
@@ -107,5 +110,5 @@ else:
     ''' $BASHLER_REMOTE_PATH $1)
 
     echo $res
-	return 0 # Выйти из функции 0 хорошо 1 плохо
+    return 0 # Выйти из функции 0 хорошо 1 плохо
 }

@@ -230,7 +230,7 @@ export Wireguard_VPN_CONF="wg0"
 -ssh-cf() {
     # Поключиться по SSH. Взять данные для подлючения из файла
     # $1 - ПроизвольноеИмя из файла для ssh
-    res=`-ssh-parse-conf $1`
+    res=$(-ssh-parse-conf $1)
     user=$(echo $res | cut -d "|" -f 1)
     host=$(echo $res | cut -d "|" -f 2)
     port=$(echo $res | cut -d "|" -f 3)
@@ -241,7 +241,7 @@ export Wireguard_VPN_CONF="wg0"
 -ssh-copy-key-cf() {
     # Скопироввать SSH ключ. Взять данные для подлючения из файла
     # $1 - ПроизвольноеИмя из файла для ssh
-    res=`-ssh-parse-conf $1`
+    res=$(-ssh-parse-conf $1)
     user=$(echo $res | cut -d "|" -f 1)
     host=$(echo $res | cut -d "|" -f 2)
     port=$(echo $res | cut -d "|" -f 3)
@@ -249,8 +249,11 @@ export Wireguard_VPN_CONF="wg0"
     ssh-copy-id -p $port "$user@$host"
 }
 
--ssh-parse-conf(){
-    # Получаем данные для подключения по `ПроизвольноеИмя`
+-ssh-parse-conf() {
+    # Получаем данные для подключения по `ПроизвольноеИмяПодключения_SSH`
+    #
+    # $1 = ПроизвольноеИмяПодключения_SSH
+    #
     res=$(~py -c '''
 import pathlib
 import sys
@@ -273,8 +276,9 @@ else:
     ''' $BASHLER_REMOTE_PATH $1)
 
     echo $res
-	return 0 # Выйти из функции 0 хорошо 1 плохо
+    return 0 # Выйти из функции 0 хорошо 1 плохо
 }
+
 #!/bin/bash
 
 -rsync-server() {
@@ -325,7 +329,10 @@ else:
 }
 
 -rsync-parse-conf() {
-	# Получаем данные для подключения по `ПроизвольноеИмя`
+	# Выполнить синхронизацию из `.bash_remote.json`
+	#
+	# $1 = ПроизвольноеИмяПодключения_RSYNC
+	#
 	res=$(~py -c '''
 import pathlib
 import sys
@@ -334,21 +341,34 @@ import json
 path_to_remote_file = sys.argv[1]
 name_connect_from_conf = sys.argv[2]
 
-text_conf = pathlib.Path(path_to_remote_file).read_text()
-json_conf = json.loads(text_conf)
+json_conf = json.loads(pathlib.Path(path_to_remote_file).read_text())
+# Конфигурация Rsync
+conf_rsync = json_conf["rsync"].get(name_connect_from_conf)
+res = []
 
-conf = json_conf["rsync"].get(name_connect_from_conf)
-
-if conf:
-    print(conf["user"], conf["host"], conf["port"], sep="|")
+if conf_rsync:
+    # Конфигурация SSH которая указана в Rsync
+    conf_ssh = json_conf["ssh"].get(conf_rsync["ssh"])
+    if conf_ssh:
+        port = conf_ssh["port"]
+        user = conf_ssh["user"]
+        host = conf_ssh["host"]
+        for _path in conf_rsync["sync_dir"]:
+            # Формируем команды
+            res.append(
+                f"""-rsync-server {_path["in"]} {user}@{host}:{_path["out"]} -p {port} {"-d_" if _path.get("d") else ""}"""
+            )
 else:
     raise KeyError(
         f"Не найдено SSH подключение по имени - {name_connect_from_conf}"
     )
+
+# Выводим команды
+print(";\n".join(res))
     ''' $BASHLER_REMOTE_PATH $1)
 
 	echo $res
-	return 0 # Выйти из функции 0 хорошо 1 плохо
+	eval $res
 }
 
 #################
