@@ -6,6 +6,8 @@
 export DiskData="/media/denis/dd19b13d-bd85-46bb-8db9-5b8f6cf7a825"
 # Путь к Python модулям
 export BASHLER_PATH_PY="$BASHLER_PATH/py"
+# Путь к парсеру комадной строки
+export BASHLER_PATH_PY_PYPARS="$BASHLER_PATH_PY/pypars.py"
 ######################################################################################
 # Открывать файлы с указаным разширенем в указанной программе
 alias {txt,md,conf,log}=micro
@@ -305,27 +307,37 @@ else:
 }
 -rsync-delete-server-folder() {
 	# Синхронезировать с сервером по SSH, если в ВЫХОДНОЙ(out) папке отличия, то удалить их
-	# 
-	# $1 - localpath 
-	# $2 - username@ip:pat 
-	# $3 -? port 
+	#
+	# $1 - localpath
+	# $2 - username@ip:pat
+	# -p - port
 	# -e папка_1 папка_... = Исключить папки или файлы из сихронизации
 	#
 	# rsync -azvh --progress ./firebird_book1 root@5.63.154.238:/home/ubuntu/test -e "ssh -p 22"
-	exclud_folder=$(__rsync-exlude-folder $@)
-
-	echo $@ 
 	
+	#
+	# Парсим командную строку
+	#
+	parms=$(__pypars $@)
+	echo $parms
+	eval $parms
+	#
+	# Исключение папок
+	#
+	exclud_folder=""
+	for key in "${e[@]}"; do
+		exclud_folder="$exclud_folder --exclude=$key"
+	done
 	# Порт
 	SSH_RES=""
-    if [[ -n $3 ]] && [[ ${3:0:2} != '-e' ]]; then
-        SSH_RES="-e \"ssh -p $3\""
-    fi
-
-	res="rsync -azvh --progress --delete $1 $2 $SSH_RES $exclud_folder"
-	# echo $res
+	if [[ -n $3 ]] && [[ ${3:0:2} != '-e' ]]; then
+		SSH_RES="-e \"ssh -p ${p[1]}\""
+	fi
+	res="rsync -azvh --progress --delete ${_p[1]} ${_p[2]} $SSH_RES $exclud_folder"
+	echo $res
 	# eval $res
 }
+
 ##############
 -rsync-read-file() {
 	# Прочитать файл с сохранеными путями синхронизации
@@ -370,10 +382,9 @@ main(sys.argv)
 	" $@
 }
 
-
--rsync-parse-conf(){
-    # Получаем данные для подключения по `ПроизвольноеИмя`
-    res=$(~py -c '''
+-rsync-parse-conf() {
+	# Получаем данные для подключения по `ПроизвольноеИмя`
+	res=$(~py -c '''
 import pathlib
 import sys
 import json
@@ -394,9 +405,10 @@ else:
     )
     ''' $BASHLER_REMOTE_PATH $1)
 
-    echo $res
+	echo $res
 	return 0 # Выйти из функции 0 хорошо 1 плохо
 }
+
 #!/bin/bash
 
 # Работа с пакетными менеджарами
@@ -640,6 +652,17 @@ print(res)
 __write-file() {
     # Записать текст в файл
     echo "$1" >$2
+}
+
+__pypars() {
+    # Парсить командную строку
+    #
+    # :Вот так вызывать:
+    #
+    # parms=$(__pypars $@)
+    # eval $parms
+    res=$(eval "~py $BASHLER_PATH_PY_PYPARS \"$@\"")
+    echo $res
 }
 
 #!/bin/bash

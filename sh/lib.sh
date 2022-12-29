@@ -26,3 +26,14 @@ __write-file() {
     # Записать текст в файл
     echo "$1" >$2
 }
+
+__pypars() {
+    # Парсить командную строку
+    #
+    # :Вот так вызывать:
+    #
+    # parms=$(__pypars $@)
+    # eval $parms
+    res=$(eval "~py $BASHLER_PATH_PY_PYPARS \"$@\"")
+    echo $res
+}

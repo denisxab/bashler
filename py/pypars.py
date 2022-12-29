@@ -2,6 +2,11 @@ import sys
 import typing
 import re
 
+""" 
+:Шаблон командной строки:
+
+Позиционный1 Позиционный2 -Флаг2? -Флаг2? -Именованный1 Значение1 Значение2 -Именованный1 Значение1 Значение2
+"""
 
 class TArgs(typing.TypedDict):
     # Текущий путь
@@ -52,7 +57,16 @@ def parse_args(in_path, argv: list[str]):
     return TArgs(dict(in_path=in_path, flags=flags, named_args=named_args, position_args=position_args))
 
 
-def toBash(argv):
+def toBash(argv: list[str] | None = None):
+    """
+    >> ~py Путь.py "КоманднаяСтрокаДляПарсинга"
+
+
+    :Большой пример:
+    >> ~py py/pypars.py "-rsync-delete-server-folder ./firebird_book1 root@5.63.154.238:/home/ubuntu/test 80 -ess md ms  -p 1010 asd a22 -d? -W? -dfc?" 
+    """
+    if argv is None:
+        argv = sys.argv
     # Аргументы командной строки в нормальном виде
     targs: TArgs = parse_args(in_path=argv[0], argv=argv[1].split())
     # Итоговая команда
@@ -60,23 +74,23 @@ def toBash(argv):
     #
     # Формируем флаги
     #
-    res_command.append("_flags=({f})".format(f=' '.join(
-        [f'"{x}"' for x in targs["flags"]]
-    )))
+    if targs["flags"]:
+        res_command.append("local _f=({f})".format(f=' '.join(
+            [f'"{x}"' for x in targs["flags"]]
+        )))
     #
     # Формируем позиционные аргументы
     #
-    res_command.append("_position_args=({f})".format(f=' '.join(
+    res_command.append("local _p=({f})".format(f=' '.join(
         [f'"{x}"' for x in targs["position_args"]]
     )))
     #
     # Формируем именованные аргименты
     #
     for k, v in targs["named_args"].items():
-        res_command.append("{k}=({f})".format(
+        res_command.append("local {k}=({f})".format(
             k=k, f=' '.join([f'"{x}"' for x in v])))
     return ';\n'.join(res_command)+';'
 
-
-print(sys.argv)
-print(toBash(sys.argv))
+# Сразу выполняем парсинг командной строки при импорте модуля
+print(toBash())

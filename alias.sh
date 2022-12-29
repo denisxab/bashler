@@ -6,6 +6,8 @@
 export DiskData="/media/denis/dd19b13d-bd85-46bb-8db9-5b8f6cf7a825"
 # Путь к Python модулям
 export BASHLER_PATH_PY="$BASHLER_PATH/py"
+# Путь к парсеру комадной строки
+export BASHLER_PATH_PY_PYPARS="$BASHLER_PATH_PY/pypars.py"
 ######################################################################################
 # Открывать файлы с указаным разширенем в указанной программе
 alias {txt,md,conf,log}=micro
