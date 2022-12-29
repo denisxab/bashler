@@ -8,6 +8,14 @@ export DiskData="/media/denis/dd19b13d-bd85-46bb-8db9-5b8f6cf7a825"
 if [[ -z $BASHLER_PATH ]]; then
     export BASHLER_PATH="$HOME/bashler"
 fi
+# Путь к файлу автозапуска
+if [[ -z $AUTORUN_BASHLER ]]; then
+    export AUTORUN_BASHLER="$HOME/.autorun_bashler"
+fi
+# Путь к найтрокам удаленного доступа
+if [[ -z $BASHLER_REMOTE_PATH ]]; then
+    export BASHLER_REMOTE_PATH="$HOME/.bashler_remote"
+fi
 # Путь к Python модулям
 export BASHLER_PATH_PY="$BASHLER_PATH/py"
 # Путь к парсеру комадной строки
