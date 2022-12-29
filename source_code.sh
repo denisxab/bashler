@@ -282,16 +282,16 @@ else:
 	# --dry-run			 	= Показать какие файлы будут сихронезированы без выполени программы
 	exclud_folder=$(__rsync-exlude-folder $@)
 	res="rsync -azvh --progress $1 $2 $exclud_folder"
-	echo res
-	eval res
+	echo $res
+	eval $res
 }
 -rsync-delete-local-folder() {
 	# Синхронизировать папки, если в ВЫХОДНОЙ(out) папке отличия, то удалить их
 	# -e папка_1 папка_... = Исключить папки или файлы из сихронизации
 	exclud_folder=$(__rsync-exlude-folder $@)
 	res="rsync -azvh --progress --delete $1 $2 $exclud_folder"
-	echo res
-	eval res
+	echo $res
+	eval $res
 }
 -rsync-server-folder() {
 	# Синхронезировать с сервером по SSH
@@ -300,18 +300,31 @@ else:
 	exclud_folder=$(__rsync-exlude-folder $@)
 	SSH_RES="ssh -p $1"
 	res="rsync -azvh --progress -e $SSH_RES $2 $3 $exclud_folder"
-	echo res
-	eval res
+	echo $res
+	eval $res
 }
 -rsync-delete-server-folder() {
 	# Синхронезировать с сервером по SSH, если в ВЫХОДНОЙ(out) папке отличия, то удалить их
-	# > port username@ip:path localpath
+	# 
+	# $1 - localpath 
+	# $2 - username@ip:pat 
+	# $3 -? port 
 	# -e папка_1 папка_... = Исключить папки или файлы из сихронизации
+	#
+	# rsync -azvh --progress ./firebird_book1 root@5.63.154.238:/home/ubuntu/test -e "ssh -p 22"
 	exclud_folder=$(__rsync-exlude-folder $@)
-	SSH_RES="ssh -p $1"
-	res="rsync -azvh --progress --delete -e $SSH_RES $2 $3 $exclud_folder"
-	echo res
-	eval res
+
+	echo $@ 
+	
+	# Порт
+	SSH_RES=""
+    if [[ -n $3 ]] && [[ ${3:0:2} != '-e' ]]; then
+        SSH_RES="-e \"ssh -p $3\""
+    fi
+
+	res="rsync -azvh --progress --delete $1 $2 $SSH_RES $exclud_folder"
+	# echo $res
+	# eval $res
 }
 ##############
 -rsync-read-file() {
@@ -357,6 +370,33 @@ main(sys.argv)
 	" $@
 }
 
+
+-rsync-parse-conf(){
+    # Получаем данные для подключения по `ПроизвольноеИмя`
+    res=$(~py -c '''
+import pathlib
+import sys
+import json
+
+path_to_remote_file = sys.argv[1]
+name_connect_from_conf = sys.argv[2]
+
+text_conf = pathlib.Path(path_to_remote_file).read_text()
+json_conf = json.loads(text_conf)
+
+conf = json_conf["rsync"].get(name_connect_from_conf)
+
+if conf:
+    print(conf["user"], conf["host"], conf["port"], sep="|")
+else:
+    raise KeyError(
+        f"Не найдено SSH подключение по имени - {name_connect_from_conf}"
+    )
+    ''' $BASHLER_REMOTE_PATH $1)
+
+    echo $res
+	return 0 # Выйти из функции 0 хорошо 1 плохо
+}
 #!/bin/bash
 
 # Работа с пакетными менеджарами
