@@ -37,3 +37,13 @@ __pypars() {
     res=$(eval "~py $BASHLER_PATH_PY_PYPARS \"$@\"")
     echo $res
 }
+
+#------------------
+
+
+-uid(){
+    #
+    # Сгинироровать UUID в виде `c7e007a688e611edb98f4d69faeaed66`
+    #
+    echo ${$(uuidgen -t)//-/}
+}

@@ -724,6 +724,15 @@ __pypars() {
     echo $res
 }
 
+#------------------
+
+
+-uid(){
+    #
+    # Сгинироровать UUID в виде `c7e007a688e611edb98f4d69faeaed66`
+    #
+    echo ${$(uuidgen -t)//-/}
+}
 #!/bin/bash
 
 sy-ie() {
