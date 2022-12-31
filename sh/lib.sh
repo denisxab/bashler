@@ -43,7 +43,19 @@ __pypars() {
 
 -uid(){
     #
-    # Сгинироровать UUID в виде `c7e007a688e611edb98f4d69faeaed66`
+    # Сгинироровать UUID в виде `x6nUxOD56_MAAA__`
     #
-    echo ${$(uuidgen -t)//-/}
+    # echo ${$(uuidgen -t)//-/}
+    echo $(~py -c '''
+import base64
+import random
+import re
+
+len_b=8
+value = random.getrandbits(64)
+by = value.to_bytes(len_b, byteorder="little")
+b64 = base64.urlsafe_b64encode(by).decode("ascii")
+
+print(re.sub(r"[\=\-]", "_", b64))
+    ''')
 }
