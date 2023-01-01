@@ -3,7 +3,7 @@
 ######################################################################################
 # Мои переменные окурежния
 # Путь к диску с данными
-export DiskData="/media/denis/dd19b13d-bd85-46bb-8db9-5b8f6cf7a825"
+export DiskData="/media/denis/130479d6-b6a6-45e3-b75b-f2c4b6c004b5"
 # Если не указн путь к Bashler то брем путь по умолчанию
 if [[ -z $BASHLER_PATH ]]; then
     export BASHLER_PATH="$HOME/bashler"
@@ -25,9 +25,9 @@ export BASHLER_PATH_PY_PYPARS="$BASHLER_PATH_PY/pypars.py"
 alias {txt,md,conf,log}=micro
 alias {js,py,cs,ts,html}=code
 ######################################################################################
-# 
+#
 # Глобальные Alias
-# 
+#
 # Алиасы для программ
 alias configer="$DiskData/MyProject/PycharmProjects/configer/venv/bin/python3.10 $DiskData/MyProject/PycharmProjects/configer/configer/main.py"
 alias gitclones="$DiskData/MyProject/PycharmProjects/git_clons/venv/bin/python3.10 $DiskData/MyProject/PycharmProjects/git_clons/git_clons/main.py"
@@ -38,7 +38,7 @@ alias pip="~py -m pip"
 alias ~bpy="~py -m bpython"
 alias syncthing="$DiskData/AlienApp/aplication/other/Syncthing/syncthing-linux-amd64-v1.20.1/syncthing"
 alias dbeaver="snap run dbeaver-ce"
-# 
+#
 alias ..="cd .."
 # замена ls на NNN
 alias nnn='nnn -de'
