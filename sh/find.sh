@@ -36,11 +36,19 @@
 }
 -find-t() {
     # Поиск текста в файлах по указаному шаблону
+    # $1 - Что искать
+    # $2 - Где искать
+    # $3 - Исключить пути из поиска
+
     res='grep'
-    if [[ -n $2 ]]; then
-        res+=" --exclude-dir={$2}"
+    path_="$2"
+    if [[ -z $2 ]]; then
+        path_="."
     fi
-    res+=" -rnw . -e $1"
+    if [[ -n $3 ]]; then
+        res+=" --exclude-dir={$3}"
+    fi
+    res+=" -rnw '$path_' -e '$1'"
     echo $res
     eval $res
 }

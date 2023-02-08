@@ -45,6 +45,382 @@ alias nnn='nnn -de'
 ######################################################################################
 #!/bin/bash
 
+# Git
+alias gst="git status"
+alias glog="git log"
+alias gbra="git branch"
+alias gcd="git checkout $1"
+alias gmer="git merge $1"
+# Разница между коммитами или ветками
+alias gdif="git diff $1"
+alias grst="git reset --hard"
+
+gadd() {
+    # Создать комит всех изменений
+    date=$(date +\"%c\")
+    req="git add -A && git commit -m '$date - $1'"
+    echo $req
+    eval $req
+}
+gaddp() {
+    # Создать комит всех изменений и выполнить push
+    gadd $@
+    echo 'git push'
+    git push
+}
+garch() {
+    # Сделать архив текущей ветки
+    req="git archive --format zip --output $1.zip "
+    req+=$(git rev-parse --abbrev-ref HEAD)
+    echo $req
+    eval $req
+}
+grmh() {
+    # Удалить файл из отслеживания
+    res=`git rm --cached -r $1`
+    echo $res
+    eval $res
+}
+
+gitignore(){
+    template='''__pycache__
+log
+venv
+/html
+.vscode
+/dist
+'''
+    echo $template > '.gitignore'
+}
+
+gremot-up-token() {
+    # Обновить токен в URL
+    # $1 = Токен
+    git_url=$(git remote get-url origin)
+    new_token=$1
+    new_url=$(~py -c '''
+import sys
+import re
+gir_url = sys.argv[1]
+new_token = sys.argv[2]
+res=new_token.join(re.search("(.+:).+(@.+)",gir_url).group(1,2))
+print(res)
+    ''' $git_url $new_token)
+    res="git remote set-url origin $new_url"
+    echo $res
+    eval $res
+}
+
+#!/bin/bash
+
+# pep 8
+pep() {
+    # $1 =  путь к файлу или папки, если указана папка то тогда отформатируется вссе файлы в этой папке
+    pimport $1 && ppep8 $1
+}
+ppep8() {
+    # Отформатировать python файл
+    # $1 =  путь к файлу или папки, если указана папка то тогда отформатируется вссе файлы в этой папке
+    # Установить `pip install autopep8`
+    if [[ -f $1 ]]; then
+        ~py -m autopep8 --in-place --aggressive -v $1
+    elif [[ -d $1 ]]; then
+        ~py -m autopep8 --in-place --aggressive -v -r $1
+    fi
+
+}
+pimport() {
+    # Форматировать иморты, удалить не используемые импорты
+    # $1 =  путь к файлу или папки, если указана папка то тогда отформатируется вссе файлы в этой папке
+    # Установить `pip install autoflake`
+    if [[ -f $1 ]]; then
+        ~py -m autoflake --in-place --remove-unused-variables $1
+    elif [[ -d $1 ]]; then
+        ~py -m autoflake --in-place --remove-unused-variables -r $1
+    fi
+}
+
+# PIP
+# Установаить пакет
+pipin() {
+    # Если актевировано окружение то установить пакет в него
+    res=""
+    if [[ -n $VIRTUAL_ENV ]]; then
+        res="$VIRTUAL_ENV/bin/python -m pip install $1"
+    else
+        res="~py -m pip install $1"
+    fi
+    echo $res
+    eval $res && ~py -c '''
+import pathlib
+import sys
+import re
+
+path_self = sys.argv[1]
+package = sys.argv[2]
+
+requirements = pathlib.Path(path_self) / "requirements.txt"
+
+if requirements.exists():
+    if_exist = re.search(f"{package}[ \t><=!\n]", requirements.read_text())
+    if not if_exist:
+        with requirements.open("a") as f:
+            f.write(f"{package}\n")
+else:
+    requirements.write_text(package)
+    ''' $(pwd) $1
+}
+# Удалить пакет
+piprm() {
+    # Если актевировано окружение то удляем пакет из него
+    res=""
+    if [[ -n $VIRTUAL_ENV ]]; then
+        res="$VIRTUAL_ENV/bin/python -m pip uninstall $1"
+    else
+        res="~py -m pip uninstall $1"
+    fi
+    echo $res
+    eval $res && ~py -c '''
+import pathlib
+import sys
+import re
+
+path_self = sys.argv[1]
+package = sys.argv[2]
+
+requirements = pathlib.Path(path_self) / "requirements.txt"
+
+if requirements.exists():
+    rt = requirements.read_text()
+    rtn = re.sub(f"{package}[ \t><=!\n]","", rt)
+    requirements.write_text(rtn)
+    ''' $(pwd) $1
+}
+# Обновить сам pip
+pipup-self() {
+    # Обновить pip
+    ~py -m pip install --upgrade pip
+}
+# Poetry
+poetry-() {
+    res=""
+    if [[ -n $VIRTUAL_ENV ]]; then
+        res="$VIRTUAL_ENV/bin/python -m poetry $@"
+    else
+        res="~py -m poetry $@"
+    fi
+    echo $res
+    eval $res
+}
+
+# Venv
+# Создать окружение
+pcvenv() {
+    if [[ -z $1 ]]; then
+        b_dirname='venv'
+    else
+        b_dirname=$1
+    fi
+    res="~py -m venv $b_dirname"
+    echo $res
+    eval $res
+}
+# Актевировать окружение
+pavenv() {
+    if [[ -z $1 ]]; then
+        b_dirname='./venv/bin/activate'
+    else
+        b_dirname=$1
+    fi
+    res="source $b_dirname"
+    echo $res
+    eval $res
+}
+# Деактевировать окружение
+pdvenv() {
+    deactivate
+}
+
+# Poetry
+poetry_init() {
+    # Звгрузить poetry
+    pip install cachecontrol
+    pipupdate
+    pip install poetry
+    poetry install
+}
+
+# -------------------
+
+phttpserver() {
+    # Запустить сервер п разадчи файлов
+    # $1 порт
+    ~py -c '''
+from http.server import HTTPServer, SimpleHTTPRequestHandler, test
+import sys
+
+class CORSRequestHandler (SimpleHTTPRequestHandler):
+    def end_headers(self):
+        # Для разрешения CROS.(Запросы от других url)
+        self.send_header("Access-Control-Allow-Origin", "*")
+        SimpleHTTPRequestHandler.end_headers(self)
+
+test(
+    CORSRequestHandler,
+    HTTPServer,
+    port=int(sys.argv[1]) if len(sys.argv) > 1 else 8000,
+)
+''' $1
+}
+
+#!/bin/bash
+
+# Find
+-find() {
+
+    # find [ОткудаИскать...] -name "ЧтоИскать"
+
+    # `*`				= Любой символ до и после
+    # -iname 			= Поиск БЕЗ учета регистра
+    # -name 			= Поиск С учетом регистра
+    # --not -name 		= Поиск НЕ совпадений шаблону
+    # -maxdepth Число 	= Максимальная глубина поиска
+    # -type d			= Поиск только папок
+    # -type f			= Поиск только файлов
+    # -perm 0664		= Поиск по разришению файлов
+
+    # -mtime Дней		= Модифецированные столько дней назад
+    # -atime Дней		= Открытые столько дней назад
+
+    # -not 		= НЕ
+    # -o 		= ИЛИ
+    find $@
+}
+-find-e() {
+    # Поиск всех файлов с указаным разширением
+    find . -name "*.$1"
+}
+-find-f() {
+    # Поиск файла или папки по указаному шаблоному имени
+    find . -iname "$1"
+}
+-find-tree() {
+    # Фильтрация вывода
+    # > шаблон_слово
+    tree -a -F | grep $@
+}
+-find-t() {
+    # Поиск текста в файлах по указаному шаблону
+    # $1 - Что искать
+    # $2 - Где искать
+    # $3 - Исключить пути из поиска
+
+    res='grep'
+    path_="$2"
+    if [[ -z $2 ]]; then
+        path_="."
+    fi
+    if [[ -n $3 ]]; then
+        res+=" --exclude-dir={$3}"
+    fi
+    res+=" -rnw '$path_' -e '$1'"
+    echo $res
+    eval $res
+}
+
+-find-chage-more() {
+    # Поиск файлов в директории `$1` которые изменялись более `$2` дней
+    # `$1` Путь к паке в которой искать
+    # `$2` Сколько дней назад изменялось, если нужно сегодня то укажите 0
+    # `$3` Во сколько директория можно углубляться, по умолчанию во все
+
+    day=$(expr $2 - 1)
+
+    if [[ $2 -eq 0 ]]; then
+        day=0
+    else
+        # 0 Изменялись сегодня
+        # +0 Изменялись вчера и далее
+        # +1 Изменялись позавчера и далее
+        day="+$day"
+    fi
+
+    maxdepth='-maxdepth'
+    if [[ -z $3 ]]; then
+        maxdepth=""
+    else
+        maxdepth="$maxdepth $3"
+    fi
+
+    # %TY-%Tm-%Td %TT %p\n
+    res="find $1 $maxdepth -mtime $day -printf '\033[92m%TY-%Tm-%Td %TT\033[0m\t\033[93m%p\033[0m\n' | sort -r"
+    echo $res
+    eval $res
+}
+
+#!/bin/bash
+
+__read-line-file-return-bash-for() {
+    # Прочитать файл с переносами строк и вернуть bash массив
+    #
+    # Пример испоильзования
+    #
+    # list_text=`__read-line-file-return-bash-for sd`
+    # for x in `echo $das`
+    # do
+    #     echo ") $x"
+    # done
+    echo $(~py -c "
+import sys
+name_file=sys.argv[1]
+with open(name_file,'r') as _f:
+	data = _f.read()
+res=''
+for x in data.split():
+    res+='\"%s\" ' % x
+print(res)
+" $1)
+}
+
+__write-file() {
+    # Записать текст в файл
+    echo "$1" >$2
+}
+
+__pypars() {
+    # Парсить командную строку
+    #
+    # :Вот так вызывать:
+    #
+    # parms=$(__pypars $@)
+    # eval $parms
+    res=$(eval "~py $BASHLER_PATH_PY_PYPARS \"$@\"")
+    echo $res
+}
+
+#------------------
+
+
+-uid(){
+    #
+    # Сгинироровать UUID в виде `x6nUxOD56_MAAA__`
+    #
+    # echo ${$(uuidgen -t)//-/}
+    echo $(~py -c '''
+import base64
+import random
+import re
+
+len_b=8
+value = random.getrandbits(64)
+by = value.to_bytes(len_b, byteorder="little")
+b64 = base64.urlsafe_b64encode(by).decode("ascii")
+
+print(re.sub(r"[\=\-]", "_", b64))
+    ''')
+}
+#!/bin/bash
+
 autorun-bashler() {
     # Логика запуска программ
     tmp_path="/tmp/autorun_bashler"
@@ -97,199 +473,6 @@ autorun-bashler-force() {
     autorun-bashler
 }
 
-
-#!/bin/bash
-
-#
-## Рабата с видео и Gif
-#
-
--gifzip() {
-    # Сжать Gif видео
-    e="gifsicle -i \"$1\" -o \"out_$1\" --optimize=3 --colors=256 --lossy=30"
-    echo $e
-    eval $e
-}
-
-#!/bin/bash
-
-##################################################
---() {
-    # Поиск документции у функции
-    ---dev $@ | less
-}
-an() {
-    # Поиск алиасов по имени
-    aa-dev $@ -n | less
-}
-av() {
-    # Поиск алиасов по значению
-    aa-dev $@ -v | less
-}
-##################################################
-
-##################################################
-# Реализацию писать через постфикс -dev
-
----dev() {
-    # Поиск bash команды в папке bashler
-    #
-    # [часть_имени_команды]
-    #
-    ~py -c "
-import sys
-sys.path.insert(0,'$BASHLER_PATH_PY')
-from doc_serach import manger_search_func
-manger_search_func()
-    " $@
-}
-aa-dev() {
-    # Посик алисов по значению и имени
-    #
-    # [часть_алиаса]
-    # -v                = Поиск по знаечнию
-    # -n                = Поиск по имени
-    ~py -c "
-import sys
-sys.path.insert(0,'$BASHLER_PATH_PY')
-from doc_serach import search_alias
-search_alias()
-    " $@ $(alias)
-
-    alias | grep $1
-}
-
-#!/bin/bash
-
-export Wireguard_VPN_CONF="wg0"
-
--vpn-on() {
-    # Включить VPN
-    sudo wg-quick up $Wireguard_VPN_CONF
-}
--vpn-off() {
-    # Выключить VPN
-    sudo wg-quick down $Wireguard_VPN_CONF
-}
--vpn-info() {
-    # Информация о подключение к VPN
-    sudo wg show
-}
-
-#!/bin/bash
-
-# SSH - Сервер
--ssh-keygen() {
-    # Сгенерировать ssh ключи
-    ssh-keygen
-}
--ssh-restart() {
-    # Перезапутсить SSH сервер
-    res=''
-    if [[ $BASE_SYSTEM_OS == "termix" ]]; then
-        res="-ssh-stop && -ssh-start"
-        echo "Termix - SSH перезагружен "
-    elif [[ $BASE_SYSTEM_OS == "ubuntu" ]]; then
-        res="sudo systemctl restart shhd"
-        echo "Ubuntu - SSH перезагружен"
-    fi
-    echo $res
-    eval $res
-}
--ssh-start() {
-    # Запустить SSH сервер
-    res=''
-    if [[ $BASE_SYSTEM_OS == "termix" ]]; then
-        res="sshd"
-        echo "Termix - SSH перезагружен "
-    elif [[ $BASE_SYSTEM_OS == "ubuntu" ]]; then
-        res="sudo systemctl start shhd"
-        echo "Ubuntu - SSH перезагружен "
-    fi
-    echo $res
-    eval $res
-}
-
--ssh-stop() {
-    # Остановить SSH сервер
-    res=''
-    if [[ $BASE_SYSTEM_OS == "termix" ]]; then
-        res="pkill sshd"
-        echo "Termix - SSH перезагружен "
-    elif [[ $BASE_SYSTEM_OS == "ubuntu" ]]; then
-        res="sudo systemctl stop shhd"
-        echo "Ubuntu - SSH перезагружен "
-    fi
-    echo $res
-    eval $res
-}
-
-# SSH - Подключение к серверу
--ssh-c() {
-    # Поключиться по SSH
-    # $1 - Имя пользователя
-    # $2 - Host(ip) сервера
-    # $3 - Порт
-    port=22
-    if [[ -z $3 ]]; then
-        port=$3
-    fi
-    #
-    res=ssh -p 22 "$1@$2"
-    echo res
-    eval res
-}
--ssh-cf() {
-    # Поключиться по SSH. Взять данные для подлючения из файла
-    # $1 - ПроизвольноеИмя из файла для ssh
-    res=$(-ssh-parse-conf $1)
-    user=$(echo $res | cut -d "|" -f 1)
-    host=$(echo $res | cut -d "|" -f 2)
-    port=$(echo $res | cut -d "|" -f 3)
-    echo "$user@$host:$port"
-    # Подключение по сереру
-    ssh -p $port "$user@$host"
-}
--ssh-copy-key-cf() {
-    # Скопироввать SSH ключ. Взять данные для подлючения из файла
-    # $1 - ПроизвольноеИмя из файла для ssh
-    res=$(-ssh-parse-conf $1)
-    user=$(echo $res | cut -d "|" -f 1)
-    host=$(echo $res | cut -d "|" -f 2)
-    port=$(echo $res | cut -d "|" -f 3)
-    echo "$user@$host:$port"
-    ssh-copy-id -p $port "$user@$host"
-}
-
--ssh-parse-conf() {
-    # Получаем данные для подключения по `ПроизвольноеИмяПодключения_SSH`
-    #
-    # $1 = ПроизвольноеИмяПодключения_SSH
-    #
-    res=$(~py -c '''
-import pathlib
-import sys
-import json
-
-path_to_remote_file = sys.argv[1]
-name_connect_from_conf = sys.argv[2]
-
-text_conf = pathlib.Path(path_to_remote_file).read_text()
-json_conf = json.loads(text_conf)
-
-conf = json_conf["ssh"].get(name_connect_from_conf)
-
-if conf:
-    print(conf["user"], conf["host"], conf["port"], sep="|")
-else:
-    raise KeyError(
-        f"Не найдено SSH подключение по имени - {name_connect_from_conf}"
-    )
-    ''' $BASHLER_REMOTE_PATH $1)
-
-    echo $res
-    return 0 # Выйти из функции 0 хорошо 1 плохо
-}
 
 #!/bin/bash
 
@@ -467,6 +650,449 @@ print(";\n".join(res))
 # main(sys.argv)
 # 	" $@
 # }
+
+#!/bin/bash
+
+# Docekr
+-docker-ip() {
+	# Получить	 ip адрес   указанного 	 контейнера
+	# -docker-ip имя_контейнера
+	NAME_PROJ=$(__docker-create-filename $@)
+	echo "Проект: $NAME_PROJ"
+	sudo docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $NAME_PROJ
+}
+
+__docker-create-filename() {
+	# Взять название проекта из файла
+	if [[ -r .name_docker_container ]]; then
+		NAME_PROJ=$(cat .name_docker_container)
+		echo "$NAME_PROJ"
+		return 0
+	fi
+	NAME_PROJ="$1"
+	__write-file "$NAME_PROJ" .name_docker_container
+	echo "$NAME_PROJ"
+}
+-docker-build() {
+	# Создать образ проекта(Нужно находиться на одном уровне с `Dockerfile`)
+	# -docker-build [имя_для_контейнера]
+	NAME_PROJ=$(__docker-create-filename $@)
+	echo "Проект: $NAME_PROJ"
+	WORK_DIR="/usr/src/$NAME_PROJ"
+	image_name="img_$NAME_PROJ"
+	sudo docker build --build-arg WORK_DIR=$WORK_DIR --build-arg NAME_PROJ=$NAME_PROJ -t $image_name .
+}
+-docker-run() {
+	# Создать и запустить контейнер с проектом
+	# -docker-run [имя_контейнра] [--rm (удалить при выходе контейенр)]
+	NAME_PROJ=$(__docker-create-filename $@)
+	echo "Проект: $NAME_PROJ"
+	container_name="$NAME_PROJ"
+	image_name="img_$NAME_PROJ"
+	sudo docker run --rm -ti --name $container_name $image_name $@
+	#-v $(my_path)/deploy:$(WORK_DIR)/deploy -p $(EXTERNAL_WEB_PORT):$(EXTERNAL_WEB_PORT)
+}
+-docker-start() {
+	#  Запустить существубщий контенер
+	# [-a (войти в контейнер)]
+	NAME_PROJ=$(__docker-create-filename $@)
+	echo "Проект: $NAME_PROJ"
+	sudo docker container start $NAME_PROJ
+}
+-docker-stop() {
+	#  Остановить существубщий контенер
+	NAME_PROJ=$(__docker-create-filename $@)
+	echo "Проект: $NAME_PROJ"
+	sudo docker container stop $NAME_PROJ
+}
+-docker-exec() {
+	# Войти в контейнер
+	# -docker-exec [имя_контейнера]
+	NAME_PROJ=$(__docker-create-filename $@)
+	echo "Проект: $NAME_PROJ"
+	sudo docker exec -ti $NAME_PROJ /bin/sh
+}
+-dshc() {
+	# Посмотреть контейнеры
+	# docker-show-container
+	if [[ $1 == '-w' ]]; then
+		watch -d -n 2 sudo docker ps -a
+	else
+		sudo docker ps -a
+	fi
+
+}
+-dshi() {
+	# Посмотреть образы
+	# docker-show-image
+	if [[ $1 == '-w' ]]; then
+		sudo watch -d -n 2 sudo docker images
+	else
+		sudo docker images
+	fi
+}
+-dcp() {
+	# Отчитстить контейнеры
+	sudo docker container prune
+}
+-dip() {
+	# Отчитстить образы
+	sudo docker container prune
+}
+
+-docker-compose-select-envfile() {
+	# Сохранить путь к env файлу
+	# -docker-compose-select-env-file ./file/__env.env
+	__write-file $1 .env_path
+}
+-docker-compose-build() {
+	# Запустить образы контейнеров
+	if [[ -r .env_path ]]; then
+		sudo docker-compose --env-file $(cat .env_path) build
+	fi
+	sudo docker-compose build
+}
+-docker-compose-up() {
+	# Запустить контейнеры а после окончанию отчистить удалить их
+	if [[ -r .env_path ]]; then
+		sudo docker-compose --env-file $(cat .env_path) up && sudo docker-compose --env-file $(cat .env_path) rm -fsv
+	fi
+	sudo docker-compose up && sudo docker-compose rm -fsv
+}
+-docker-compose-rm() {
+	# Удалить ненужные контейнеры
+	if [[ -r .env_path ]]; then
+		sudo docker-compose --env-file $(cat .env_path) rm -fsv
+	fi
+	sudo docker-compose rm -fsv
+}
+
+#!/bin/bash
+
+# Zsh
+-zsh-hotkey() {
+	echo "	
+Ctrl+a = Переместить курсор в начало команды
+Ctrl+e = Переместить курсор в конец команды
+Ctrl+r = Поиск команды по истории
+Ctrl+c = Прервать команду
+Ctrl+z = Свернуть выполненеи команды (fg = вернуться)
+Ctrl+w = Удалить слово в право
+Ctrl+u = Удалить весь текст в лево
+Ctrl+k = Удалить весь текст в право
+Ctrl+y = Вставить текст
+Ctrl+x затем Ctrl+e = Открыть команду в текстовом редакторе указанным в $(EDITOR), после выхода она вставиться в консоль 
+Ctrl+s =  Поставить на паузу выполение команжы (Ctrl+q возобновить)
+	"
+}
+-zsh-edit() {
+	# Открыть редактирование zsh
+	$EDITOR ~/.zshrc
+}
+-zsh-install-plugin() {
+	# Установить плагины Zsh
+	git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions &&
+		git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting &&
+		git clone https://github.com/marlonrichert/zsh-autocomplete.git ~/.oh-my-zsh/custom/plugins/zsh-autocomplete &&
+		mkdir $ZSH_CUSTOM/plugins/poetry &&
+		poetry completions zsh >$ZSH_CUSTOM/plugins/poetry/_poetry
+}
+-zsh-mount-disk() {
+	# Примонтировать повседневные  диски
+
+	# Google Disk
+	google-drive-ocamlfuse /mnt/google_disk
+}
+-zsh-clean-history() {
+	# Отчистить историю команд
+	history -c
+}
+
+#!/bin/bash
+
+##################################################
+--() {
+    # Поиск документции у функции
+    ---dev $@ | less
+}
+an() {
+    # Поиск алиасов по имени
+    aa-dev $@ -n | less
+}
+av() {
+    # Поиск алиасов по значению
+    aa-dev $@ -v | less
+}
+##################################################
+
+##################################################
+# Реализацию писать через постфикс -dev
+
+---dev() {
+    # Поиск bash команды в папке bashler
+    #
+    # [часть_имени_команды]
+    #
+    ~py -c "
+import sys
+sys.path.insert(0,'$BASHLER_PATH_PY')
+from doc_serach import manger_search_func
+manger_search_func()
+    " $@
+}
+aa-dev() {
+    # Посик алисов по значению и имени
+    #
+    # [часть_алиаса]
+    # -v                = Поиск по знаечнию
+    # -n                = Поиск по имени
+    ~py -c "
+import sys
+sys.path.insert(0,'$BASHLER_PATH_PY')
+from doc_serach import search_alias
+search_alias()
+    " $@ $(alias)
+
+    alias | grep $1
+}
+
+#!/bin/bash
+
+# SSH - Сервер
+-ssh-keygen() {
+    # Сгенерировать ssh ключи
+    ssh-keygen
+}
+-ssh-restart() {
+    # Перезапутсить SSH сервер
+    res=''
+    if [[ $BASE_SYSTEM_OS == "termix" ]]; then
+        res="-ssh-stop && -ssh-start"
+        echo "Termix - SSH перезагружен "
+    elif [[ $BASE_SYSTEM_OS == "ubuntu" ]]; then
+        res="sudo systemctl restart shhd"
+        echo "Ubuntu - SSH перезагружен"
+    fi
+    echo $res
+    eval $res
+}
+-ssh-start() {
+    # Запустить SSH сервер
+    res=''
+    if [[ $BASE_SYSTEM_OS == "termix" ]]; then
+        res="sshd"
+        echo "Termix - SSH перезагружен "
+    elif [[ $BASE_SYSTEM_OS == "ubuntu" ]]; then
+        res="sudo systemctl start shhd"
+        echo "Ubuntu - SSH перезагружен "
+    fi
+    echo $res
+    eval $res
+}
+
+-ssh-stop() {
+    # Остановить SSH сервер
+    res=''
+    if [[ $BASE_SYSTEM_OS == "termix" ]]; then
+        res="pkill sshd"
+        echo "Termix - SSH перезагружен "
+    elif [[ $BASE_SYSTEM_OS == "ubuntu" ]]; then
+        res="sudo systemctl stop shhd"
+        echo "Ubuntu - SSH перезагружен "
+    fi
+    echo $res
+    eval $res
+}
+
+# SSH - Подключение к серверу
+-ssh-c() {
+    # Поключиться по SSH
+    # $1 - Имя пользователя
+    # $2 - Host(ip) сервера
+    # $3 - Порт
+    port=22
+    if [[ -z $3 ]]; then
+        port=$3
+    fi
+    #
+    res=ssh -p 22 "$1@$2"
+    echo res
+    eval res
+}
+-ssh-cf() {
+    # Поключиться по SSH. Взять данные для подлючения из файла
+    # $1 - ПроизвольноеИмя из файла для ssh
+    res=$(-ssh-parse-conf $1)
+    user=$(echo $res | cut -d "|" -f 1)
+    host=$(echo $res | cut -d "|" -f 2)
+    port=$(echo $res | cut -d "|" -f 3)
+    echo "$user@$host:$port"
+    # Подключение по сереру
+    ssh -p $port "$user@$host"
+}
+-ssh-copy-key-cf() {
+    # Скопироввать SSH ключ. Взять данные для подлючения из файла
+    # $1 - ПроизвольноеИмя из файла для ssh
+    res=$(-ssh-parse-conf $1)
+    user=$(echo $res | cut -d "|" -f 1)
+    host=$(echo $res | cut -d "|" -f 2)
+    port=$(echo $res | cut -d "|" -f 3)
+    echo "$user@$host:$port"
+    ssh-copy-id -p $port "$user@$host"
+}
+
+-ssh-parse-conf() {
+    # Получаем данные для подключения по `ПроизвольноеИмяПодключения_SSH`
+    #
+    # $1 = ПроизвольноеИмяПодключения_SSH
+    #
+    res=$(~py -c '''
+import pathlib
+import sys
+import json
+
+path_to_remote_file = sys.argv[1]
+name_connect_from_conf = sys.argv[2]
+
+text_conf = pathlib.Path(path_to_remote_file).read_text()
+json_conf = json.loads(text_conf)
+
+conf = json_conf["ssh"].get(name_connect_from_conf)
+
+if conf:
+    print(conf["user"], conf["host"], conf["port"], sep="|")
+else:
+    raise KeyError(
+        f"Не найдено SSH подключение по имени - {name_connect_from_conf}"
+    )
+    ''' $BASHLER_REMOTE_PATH $1)
+
+    echo $res
+    return 0 # Выйти из функции 0 хорошо 1 плохо
+}
+
+#!/bin/bash
+
+sy-ie() {
+    # Проверить включена ли служба в автозапуск
+    sudo systemctl is-enabled $1
+}
+sy-e() {
+    # Добвить службу в автозапуск
+    sudo systemctl enabled $1
+}
+sy-d() {
+    # Удалить службу из автозапуска
+    sudo systemctl disable $1
+}
+sy-r() {
+    # Перезапустить службу
+    sudo systemctl restart $1
+}
+sy-s() {
+    # Статус службы
+    sudo systemctl status $1
+}
+sy-str() {
+    # Запустить службы
+    sudo systemctl start $1
+}
+sy-stp() {
+    # Остановить службу
+    sudo systemctl stop $1
+}
+
+#!/bin/bash
+
+## Действия с папками
+f-dir-copy() {
+	# Скопировать папку
+	cp -R $1 $2
+}
+f-dir-rename() {
+	# Переименовать папку
+	mv $1 $2
+}
+f-dir-create() {
+	# Создать папку
+	mkdir $1
+}
+f-dir-remove() {
+	# Удалить папку
+	rm -rf $1
+}
+
+## Размер Диска и использование его
+d-size-folder() {
+	# Получить разме файлов в указанной директории
+	du $1 -ach -d 1 | sort -h
+}
+d-size-disk() {
+	# Использование дисков
+	df -h $@
+}
+d-list-disk() {
+	# Все подключенные диски
+	sudo fdisk -l
+}
+## Tree
+-tree() {
+	# > УровеньВложенности ДиректориюПосмотерть
+	# -a = скрытые файлы
+	# -d = только директории
+	# -f = показать относительный путь для файлов
+	# -L = уровень вложенности
+	# -P = поиск по шаблону (* сделать на python)
+	# -h = Вывести размер файлов и папок
+	# -Q = Заключать названия в двойные кавычки
+	# -F = Добовлять символы отличия для папок, файлов и сокетов
+	# -I = Исключить из списка по патерну
+	res='tree -a -L'
+
+	if [[ -z $1 ]]; then
+		res+=' 3'
+	else
+		res+=" $1"
+	fi
+	res+=' -h -F'
+	if [[ -z $2 ]]; then
+		res+=' ./'
+	else
+		res+=" $2"
+	fi
+	echo $res
+	eval $res
+}
+
+## Python
+
+-p-joinfile() {
+	# Объеденить текс всех файлов из указанной директории
+	# 1 - Путь к папке
+	# 2 - Кодировка файлов
+	# 3 - Разделитель при записи в итоговый файл
+
+	res=$(~py -c '''
+import pathlib
+import sys
+
+# Путь к папке
+dir=sys.argv[1]
+# Кодировка файлов
+encode=sys.argv[2] # "windows-1251"
+# Разделитель при записи в итоговый файл
+sep=sys.argv[3] # "\n"
+
+res_text = []
+p = pathlib.Path(dir).resolve()
+for x in p.glob("*.txt"):
+    res_text.append(x.read_text(encode))
+
+(p / "join.out").write_text(sep.join(res_text))
+
+    ''' "$1" "$2" "$3")
+	echo $res
+}
 
 #!/bin/bash
 
@@ -686,648 +1312,30 @@ s-watch(){
 
 #!/bin/bash
 
-__read-line-file-return-bash-for() {
-    # Прочитать файл с переносами строк и вернуть bash массив
-    #
-    # Пример испоильзования
-    #
-    # list_text=`__read-line-file-return-bash-for sd`
-    # for x in `echo $das`
-    # do
-    #     echo ") $x"
-    # done
-    echo $(~py -c "
-import sys
-name_file=sys.argv[1]
-with open(name_file,'r') as _f:
-	data = _f.read()
-res=''
-for x in data.split():
-    res+='\"%s\" ' % x
-print(res)
-" $1)
-}
+export Wireguard_VPN_CONF="wg0"
 
-__write-file() {
-    # Записать текст в файл
-    echo "$1" >$2
+-vpn-on() {
+    # Включить VPN
+    sudo wg-quick up $Wireguard_VPN_CONF
 }
-
-__pypars() {
-    # Парсить командную строку
-    #
-    # :Вот так вызывать:
-    #
-    # parms=$(__pypars $@)
-    # eval $parms
-    res=$(eval "~py $BASHLER_PATH_PY_PYPARS \"$@\"")
-    echo $res
+-vpn-off() {
+    # Выключить VPN
+    sudo wg-quick down $Wireguard_VPN_CONF
 }
-
-#------------------
-
-
--uid(){
-    #
-    # Сгинироровать UUID в виде `x6nUxOD56_MAAA__`
-    #
-    # echo ${$(uuidgen -t)//-/}
-    echo $(~py -c '''
-import base64
-import random
-import re
-
-len_b=8
-value = random.getrandbits(64)
-by = value.to_bytes(len_b, byteorder="little")
-b64 = base64.urlsafe_b64encode(by).decode("ascii")
-
-print(re.sub(r"[\=\-]", "_", b64))
-    ''')
-}
-#!/bin/bash
-
-sy-ie() {
-    # Проверить включена ли служба в автозапуск
-    sudo systemctl is-enabled $1
-}
-sy-e() {
-    # Добвить службу в автозапуск
-    sudo systemctl enabled $1
-}
-sy-d() {
-    # Удалить службу из автозапуска
-    sudo systemctl disable $1
-}
-sy-r() {
-    # Перезапустить службу
-    sudo systemctl restart $1
-}
-sy-s() {
-    # Статус службы
-    sudo systemctl status $1
-}
-sy-str() {
-    # Запустить службы
-    sudo systemctl start $1
-}
-sy-stp() {
-    # Остановить службу
-    sudo systemctl stop $1
+-vpn-info() {
+    # Информация о подключение к VPN
+    sudo wg show
 }
 
 #!/bin/bash
 
-# Docekr
--docker-ip() {
-	# Получить	 ip адрес   указанного 	 контейнера
-	# -docker-ip имя_контейнера
-	NAME_PROJ=$(__docker-create-filename $@)
-	echo "Проект: $NAME_PROJ"
-	sudo docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $NAME_PROJ
-}
+#
+## Рабата с видео и Gif
+#
 
-__docker-create-filename() {
-	# Взять название проекта из файла
-	if [[ -r .name_docker_container ]]; then
-		NAME_PROJ=$(cat .name_docker_container)
-		echo "$NAME_PROJ"
-		return 0
-	fi
-	NAME_PROJ="$1"
-	__write-file "$NAME_PROJ" .name_docker_container
-	echo "$NAME_PROJ"
-}
--docker-build() {
-	# Создать образ проекта(Нужно находиться на одном уровне с `Dockerfile`)
-	# -docker-build [имя_для_контейнера]
-	NAME_PROJ=$(__docker-create-filename $@)
-	echo "Проект: $NAME_PROJ"
-	WORK_DIR="/usr/src/$NAME_PROJ"
-	image_name="img_$NAME_PROJ"
-	sudo docker build --build-arg WORK_DIR=$WORK_DIR --build-arg NAME_PROJ=$NAME_PROJ -t $image_name .
-}
--docker-run() {
-	# Создать и запустить контейнер с проектом
-	# -docker-run [имя_контейнра] [--rm (удалить при выходе контейенр)]
-	NAME_PROJ=$(__docker-create-filename $@)
-	echo "Проект: $NAME_PROJ"
-	container_name="$NAME_PROJ"
-	image_name="img_$NAME_PROJ"
-	sudo docker run --rm -ti --name $container_name $image_name $@
-	#-v $(my_path)/deploy:$(WORK_DIR)/deploy -p $(EXTERNAL_WEB_PORT):$(EXTERNAL_WEB_PORT)
-}
--docker-start() {
-	#  Запустить существубщий контенер
-	# [-a (войти в контейнер)]
-	NAME_PROJ=$(__docker-create-filename $@)
-	echo "Проект: $NAME_PROJ"
-	sudo docker container start $NAME_PROJ
-}
--docker-stop() {
-	#  Остановить существубщий контенер
-	NAME_PROJ=$(__docker-create-filename $@)
-	echo "Проект: $NAME_PROJ"
-	sudo docker container stop $NAME_PROJ
-}
--docker-exec() {
-	# Войти в контейнер
-	# -docker-exec [имя_контейнера]
-	NAME_PROJ=$(__docker-create-filename $@)
-	echo "Проект: $NAME_PROJ"
-	sudo docker exec -ti $NAME_PROJ /bin/sh
-}
--dshc() {
-	# Посмотреть контейнеры
-	# docker-show-container
-	if [[ $1 == '-w' ]]; then
-		watch -d -n 2 sudo docker ps -a
-	else
-		sudo docker ps -a
-	fi
-
-}
--dshi() {
-	# Посмотреть образы
-	# docker-show-image
-	if [[ $1 == '-w' ]]; then
-		sudo watch -d -n 2 sudo docker images
-	else
-		sudo docker images
-	fi
-}
--dcp() {
-	# Отчитстить контейнеры
-	sudo docker container prune
-}
--dip() {
-	# Отчитстить образы
-	sudo docker container prune
-}
-
--docker-compose-select-envfile() {
-	# Сохранить путь к env файлу
-	# -docker-compose-select-env-file ./file/__env.env
-	__write-file $1 .env_path
-}
--docker-compose-build() {
-	# Запустить образы контейнеров
-	if [[ -r .env_path ]]; then
-		sudo docker-compose --env-file $(cat .env_path) build
-	fi
-	sudo docker-compose build
-}
--docker-compose-up() {
-	# Запустить контейнеры а после окончанию отчистить удалить их
-	if [[ -r .env_path ]]; then
-		sudo docker-compose --env-file $(cat .env_path) up && sudo docker-compose --env-file $(cat .env_path) rm -fsv
-	fi
-	sudo docker-compose up && sudo docker-compose rm -fsv
-}
--docker-compose-rm() {
-	# Удалить ненужные контейнеры
-	if [[ -r .env_path ]]; then
-		sudo docker-compose --env-file $(cat .env_path) rm -fsv
-	fi
-	sudo docker-compose rm -fsv
-}
-
-#!/bin/bash
-
-## Действия с папками
-f-dir-copy() {
-	# Скопировать папку
-	cp -R $1 $2
-}
-f-dir-rename() {
-	# Переименовать папку
-	mv $1 $2
-}
-f-dir-create() {
-	# Создать папку
-	mkdir $1
-}
-f-dir-remove() {
-	# Удалить папку
-	rm -rf $1
-}
-
-## Размер Диска и использование его
-d-size-folder() {
-	# Получить разме файлов в указанной директории
-	du $1 -ach -d 1 | sort -h
-}
-d-size-disk() {
-	# Использование дисков
-	df -h $@
-}
-d-list-disk() {
-	# Все подключенные диски
-	sudo fdisk -l
-}
-## Tree
--tree() {
-	# > УровеньВложенности ДиректориюПосмотерть
-	# -a = скрытые файлы
-	# -d = только директории
-	# -f = показать относительный путь для файлов
-	# -L = уровень вложенности
-	# -P = поиск по шаблону (* сделать на python)
-	# -h = Вывести размер файлов и папок
-	# -Q = Заключать названия в двойные кавычки
-	# -F = Добовлять символы отличия для папок, файлов и сокетов
-	# -I = Исключить из списка по патерну
-	res='tree -a -L'
-
-	if [[ -z $1 ]]; then
-		res+=' 3'
-	else
-		res+=" $1"
-	fi
-	res+=' -h -F'
-	if [[ -z $2 ]]; then
-		res+=' ./'
-	else
-		res+=" $2"
-	fi
-	echo $res
-	eval $res
-}
-
-## Python
-
--p-joinfile() {
-	# Объеденить текс всех файлов из указанной директории
-	# 1 - Путь к папке
-	# 2 - Кодировка файлов
-	# 3 - Разделитель при записи в итоговый файл
-
-	res=$(~py -c '''
-import pathlib
-import sys
-
-# Путь к папке
-dir=sys.argv[1]
-# Кодировка файлов
-encode=sys.argv[2] # "windows-1251"
-# Разделитель при записи в итоговый файл
-sep=sys.argv[3] # "\n"
-
-res_text = []
-p = pathlib.Path(dir).resolve()
-for x in p.glob("*.txt"):
-    res_text.append(x.read_text(encode))
-
-(p / "join.out").write_text(sep.join(res_text))
-
-    ''' "$1" "$2" "$3")
-	echo $res
-}
-
-#!/bin/bash
-
-# Zsh
--zsh-hotkey() {
-	echo "	
-Ctrl+a = Переместить курсор в начало команды
-Ctrl+e = Переместить курсор в конец команды
-Ctrl+r = Поиск команды по истории
-Ctrl+c = Прервать команду
-Ctrl+z = Свернуть выполненеи команды (fg = вернуться)
-Ctrl+w = Удалить слово в право
-Ctrl+u = Удалить весь текст в лево
-Ctrl+k = Удалить весь текст в право
-Ctrl+y = Вставить текст
-Ctrl+x затем Ctrl+e = Открыть команду в текстовом редакторе указанным в $(EDITOR), после выхода она вставиться в консоль 
-Ctrl+s =  Поставить на паузу выполение команжы (Ctrl+q возобновить)
-	"
-}
--zsh-edit() {
-	# Открыть редактирование zsh
-	$EDITOR ~/.zshrc
-}
--zsh-install-plugin() {
-	# Установить плагины Zsh
-	git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions &&
-		git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting &&
-		git clone https://github.com/marlonrichert/zsh-autocomplete.git ~/.oh-my-zsh/custom/plugins/zsh-autocomplete &&
-		mkdir $ZSH_CUSTOM/plugins/poetry &&
-		poetry completions zsh >$ZSH_CUSTOM/plugins/poetry/_poetry
-}
--zsh-mount-disk() {
-	# Примонтировать повседневные  диски
-
-	# Google Disk
-	google-drive-ocamlfuse /mnt/google_disk
-}
--zsh-clean-history() {
-	# Отчистить историю команд
-	history -c
-}
-
-#!/bin/bash
-
-# Git
-alias gst="git status"
-alias glog="git log"
-alias gbra="git branch"
-alias gcd="git checkout $1"
-alias gmer="git merge $1"
-# Разница между коммитами или ветками
-alias gdif="git diff $1"
-alias grst="git reset --hard"
-
-gadd() {
-    # Создать комит всех изменений
-    date=$(date +\"%c\")
-    req="git add -A && git commit -m '$date - $1'"
-    echo $req
-    eval $req
-}
-gaddp() {
-    # Создать комит всех изменений и выполнить push
-    gadd $@
-    echo 'git push'
-    git push
-}
-garch() {
-    # Сделать архив текущей ветки
-    req="git archive --format zip --output $1.zip "
-    req+=$(git rev-parse --abbrev-ref HEAD)
-    echo $req
-    eval $req
-}
-grmh() {
-    # Удалить файл из отслеживания
-    res=`git rm --cached -r $1`
-    echo $res
-    eval $res
-}
-
-gitignore(){
-    template='''__pycache__
-log
-venv
-/html
-.vscode
-/dist
-'''
-    echo $template > '.gitignore'
-}
-
-gremot-up-token() {
-    # Обновить токен в URL
-    # $1 = Токен
-    git_url=$(git remote get-url origin)
-    new_token=$1
-    new_url=$(~py -c '''
-import sys
-import re
-gir_url = sys.argv[1]
-new_token = sys.argv[2]
-res=new_token.join(re.search("(.+:).+(@.+)",gir_url).group(1,2))
-print(res)
-    ''' $git_url $new_token)
-    res="git remote set-url origin $new_url"
-    echo $res
-    eval $res
-}
-
-#!/bin/bash
-
-# Find
--find() {
-
-    # find [ОткудаИскать...] -name "ЧтоИскать"
-
-    # `*`				= Любой символ до и после
-    # -iname 			= Поиск БЕЗ учета регистра
-    # -name 			= Поиск С учетом регистра
-    # --not -name 		= Поиск НЕ совпадений шаблону
-    # -maxdepth Число 	= Максимальная глубина поиска
-    # -type d			= Поиск только папок
-    # -type f			= Поиск только файлов
-    # -perm 0664		= Поиск по разришению файлов
-
-    # -mtime Дней		= Модифецированные столько дней назад
-    # -atime Дней		= Открытые столько дней назад
-
-    # -not 		= НЕ
-    # -o 		= ИЛИ
-    find $@
-}
--find-e() {
-    # Поиск всех файлов с указаным разширением
-    find . -name "*.$1"
-}
--find-f() {
-    # Поиск файла или папки по указаному шаблоному имени
-    find . -iname "$1"
-}
--find-tree() {
-    # Фильтрация вывода
-    # > шаблон_слово
-    tree -a -F | grep $@
-}
--find-t() {
-    # Поиск текста в файлах по указаному шаблону
-    res='grep'
-    if [[ -n $2 ]]; then
-        res+=" --exclude-dir={$2}"
-    fi
-    res+=" -rnw . -e $1"
-    echo $res
-    eval $res
-}
-
--find-chage-more() {
-    # Поиск файлов в директории `$1` которые изменялись более `$2` дней
-    # `$1` Путь к паке в которой искать
-    # `$2` Сколько дней назад изменялось, если нужно сегодня то укажите 0
-    # `$3` Во сколько директория можно углубляться, по умолчанию во все
-
-    day=$(expr $2 - 1)
-
-    if [[ $2 -eq 0 ]]; then
-        day=0
-    else
-        # 0 Изменялись сегодня
-        # +0 Изменялись вчера и далее
-        # +1 Изменялись позавчера и далее
-        day="+$day"
-    fi
-
-    maxdepth='-maxdepth'
-    if [[ -z $3 ]]; then
-        maxdepth=""
-    else
-        maxdepth="$maxdepth $3"
-    fi
-
-    # %TY-%Tm-%Td %TT %p\n
-    res="find $1 $maxdepth -mtime $day -printf '\033[92m%TY-%Tm-%Td %TT\033[0m\t\033[93m%p\033[0m\n' | sort -r"
-    echo $res
-    eval $res
-}
-
-#!/bin/bash
-
-# pep 8
-pep() {
-    # $1 =  путь к файлу или папки, если указана папка то тогда отформатируется вссе файлы в этой папке
-    pimport $1 && ppep8 $1
-}
-ppep8() {
-    # Отформатировать python файл
-    # $1 =  путь к файлу или папки, если указана папка то тогда отформатируется вссе файлы в этой папке
-    # Установить `pip install autopep8`
-    if [[ -f $1 ]]; then
-        ~py -m autopep8 --in-place --aggressive -v $1
-    elif [[ -d $1 ]]; then
-        ~py -m autopep8 --in-place --aggressive -v -r $1
-    fi
-
-}
-pimport() {
-    # Форматировать иморты, удалить не используемые импорты
-    # $1 =  путь к файлу или папки, если указана папка то тогда отформатируется вссе файлы в этой папке
-    # Установить `pip install autoflake`
-    if [[ -f $1 ]]; then
-        ~py -m autoflake --in-place --remove-unused-variables $1
-    elif [[ -d $1 ]]; then
-        ~py -m autoflake --in-place --remove-unused-variables -r $1
-    fi
-}
-
-# PIP
-# Установаить пакет
-pipin() {
-    # Если актевировано окружение то установить пакет в него
-    res=""
-    if [[ -n $VIRTUAL_ENV ]]; then
-        res="$VIRTUAL_ENV/bin/python -m pip install $1"
-    else
-        res="~py -m pip install $1"
-    fi
-    echo $res
-    eval $res && ~py -c '''
-import pathlib
-import sys
-import re
-
-path_self = sys.argv[1]
-package = sys.argv[2]
-
-requirements = pathlib.Path(path_self) / "requirements.txt"
-
-if requirements.exists():
-    if_exist = re.search(f"{package}[ \t><=!\n]", requirements.read_text())
-    if not if_exist:
-        with requirements.open("a") as f:
-            f.write(f"{package}\n")
-else:
-    requirements.write_text(package)
-    ''' $(pwd) $1
-}
-# Удалить пакет
-piprm() {
-    # Если актевировано окружение то удляем пакет из него
-    res=""
-    if [[ -n $VIRTUAL_ENV ]]; then
-        res="$VIRTUAL_ENV/bin/python -m pip uninstall $1"
-    else
-        res="~py -m pip uninstall $1"
-    fi
-    echo $res
-    eval $res && ~py -c '''
-import pathlib
-import sys
-import re
-
-path_self = sys.argv[1]
-package = sys.argv[2]
-
-requirements = pathlib.Path(path_self) / "requirements.txt"
-
-if requirements.exists():
-    rt = requirements.read_text()
-    rtn = re.sub(f"{package}[ \t><=!\n]","", rt)
-    requirements.write_text(rtn)
-    ''' $(pwd) $1
-}
-# Обновить сам pip
-pipup-self() {
-    # Обновить pip
-    ~py -m pip install --upgrade pip
-}
-# Poetry
-poetry-() {
-    res=""
-    if [[ -n $VIRTUAL_ENV ]]; then
-        res="$VIRTUAL_ENV/bin/python -m poetry $@"
-    else
-        res="~py -m poetry $@"
-    fi
-    echo $res
-    eval $res
-}
-
-# Venv
-# Создать окружение
-pcvenv() {
-    if [[ -z $1 ]]; then
-        b_dirname='venv'
-    else
-        b_dirname=$1
-    fi
-    res="~py -m venv $b_dirname"
-    echo $res
-    eval $res
-}
-# Актевировать окружение
-pavenv() {
-    if [[ -z $1 ]]; then
-        b_dirname='./venv/bin/activate'
-    else
-        b_dirname=$1
-    fi
-    res="source $b_dirname"
-    echo $res
-    eval $res
-}
-# Деактевировать окружение
-pdvenv() {
-    deactivate
-}
-
-# Poetry
-poetry_init() {
-    # Звгрузить poetry
-    pip install cachecontrol
-    pipupdate
-    pip install poetry
-    poetry install
-}
-
-# -------------------
-
-phttpserver() {
-    # Запустить сервер п разадчи файлов
-    # $1 порт
-    ~py -c '''
-from http.server import HTTPServer, SimpleHTTPRequestHandler, test
-import sys
-
-class CORSRequestHandler (SimpleHTTPRequestHandler):
-    def end_headers(self):
-        # Для разрешения CROS.(Запросы от других url)
-        self.send_header("Access-Control-Allow-Origin", "*")
-        SimpleHTTPRequestHandler.end_headers(self)
-
-test(
-    CORSRequestHandler,
-    HTTPServer,
-    port=int(sys.argv[1]) if len(sys.argv) > 1 else 8000,
-)
-''' $1
+-gifzip() {
+    # Сжать Gif видео
+    e="gifsicle -i \"$1\" -o \"out_$1\" --optimize=3 --colors=256 --lossy=30"
+    echo $e
+    eval $e
 }
