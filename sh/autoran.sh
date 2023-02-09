@@ -33,7 +33,7 @@ print(res)
             IFS=$'\n'
             for x in $(echo $list_dir); do
                 # Фоновый запуск
-                res="nohup $x >/dev/null &"
+                res="$x >/dev/null &"
                 echo $res
                 eval $res
             done
