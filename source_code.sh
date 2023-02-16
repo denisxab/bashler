@@ -767,6 +767,41 @@ __docker-create-filename() {
 	sudo docker-compose rm -fsv
 }
 
+####
+# Работа с оброзом
+###
+
+dk-build() {
+	# Собрать образ
+	# $1 Имя для оброза
+	# $2 Путь к папке в которой расположен Dockergile
+	#
+	conf_docker_image="conf_docker_image.json"
+	# Собрать образ
+	q1="sudo docker build -t $1 $2"
+	echo $q1
+	eval $q1
+	# Создать файл с конфигурациями образа
+	q2="sudo docker inspect $1 > $2/$conf_docker_image"
+	echo $q2
+	eval $q2
+}
+
+dk-run() {
+	# Запустить контейнер из оброза
+	# $1 Имя для оброза
+	# $@ Остальные аргументы
+	#
+	conf_docker_container="conf_docker_container.json"
+	# q1="sudo docker run -it --rm --detach $1 $@"
+	# echo $q1
+	container_id=$(sudo docker run -it --rm --detach $1 $@)
+	# Создать файл с конфигурациями образа
+	q2="sudo docker inspect $container_id > $conf_docker_container"
+	echo $q2
+	eval $q2
+}
+
 #!/bin/bash
 
 # Zsh
