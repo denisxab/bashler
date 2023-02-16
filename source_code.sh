@@ -689,7 +689,7 @@ dk-images() {
 ###
 
 dk-run() {
-	# Запустить контейнер из оброза
+	# Создать и запустить контейнер из оброза
 	# $1 Имя для оброза
 	# $@ Остальные аргументы
 
@@ -697,6 +697,20 @@ dk-run() {
 	conf_docker_container="conf_docker_container.json"
 	# Запускаем контейнер и полуаем его ID
 	container_id=$(sudo docker run -it --rm --detach $1 ${@:2})
+	# Создать файл с конфигурациями образа
+	q2="sudo docker inspect $container_id > $conf_docker_container"
+	echo $q2
+	eval $q2
+}
+dk-create() {
+	# Создать контейнер из оброза
+	# $1 Имя для оброза
+	# $@ Остальные аргументы
+
+	# Путь куда сохранятсья настройки запущеного контейнера
+	conf_docker_container="conf_docker_container.json"
+	# Запускаем контейнер и полуаем его ID
+	container_id=$(sudo docker create -it $1 ${@:2})
 	# Создать файл с конфигурациями образа
 	q2="sudo docker inspect $container_id > $conf_docker_container"
 	echo $q2
@@ -718,6 +732,11 @@ dk-stop() {
 	# Остановить существубщий контенер
 	# $1 Имя контейнера
 	sudo docker container stop $1
+}
+dk-restart() {
+	# Перезапустить существубщий контенер
+	# $1 Имя контейнера
+	sudo docker container restart $1
 }
 
 dk-ps() {
