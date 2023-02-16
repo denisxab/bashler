@@ -696,7 +696,9 @@ dk-run() {
 	# Путь куда сохранятсья настройки запущеного контейнера
 	conf_docker_container="conf_docker_container.json"
 	# Запускаем контейнер и полуаем его ID
-	container_id=$(sudo docker run -it --rm --detach $1 ${@:2})
+	q1="sudo docker run -it ${@:2} --rm --detach $1"
+	echo $q1
+	container_id=$(eval $q1)
 	# Создать файл с конфигурациями образа
 	q2="sudo docker inspect $container_id > $conf_docker_container"
 	echo $q2
@@ -715,6 +717,15 @@ dk-create() {
 	q2="sudo docker inspect $container_id > $conf_docker_container"
 	echo $q2
 	eval $q2
+}
+
+dk-attach() {
+	# Подключиться выводу консоли контейнера
+	# $1 Имя контейнера
+
+	q1="sudo docker container attach $1 ${@:2}"
+	echo $q1
+	eval $q1
 }
 
 dk-sh() {

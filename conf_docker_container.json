@@ -1,0 +1,230 @@
+[
+    {
+        "Id": "78b086693482642806a49070d3e936c63f82d6dbbeb16578b599c058d9ddad39",
+        "Created": "2023-02-16T23:03:20.051310125Z",
+        "Path": "/bin/sh",
+        "Args": [
+            "-c",
+            "daphne ${NameConf}.asgi:application -b 0.0.0.0 -p ${PORT_WEB}"
+        ],
+        "State": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 338591,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2023-02-16T23:03:20.730214464Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+        },
+        "Image": "sha256:63d760dcabac1b5b342acfa3787661534716eee94f5d0bac9dba51d60793f173",
+        "ResolvConfPath": "/media/denis/130479d6-b6a6-45e3-b75b-f2c4b6c004b5/VM/docker_data/containers/78b086693482642806a49070d3e936c63f82d6dbbeb16578b599c058d9ddad39/resolv.conf",
+        "HostnamePath": "/media/denis/130479d6-b6a6-45e3-b75b-f2c4b6c004b5/VM/docker_data/containers/78b086693482642806a49070d3e936c63f82d6dbbeb16578b599c058d9ddad39/hostname",
+        "HostsPath": "/media/denis/130479d6-b6a6-45e3-b75b-f2c4b6c004b5/VM/docker_data/containers/78b086693482642806a49070d3e936c63f82d6dbbeb16578b599c058d9ddad39/hosts",
+        "LogPath": "/media/denis/130479d6-b6a6-45e3-b75b-f2c4b6c004b5/VM/docker_data/containers/78b086693482642806a49070d3e936c63f82d6dbbeb16578b599c058d9ddad39/78b086693482642806a49070d3e936c63f82d6dbbeb16578b599c058d9ddad39-json.log",
+        "Name": "/stupefied_margulis",
+        "RestartCount": 0,
+        "Driver": "overlay2",
+        "Platform": "linux",
+        "MountLabel": "",
+        "ProcessLabel": "",
+        "AppArmorProfile": "docker-default",
+        "ExecIDs": null,
+        "HostConfig": {
+            "Binds": null,
+            "ContainerIDFile": "",
+            "LogConfig": {
+                "Type": "json-file",
+                "Config": {}
+            },
+            "NetworkMode": "default",
+            "PortBindings": {
+                "8000/tcp": [
+                    {
+                        "HostIp": "",
+                        "HostPort": "8001"
+                    }
+                ]
+            },
+            "RestartPolicy": {
+                "Name": "no",
+                "MaximumRetryCount": 0
+            },
+            "AutoRemove": true,
+            "VolumeDriver": "",
+            "VolumesFrom": null,
+            "ConsoleSize": [
+                0,
+                0
+            ],
+            "CapAdd": null,
+            "CapDrop": null,
+            "CgroupnsMode": "private",
+            "Dns": [],
+            "DnsOptions": [],
+            "DnsSearch": [],
+            "ExtraHosts": null,
+            "GroupAdd": null,
+            "IpcMode": "private",
+            "Cgroup": "",
+            "Links": null,
+            "OomScoreAdj": 0,
+            "PidMode": "",
+            "Privileged": false,
+            "PublishAllPorts": false,
+            "ReadonlyRootfs": false,
+            "SecurityOpt": null,
+            "UTSMode": "",
+            "UsernsMode": "",
+            "ShmSize": 67108864,
+            "Runtime": "runc",
+            "Isolation": "",
+            "CpuShares": 0,
+            "Memory": 0,
+            "NanoCpus": 0,
+            "CgroupParent": "",
+            "BlkioWeight": 0,
+            "BlkioWeightDevice": [],
+            "BlkioDeviceReadBps": [],
+            "BlkioDeviceWriteBps": [],
+            "BlkioDeviceReadIOps": [],
+            "BlkioDeviceWriteIOps": [],
+            "CpuPeriod": 0,
+            "CpuQuota": 0,
+            "CpuRealtimePeriod": 0,
+            "CpuRealtimeRuntime": 0,
+            "CpusetCpus": "",
+            "CpusetMems": "",
+            "Devices": [],
+            "DeviceCgroupRules": null,
+            "DeviceRequests": null,
+            "MemoryReservation": 0,
+            "MemorySwap": 0,
+            "MemorySwappiness": null,
+            "OomKillDisable": null,
+            "PidsLimit": null,
+            "Ulimits": null,
+            "CpuCount": 0,
+            "CpuPercent": 0,
+            "IOMaximumIOps": 0,
+            "IOMaximumBandwidth": 0,
+            "MaskedPaths": [
+                "/proc/asound",
+                "/proc/acpi",
+                "/proc/kcore",
+                "/proc/keys",
+                "/proc/latency_stats",
+                "/proc/timer_list",
+                "/proc/timer_stats",
+                "/proc/sched_debug",
+                "/proc/scsi",
+                "/sys/firmware"
+            ],
+            "ReadonlyPaths": [
+                "/proc/bus",
+                "/proc/fs",
+                "/proc/irq",
+                "/proc/sys",
+                "/proc/sysrq-trigger"
+            ]
+        },
+        "GraphDriver": {
+            "Data": {
+                "LowerDir": "/media/denis/130479d6-b6a6-45e3-b75b-f2c4b6c004b5/VM/docker_data/overlay2/2d39ba267fa2805840d461a4148a7d300525b3fb1799ce89d1739fd8a57815bb-init/diff:/media/denis/130479d6-b6a6-45e3-b75b-f2c4b6c004b5/VM/docker_data/overlay2/3of15356l1w3uu8rhavh1cagq/diff:/media/denis/130479d6-b6a6-45e3-b75b-f2c4b6c004b5/VM/docker_data/overlay2/8wc0g52qpqap6gj487d2x61kz/diff:/media/denis/130479d6-b6a6-45e3-b75b-f2c4b6c004b5/VM/docker_data/overlay2/qgjsgpnygnrkh2jqvu0d9l1cm/diff:/media/denis/130479d6-b6a6-45e3-b75b-f2c4b6c004b5/VM/docker_data/overlay2/v9wt0h3ynki0xw97lwpatrhig/diff:/media/denis/130479d6-b6a6-45e3-b75b-f2c4b6c004b5/VM/docker_data/overlay2/zvlx31o9shd3ubmfteku0eeyl/diff:/media/denis/130479d6-b6a6-45e3-b75b-f2c4b6c004b5/VM/docker_data/overlay2/f95f76dbb354d883fb33dc7d98682d8cd4e3642cb4447de10f515382e2c01306/diff:/media/denis/130479d6-b6a6-45e3-b75b-f2c4b6c004b5/VM/docker_data/overlay2/7f3a26564582362f546bcf3e763c0196e6e29e27554bef84ed4cb9005f026b59/diff:/media/denis/130479d6-b6a6-45e3-b75b-f2c4b6c004b5/VM/docker_data/overlay2/9afc3ccb51dcdf1b62ff9c4c4da336bb732269c6268b3df172701e5478277e62/diff:/media/denis/130479d6-b6a6-45e3-b75b-f2c4b6c004b5/VM/docker_data/overlay2/b8c73049a84400a3dfe76080589ea1012aa2761f39e93c0229dc295b218c0d91/diff:/media/denis/130479d6-b6a6-45e3-b75b-f2c4b6c004b5/VM/docker_data/overlay2/81e28c740ea75987687a8a408a36e99252b0f948edf2956376a52e4f01a188c2/diff",
+                "MergedDir": "/media/denis/130479d6-b6a6-45e3-b75b-f2c4b6c004b5/VM/docker_data/overlay2/2d39ba267fa2805840d461a4148a7d300525b3fb1799ce89d1739fd8a57815bb/merged",
+                "UpperDir": "/media/denis/130479d6-b6a6-45e3-b75b-f2c4b6c004b5/VM/docker_data/overlay2/2d39ba267fa2805840d461a4148a7d300525b3fb1799ce89d1739fd8a57815bb/diff",
+                "WorkDir": "/media/denis/130479d6-b6a6-45e3-b75b-f2c4b6c004b5/VM/docker_data/overlay2/2d39ba267fa2805840d461a4148a7d300525b3fb1799ce89d1739fd8a57815bb/work"
+            },
+            "Name": "overlay2"
+        },
+        "Mounts": [],
+        "Config": {
+            "Hostname": "78b086693482",
+            "Domainname": "",
+            "User": "",
+            "AttachStdin": false,
+            "AttachStdout": false,
+            "AttachStderr": false,
+            "ExposedPorts": {
+                "8000/tcp": {}
+            },
+            "Tty": true,
+            "OpenStdin": true,
+            "StdinOnce": false,
+            "Env": [
+                "PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "LANG=C.UTF-8",
+                "GPG_KEY=A035C8C19219BA821ECEA86B64E628F8D684696D",
+                "PYTHON_VERSION=3.11.2",
+                "PYTHON_PIP_VERSION=22.3.1",
+                "PYTHON_SETUPTOOLS_VERSION=65.5.1",
+                "PYTHON_GET_PIP_URL=https://github.com/pypa/get-pip/raw/1a96dc5acd0303c4700e02655aefd3bc68c78958/public/get-pip.py",
+                "PYTHON_GET_PIP_SHA256=d1d09b0f9e745610657a528689ba3ea44a73bd19c60f4c954271b790c71c2653",
+                "ProjName=django_test",
+                "PORT_WEB=8000",
+                "NameConf=conf"
+            ],
+            "Cmd": [
+                "/bin/sh",
+                "-c",
+                "daphne ${NameConf}.asgi:application -b 0.0.0.0 -p ${PORT_WEB}"
+            ],
+            "Image": "myproject:latest",
+            "Volumes": null,
+            "WorkingDir": "/code/django_test",
+            "Entrypoint": null,
+            "OnBuild": null,
+            "Labels": {}
+        },
+        "NetworkSettings": {
+            "Bridge": "",
+            "SandboxID": "b0d2708ba1282a7702d368a72086384f73a4fdf1ce3e401a9b6ece05bfea8ca1",
+            "HairpinMode": false,
+            "LinkLocalIPv6Address": "",
+            "LinkLocalIPv6PrefixLen": 0,
+            "Ports": {
+                "8000/tcp": [
+                    {
+                        "HostIp": "0.0.0.0",
+                        "HostPort": "8001"
+                    },
+                    {
+                        "HostIp": "::",
+                        "HostPort": "8001"
+                    }
+                ]
+            },
+            "SandboxKey": "/var/run/docker/netns/b0d2708ba128",
+            "SecondaryIPAddresses": null,
+            "SecondaryIPv6Addresses": null,
+            "EndpointID": "f67982cd3188493b81280a680a5a5987d648df3d1dd763a6bf92e211ce2a17ae",
+            "Gateway": "172.17.0.1",
+            "GlobalIPv6Address": "",
+            "GlobalIPv6PrefixLen": 0,
+            "IPAddress": "172.17.0.2",
+            "IPPrefixLen": 16,
+            "IPv6Gateway": "",
+            "MacAddress": "02:42:ac:11:00:02",
+            "Networks": {
+                "bridge": {
+                    "IPAMConfig": null,
+                    "Links": null,
+                    "Aliases": null,
+                    "NetworkID": "600fcdbcd1258eeb862e9e6019370fa40b02cfae3b086dffb4f5daf1c15a0786",
+                    "EndpointID": "f67982cd3188493b81280a680a5a5987d648df3d1dd763a6bf92e211ce2a17ae",
+                    "Gateway": "172.17.0.1",
+                    "IPAddress": "172.17.0.2",
+                    "IPPrefixLen": 16,
+                    "IPv6Gateway": "",
+                    "GlobalIPv6Address": "",
+                    "GlobalIPv6PrefixLen": 0,
+                    "MacAddress": "02:42:ac:11:00:02",
+                    "DriverOpts": null
+                }
+            }
+        }
+    }
+]
