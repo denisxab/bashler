@@ -2,8 +2,6 @@
 
 ######################################################################################
 # Мои переменные окурежния
-# Путь к диску с данными
-export DiskData="/media/denis/130479d6-b6a6-45e3-b75b-f2c4b6c004b5"
 # Если не указн путь к Bashler то брем путь по умолчанию
 if [[ -z $BASHLER_PATH ]]; then
     export BASHLER_PATH="$HOME/bashler"
@@ -29,14 +27,14 @@ alias {js,py,cs,ts,html}=code
 # Глобальные Alias
 #
 # Алиасы для программ
-alias configer="$DiskData/MyProject/PycharmProjects/configer/venv/bin/python3.10 $DiskData/MyProject/PycharmProjects/configer/configer/main.py"
-alias gitclones="$DiskData/MyProject/PycharmProjects/git_clons/venv/bin/python3.10 $DiskData/MyProject/PycharmProjects/git_clons/git_clons/main.py"
-alias pytots="$DiskData/MyProject/python_to_ts_type/venv/bin/python3.11 $DiskData/MyProject/python_to_ts_type/main.py"
+alias configer="$DISK/MyProject/PycharmProjects/configer/venv/bin/python3.10 $DISK/MyProject/PycharmProjects/configer/configer/main.py"
+alias gitclones="$DISK/MyProject/PycharmProjects/git_clons/venv/bin/python3.10 $DISK/MyProject/PycharmProjects/git_clons/git_clons/main.py"
+alias pytots="$DISK/MyProject/python_to_ts_type/venv/bin/python3.11 $DISK/MyProject/python_to_ts_type/main.py"
 alias showlogsmal="/home/denis/PycharmProjects/showlofsmal/showlogsmal.bin"
 alias ~py=python3.11
 alias pip="~py -m pip"
 alias ~bpy="~py -m bpython"
-alias syncthing="$DiskData/AlienApp/aplication/other/Syncthing/syncthing-linux-amd64-v1.20.1/syncthing"
+alias syncthing="$DISK/AlienApp/aplication/other/Syncthing/syncthing-linux-amd64-v1.20.1/syncthing"
 alias dbeaver="snap run dbeaver-ce"
 #
 alias ..="cd .."
