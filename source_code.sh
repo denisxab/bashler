@@ -662,13 +662,13 @@ dk-build() {
 	# $@ Остальные аргументы
 
 	# Собрать образ
-	q1="sudo docker build -t $1 $2 ${@:3}"
+	q1="docker build -t $1 $2 ${@:3}"
 	echo $q1
 	eval $q1
 	# Путь куда сохранятсья настройки созданого образа
 	conf_docker_image="conf_docker_image.json"
 	# Создать файл с конфигурациями образа
-	q2="sudo docker inspect $1 > $2/$conf_docker_image"
+	q2="docker inspect $1 > $2/$conf_docker_image"
 	echo $q2
 	eval $q2
 }
@@ -676,9 +676,9 @@ dk-images() {
 	# Посмотреть образы
 	# $1 - Если -w то будет отлеживать
 	if [[ $1 == '-w' ]]; then
-		sudo watch -d -n 2 sudo docker images
+		sudo watch -d -n 2 docker images
 	else
-		sudo docker images
+		docker images
 	fi
 }
 
@@ -694,11 +694,11 @@ dk-run() {
 	# Путь куда сохранятсья настройки запущеного контейнера
 	conf_docker_container="conf_docker_container.json"
 	# Запускаем контейнер и полуаем его ID
-	q1="sudo docker run -it ${@:2} --rm --detach $1"
+	q1="docker run -it ${@:2} --rm -d $1"
 	echo $q1
 	container_id=$(eval $q1)
 	# Создать файл с конфигурациями образа
-	q2="sudo docker inspect $container_id > $conf_docker_container"
+	q2="docker inspect $container_id > $conf_docker_container"
 	echo $q2
 	eval $q2
 }
@@ -710,9 +710,9 @@ dk-create() {
 	# Путь куда сохранятсья настройки запущеного контейнера
 	conf_docker_container="conf_docker_container.json"
 	# Запускаем контейнер и полуаем его ID
-	container_id=$(sudo docker create -it $1 ${@:2})
+	container_id=$(docker create -it $1 ${@:2})
 	# Создать файл с конфигурациями образа
-	q2="sudo docker inspect $container_id > $conf_docker_container"
+	q2="docker inspect $container_id > $conf_docker_container"
 	echo $q2
 	eval $q2
 }
@@ -721,7 +721,7 @@ dk-attach() {
 	# Подключиться выводу консоли контейнера
 	# $1 Имя контейнера
 
-	q1="sudo docker container attach $1 ${@:2}"
+	q1="docker container attach $1 ${@:2}"
 	echo $q1
 	eval $q1
 }
@@ -729,39 +729,39 @@ dk-attach() {
 dk-sh() {
 	# Войти в запущеннй контейнер
 	# $1 Имя контейнера
-	sudo docker exec -ti $1 /bin/sh
+	docker exec -ti $1 /bin/sh
 }
 
 dk-start() {
 	# Запустить существубщий контенер
 	# $1 Имя контейнера
-	sudo docker container start $1
+	docker container start $1
 }
 dk-stop() {
 	# Остановить существубщий контенер
 	# $1 Имя контейнера
-	sudo docker container stop $1
+	docker container stop $1
 }
 dk-restart() {
 	# Перезапустить существубщий контенер
 	# $1 Имя контейнера
-	sudo docker container restart $1
+	docker container restart $1
 }
 
 dk-ps() {
 	# Посмотреть контейнеры
 	# $1 - Если -w то будет отлеживать
 	if [[ $1 == '-w' ]]; then
-		watch -d -n 2 sudo docker ps -a
+		watch -d -n 2 docker ps -a
 	else
-		sudo docker ps -a
+		docker ps -a
 	fi
 }
 
 dk-info-ip() {
 	# Получить ip адрес указанного контейнера
 	# $1 Имя контейнера
-	sudo docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $1
+	docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $1
 }
 
 ###
@@ -769,9 +769,9 @@ dk-info-ip() {
 ###
 dk-prune() {
 	# Отчитстить контейнеры
-	sudo docker container prune
+	docker container prune
 	# Отчитстить образы
-	sudo docker container prune
+	docker container prune
 }
 
 #################################
@@ -786,23 +786,23 @@ dk-prune() {
 -docker-compose-build() {
 	# Запустить образы контейнеров
 	if [[ -r .env_path ]]; then
-		sudo docker-compose --env-file $(cat .env_path) build
+		docker-compose --env-file $(cat .env_path) build
 	fi
-	sudo docker-compose build
+	docker-compose build
 }
 -docker-compose-up() {
 	# Запустить контейнеры а после окончанию отчистить удалить их
 	if [[ -r .env_path ]]; then
-		sudo docker-compose --env-file $(cat .env_path) up && sudo docker-compose --env-file $(cat .env_path) rm -fsv
+		docker-compose --env-file $(cat .env_path) up && docker-compose --env-file $(cat .env_path) rm -fsv
 	fi
-	sudo docker-compose up && sudo docker-compose rm -fsv
+	docker-compose up && docker-compose rm -fsv
 }
 -docker-compose-rm() {
 	# Удалить ненужные контейнеры
 	if [[ -r .env_path ]]; then
-		sudo docker-compose --env-file $(cat .env_path) rm -fsv
+		docker-compose --env-file $(cat .env_path) rm -fsv
 	fi
-	sudo docker-compose rm -fsv
+	docker-compose rm -fsv
 }
 
 #!/bin/bash
