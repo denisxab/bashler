@@ -36,6 +36,7 @@ alias pip="~py -m pip"
 alias ~bpy="~py -m bpython"
 alias syncthing="$DISK/AlienApp/aplication/other/Syncthing/syncthing-linux-amd64-v1.20.1/syncthing"
 alias dbeaver="snap run dbeaver-ce"
+alias templaer="~py -m templaer"
 #
 alias ..="cd .."
 # замена ls на NNN
@@ -681,6 +682,11 @@ dk-images() {
 		docker images
 	fi
 }
+dk-imag-rm() {
+	# Удалить указанный образ
+	# $1 - Имя оброза
+	docker image rm $1
+}
 
 ####
 # Работа с контейнером
@@ -716,7 +722,6 @@ dk-create() {
 	echo $q2
 	eval $q2
 }
-
 dk-attach() {
 	# Подключиться выводу консоли контейнера
 	# $1 Имя контейнера
@@ -725,13 +730,11 @@ dk-attach() {
 	echo $q1
 	eval $q1
 }
-
 dk-sh() {
 	# Войти в запущеннй контейнер
 	# $1 Имя контейнера
 	docker exec -ti $1 /bin/sh
 }
-
 dk-start() {
 	# Запустить существубщий контенер
 	# $1 Имя контейнера
@@ -747,7 +750,6 @@ dk-restart() {
 	# $1 Имя контейнера
 	docker container restart $1
 }
-
 dk-ps() {
 	# Посмотреть контейнеры
 	# $1 - Если -w то будет отлеживать
@@ -757,7 +759,6 @@ dk-ps() {
 		docker ps -a
 	fi
 }
-
 dk-info-ip() {
 	# Получить ip адрес указанного контейнера
 	# $1 Имя контейнера

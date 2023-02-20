@@ -36,6 +36,7 @@ alias pip="~py -m pip"
 alias ~bpy="~py -m bpython"
 alias syncthing="$DISK/AlienApp/aplication/other/Syncthing/syncthing-linux-amd64-v1.20.1/syncthing"
 alias dbeaver="snap run dbeaver-ce"
+alias templaer="~py -m templaer"
 #
 alias ..="cd .."
 # замена ls на NNN
