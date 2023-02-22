@@ -1449,6 +1449,13 @@ ffmpeg-join-audio-to-video() {
     eval $res
 }
 
+pytube-download() {
+    # Скачать видео с Yotube
+    # $1 = Url ссылка на видео
+
+    ~py -c "from pytube import YouTube;YouTube(\"$1\").streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc().first().download()"
+}
+
 #!/bin/bash
 
 #
