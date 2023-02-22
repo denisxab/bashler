@@ -15,7 +15,7 @@ dk-build() {
 	echo $q1
 	eval $q1
 	# Путь куда сохранятсья настройки созданого образа
-	conf_docker_image="conf_docker_image.json"
+	conf_docker_image=".conf_docker_image.json"
 	# Создать файл с конфигурациями образа
 	q2="docker inspect $1 > $2/$conf_docker_image"
 	echo $q2
@@ -39,6 +39,8 @@ dk-imag-rm() {
 ####
 # Работа с контейнером
 ###
+alias dk="docker"
+
 
 dk-run() {
 	# Создать и запустить контейнер из оброза
@@ -46,7 +48,7 @@ dk-run() {
 	# $@ Остальные аргументы
 
 	# Путь куда сохранятсья настройки запущеного контейнера
-	conf_docker_container="conf_docker_container.json"
+	conf_docker_container=".conf_docker_container.json"
 	# Запускаем контейнер и полуаем его ID
 	q1="docker run -it ${@:2} --rm -d $1"
 	echo $q1
@@ -62,7 +64,7 @@ dk-create() {
 	# $@ Остальные аргументы
 
 	# Путь куда сохранятсья настройки запущеного контейнера
-	conf_docker_container="conf_docker_container.json"
+	conf_docker_container=".conf_docker_container.json"
 	# Запускаем контейнер и полуаем его ID
 	container_id=$(docker create -it $1 ${@:2})
 	# Создать файл с конфигурациями образа
@@ -124,8 +126,14 @@ dk-prune() {
 }
 
 #################################
+# Docker-compose
 #################################
-#################################
+alias dkp="docker-compose"
+
+dkp-init() {
+	# Создать файл `docker-compose.yml` в текущем пути
+	touch docker-compose.yml
+}
 
 -docker-compose-select-envfile() {
 	# Сохранить путь к env файлу

@@ -100,6 +100,11 @@ poetry-() {
     eval $res
 }
 
+poetry-req() {
+    # Создать файл requirements.txt
+    poetry export --dev --format requirements.txt --output requirements.txt
+}
+
 # Venv
 # Создать окружение
 pcvenv() {
