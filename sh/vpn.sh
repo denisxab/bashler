@@ -2,6 +2,9 @@
 
 export Wireguard_VPN_CONF="wg0"
 
+###
+# WireGuard
+#
 -vpn-on() {
     # Включить VPN
     sudo wg-quick up $Wireguard_VPN_CONF
@@ -13,4 +16,11 @@ export Wireguard_VPN_CONF="wg0"
 -vpn-info() {
     # Информация о подключение к VPN
     sudo wg show
+}
+###
+# OpenVpn
+#
+-open-vpn-on() {
+    # Включить OpenVpn
+    sudo openvpn /etc/openvpn/client/client.ovpn
 }
