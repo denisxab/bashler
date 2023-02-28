@@ -21,6 +21,7 @@ export Wireguard_VPN_CONF="wg0"
 # OpenVpn
 #
 -open-vpn-on() {
+    printf 'OpenVpn включен\n'
     # Включить OpenVpn
     sudo openvpn /etc/openvpn/client/client.ovpn
 }
