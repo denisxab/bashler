@@ -3,8 +3,8 @@
 ###
 # Формтирование и линтеры
 ###
-# Убрать предупреждение E501,W505 и игнорировать папку venv
-alias flake8='~py -m flake8 --extend-ignore E501,W505 --exclude venv'
+# Убрать предупреждение E501,W505,C901,F401,W605 и игнорировать папку venv
+alias flake8='~py -m flake8 --extend-ignore E501,W505,C901,F401,W605 --exclude venv'
 alias isort='~py -m isort'
 alias black='~py -m black'
 
