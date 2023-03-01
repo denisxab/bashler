@@ -114,7 +114,7 @@ export BASHLER_REMOTE_PATH="$HOME/.bashler_remote"
 
 У него будет следующая структура:
 
-```json
+```jsonc
 {
   "ssh":{
     "ПроизвольноеИмяПодключения_SSH":{
