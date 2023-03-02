@@ -1435,21 +1435,21 @@ ffmpeg-video-to-audio-dir() {
 ffmpeg-cup() {
     # Обрезать длительносить видео
     # $1 = Путь к видео
-    # $2 = Продолжительность
     # $3 = Откуда начать отсчёт продолжительности, по умолчнаию с начала видео
+    # $2 = Где закончить отсчёт продолжительности
 
-    time_long='1:00'
+    time_long='00:01:00'
     start_time='00:00:00'
 
-    if [ -n "$3" ]; then
-        start_time="$3"
-    fi
     if [ -n "$2" ]; then
-        time_long="$2"
+        start_time="$2"
+    fi
+    if [ -n "$3" ]; then
+        time_long="$3"
     fi
     new_name_file=$(echo "$start_time $time_long" | sed 's/:/_/g')
 
-    res="ffmpeg -i '$1' -ss $start_time -t $time_long '$new_name_file $1' "
+    res="ffmpeg -i '$1' -ss $start_time -to $time_long '$new_name_file $1' "
     echo $res
     eval $res
 }
