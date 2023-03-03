@@ -37,7 +37,7 @@ python _build.py
 source "$BASHLER_PATH/source_code.sh"
 ```
 
-> При выполнение `python _build.py` также создается новая документация функций `doc_source_code.md`
+> При выполнение `python _build.py` также создается новая документация функций в `./doc_source_code.md`
 
 ## Основные фичи
 
