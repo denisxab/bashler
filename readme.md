@@ -23,10 +23,6 @@
 export BASE_SYSTEM_OS="ubuntu"
 # Путь к Bahler
 export BASHLER_PATH="$HOME/bashler"
-# Путь к файлу автозапуска
-export AUTORUN_BASHLER="$HOME/.autorun_bashler"
-# Путь к настройкам удаленного доступа
-export BASHLER_REMOTE_PATH="$HOME/.bashler_remote"
 ###
 # Подключить `Bashler`
 source "$BASHLER_PATH/source_code.sh"
