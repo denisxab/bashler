@@ -169,10 +169,10 @@ source "$BASHLER_PATH/source_code.sh"
 python _build.py  
 ```
 
+> При выполнение `python _build.py` также создается новая документация функций в `./doc_source_code.md`
+
 После этого, пере подключите файл `source_code.sh` в текущем терминале
 
 ```bash
 source "$BASHLER_PATH/source_code.sh"
 ```
-
-> При выполнение `python _build.py` также создается новая документация функций в `./doc_source_code.md`
