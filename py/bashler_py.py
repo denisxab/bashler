@@ -157,11 +157,11 @@ def create_doc_from():
     ###
     # Заголовок
     doc_func = deque()
-    doc_func.append(f"# Документация функций `bashler`")
+    doc_func.append("# Документация функций `bashler`")
     ###
     # Перебираем все файлы в папке `./sh`, и получаем их документацию функций
     for x in (Path(self_bashler_path()) / "sh").glob("*.sh"):
-        doc_func.append(f"## Раздел: `{x.name}`")
+        doc_func.append(f"\n## Раздел: `{x.name}`")
         text_all_sh = x.read_text()
         for doc in create_doc_from_sh_file(text_all_sh):
             doc_func.append(doc)
@@ -187,7 +187,7 @@ def create_doc_from_sh_file(text_all_sh: str) -> typing.Iterable[str]:
             # Обрезаем лишнии отступы
             doc = re.sub("[\t#]| {2,}", "", x["doc"] if x["doc"] else "")
             # Формируем строку документации функции
-            line_doc_func = "### Функция: `{name}`\n\n```\n{doc}\n```".format(
+            line_doc_func = "\n### Функция: `{name}`\n\n```bash\n{doc}\n```".format(
                 name=name, doc=doc.strip()
             )
             yield line_doc_func

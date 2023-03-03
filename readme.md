@@ -108,7 +108,7 @@ export BASHLER_REMOTE_PATH="$HOME/.bashler_remote"
 
 - Принудительно запустить программы.
 
-  ```
+  ```bash
   autorun-bashler-force
   ```
 
