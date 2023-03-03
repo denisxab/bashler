@@ -3,13 +3,13 @@
 
 ######################################################################################
 # Путь к диску с данными
-export DISK="/media/denis/130479d6-b6a6-45e3-b75b-f2c4b6c004b5"
+export DISK="~/DISK"
 # Можем настраивать различные варинты для клиента и сервера
 export IS_SERVER="yes"
 # ОС (ubuntu/arch/termix)
 export BASE_SYSTEM_OS="ubuntu"
 # Путь к Bahler
-export BASHLER_PATH="/media/denis/130479d6-b6a6-45e3-b75b-f2c4b6c004b5/MyProject/bashler"
+export BASHLER_PATH="$DISK/MyProject/bashler"
 # Путь к файлу автозапуска
 export AUTORUN_BASHLER="$HOME/.autorun_bashler"
 # Путь к найтрокам удаленного доступа

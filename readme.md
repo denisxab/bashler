@@ -4,21 +4,11 @@
 
 ## Как подключать
 
-Для удобства импортирования мы можем в одну команду собрать
-все `.sh` файлы в один единый файл по имени `source_code.sh`.
-Это позволяет нам не беспокоиться о структуре проекта при его импортирование
+Для того, чтобы ваши функции и алиасы были доступны во всех оболочка, вам нужно импортировать файл `./source_code.sh` в `~/.zshrc` | `~/.bashrc`.
 
-Для этого выполните команду
+Пример как это можно сделать:
 
 ```bash
-make build
-```
-
-Для того чтобы ваши функции и алиасы были доступны во всех оболочка вам нужно импортировать файл `source_code.sh` в `~/.zshrc`
-
-```bash
-# Путь к диску с данными
-export DISK="/media/denis/130479d6-b6a6-45e3-b75b-f2c4b6c004b5"
 # Можем настраивать различные варинты для клиента и сервера
 export IS_SERVER="yes"
 # ОС (ubuntu/arch/termix)
@@ -29,23 +19,10 @@ export BASHLER_PATH="$HOME/bashler"
 export AUTORUN_BASHLER="$HOME/.autorun_bashler"
 # Путь к найтрокам удаленного доступа
 export BASHLER_REMOTE_PATH="$HOME/.bashler_remote"
-
--zsh-full-reload(){
-    # Перезагрузить полностью zsh
-    source ~/.zshrc
-}
--zsh-reload(){
-    # Перезагрузить библиотеки zsh
-    # Импортировать МОИ модули
-    res='source "$BASHLER_PATH/source_code.sh"'
-    echo $res
-    eval $res
-}
-# Импортировать зависимости
--zsh-reload
+###
+# Подключить `Bashler`
+source "$BASHLER_PATH/source_code.sh"
 ```
-
-Если вы изменили код в `~/bashler` то соберите файл `source_code.sh` снова, и выполните команду `-zsh-reload`
 
 ## Основные фичи
 
