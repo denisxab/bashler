@@ -102,5 +102,3 @@ def search_alias():
                     reset=color.reset.value,
                 )
             )
-
-

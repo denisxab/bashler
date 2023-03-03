@@ -1,9 +1,9 @@
-from collections import deque
 import enum
 import os
-from pathlib import Path
 import re
 import typing
+from collections import deque
+from pathlib import Path
 
 Home: str = os.environ["HOME"]
 BASHLER_PATH: str = os.environ["BASHLER_PATH"]
@@ -151,37 +151,15 @@ def search_shot_doc(similar_commands: str, _template_comment: str, text_all_sh: 
 
 
 def create_doc_from():
-    # Полный текст `source_code.sh`
-    # text_all_sh: str = read_sh_file(self_bashler_path())
-    # Шаблон для поиска функции и их документации
-    # template = re.compile(
-    # r"(?<=\n)(?P<name>[\w\d_-]+)\(\) {\s*(?P<doc>(?:(?:#.+)\s*)+)?"
-    # )
-    ##
-    # Записываем документацию в отдельный `MarkDown`` файл
-    # doc_func = deque()
-    # for x in template.finditer(text_all_sh):
-    #     name = x["name"]
-    #     # Не документируем системны и вспомогательные функции
-    #     if not re.search(r"\A(?:--|__|-|_)\w?", name):
-    #         # Обрезаем лишнии отступы
-    #         doc = re.sub("[\t#]| {2,}", "", x["doc"] if x["doc"] else "")
-    #         # Формируем строку документации функции
-    #         line_doc_func = "## `{name}`\n\n```\n{doc}\n```".format(
-    #             name=name, doc=doc.strip()
-    #         )
-    #         doc_func.append((name, line_doc_func))
+    """
+    Создать документацию `bash` функций
+    """
     ###
-    # Добавить заголовок
-    # doc_func_list = []
-    # doc_func.append(f"# Документация функций `bashler`")
-    # doc_func_list.extend([x[1] for x in doc_func])
-    # Запись файл
-    # doc_source_code.write_text("\n".join(doc_func_list))
-
-    ################
+    # Заголовок
     doc_func = deque()
     doc_func.append(f"# Документация функций `bashler`")
+    ###
+    # Перебираем все файлы в папке `./sh`, и получаем их документацию функций
     for x in (Path(self_bashler_path()) / "sh").glob("*.sh"):
         doc_func.append(f"## Раздел: `{x.name}`")
         text_all_sh = x.read_text()
@@ -195,6 +173,9 @@ def create_doc_from():
 
 
 def create_doc_from_sh_file(text_all_sh: str) -> typing.Iterable[str]:
+    """
+    Поиск документации функций в `bash` тексте
+    """
     # Шаблон для поиска функции и их документации
     template = re.compile(
         r"(?<=\n)(?P<name>[\w\d_-]+)\(\) {\s*(?P<doc>(?:(?:#.+)\s*)+)?"
