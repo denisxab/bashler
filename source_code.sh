@@ -1340,15 +1340,15 @@ export Wireguard_VPN_CONF="wg0"
 ###
 # WireGuard
 #
-vpn-on() {
+wg-vpn-on() {
     # Включить VPN
     sudo wg-quick up $Wireguard_VPN_CONF
 }
-vpn-off() {
+wg-vpn-off() {
     # Выключить VPN
     sudo wg-quick down $Wireguard_VPN_CONF
 }
-vpn-info() {
+wg-vpn-info() {
     # Информация о подключение к VPN
     sudo wg show
 }
