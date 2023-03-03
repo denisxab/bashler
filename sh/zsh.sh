@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Zsh
--zsh-hotkey() {
+zsh-hotkey() {
 	echo "	
 Ctrl+a = Переместить курсор в начало команды
 Ctrl+e = Переместить курсор в конец команды
@@ -16,11 +16,11 @@ Ctrl+x затем Ctrl+e = Открыть команду в текстовом �
 Ctrl+s =  Поставить на паузу выполение команжы (Ctrl+q возобновить)
 	"
 }
--zsh-edit() {
+zsh-edit() {
 	# Открыть редактирование zsh
 	$EDITOR ~/.zshrc
 }
--zsh-install-plugin() {
+zsh-install-plugin() {
 	# Установить плагины Zsh
 	git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions &&
 		git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting &&
@@ -28,13 +28,13 @@ Ctrl+s =  Поставить на паузу выполение команжы (
 		mkdir $ZSH_CUSTOM/plugins/poetry &&
 		poetry completions zsh >$ZSH_CUSTOM/plugins/poetry/_poetry
 }
--zsh-mount-disk() {
+zsh-mount-disk() {
 	# Примонтировать повседневные  диски
 
 	# Google Disk
 	google-drive-ocamlfuse /mnt/google_disk
 }
--zsh-clean-history() {
+zsh-clean-history() {
 	# Отчистить историю команд
 	history -c
 }

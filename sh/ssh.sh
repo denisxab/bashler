@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # SSH - Сервер
--ssh-keygen() {
+ssh-keygen() {
     # Сгенерировать ssh ключи
     ssh-keygen
 }
--ssh-restart() {
+ssh-restart() {
     # Перезапутсить SSH сервер
     res=''
     if [[ $BASE_SYSTEM_OS == "termix" ]]; then
@@ -18,7 +18,7 @@
     echo $res
     eval $res
 }
--ssh-start() {
+ssh-start() {
     # Запустить SSH сервер
     res=''
     if [[ $BASE_SYSTEM_OS == "termix" ]]; then
@@ -31,8 +31,7 @@
     echo $res
     eval $res
 }
-
--ssh-stop() {
+ssh-stop() {
     # Остановить SSH сервер
     res=''
     if [[ $BASE_SYSTEM_OS == "termix" ]]; then
@@ -45,9 +44,8 @@
     echo $res
     eval $res
 }
-
 # SSH - Подключение к серверу
--ssh-c() {
+ssh-c() {
     # Поключиться по SSH
     # $1 - Имя пользователя
     # $2 - Host(ip) сервера
@@ -61,29 +59,31 @@
     echo res
     eval res
 }
--ssh-cf() {
+ssh-cf() {
     # Поключиться по SSH. Взять данные для подлючения из файла
     # $1 - ПроизвольноеИмя из файла для ssh
-    res=$(-ssh-parse-conf $1)
+    res=$(--ssh-parse-conf $1)
     user=$(echo $res | cut -d "|" -f 1)
     host=$(echo $res | cut -d "|" -f 2)
     port=$(echo $res | cut -d "|" -f 3)
-    echo "$user@$host:$port"
+    echo "ssh -p $port $user@$host:$port"
     # Подключение по сереру
     ssh -p $port "$user@$host"
 }
--ssh-copy-key-cf() {
+ssh-copy-key-cf() {
     # Скопироввать SSH ключ. Взять данные для подлючения из файла
     # $1 - ПроизвольноеИмя из файла для ssh
-    res=$(-ssh-parse-conf $1)
+    res=$(--ssh-parse-conf $1)
     user=$(echo $res | cut -d "|" -f 1)
     host=$(echo $res | cut -d "|" -f 2)
     port=$(echo $res | cut -d "|" -f 3)
     echo "$user@$host:$port"
     ssh-copy-id -p $port "$user@$host"
 }
+######################################################################
+# Системные команды
 
--ssh-parse-conf() {
+--ssh-parse-conf() {
     # Получаем данные для подключения по `ПроизвольноеИмяПодключения_SSH`
     #
     # $1 = ПроизвольноеИмяПодключения_SSH

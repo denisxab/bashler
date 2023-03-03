@@ -23,11 +23,12 @@ def manger_search_func():
     name_regex = sys.argv[1]
     # Весь текст из sh скриптов
     text_all_sh: str = read_sh_file(self_bashler_path())
-    #: Похожие команды
+    #: Найти похожие команды
     similar_commands: list[str] = search_func(name_regex, text_all_sh)
 
     # #: Шаблон поиска документации
-    template_comment = r"[\n\t ]*#[\w\d\t,.\-_ @:\>\<\(\)\[\]\`=*]+"
+    # template_comment = r"[\n\t ]*#[\w\d\t,.\-_ @:\>\<\(\)\[\]\`=*]+"
+    template_comment = r"[\n\t ]*#.+"
     if len(similar_commands) == 1:
         search_full_doc(similar_commands[0], template_comment, text_all_sh)
     elif len(similar_commands) > 1:
@@ -101,3 +102,5 @@ def search_alias():
                     reset=color.reset.value,
                 )
             )
+
+

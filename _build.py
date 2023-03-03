@@ -6,6 +6,8 @@ import hashlib
 import pathlib
 import re
 
+from py.bashler_py import create_doc_from
+
 path = pathlib.Path(__file__).resolve().parent
 print(path)
 source_code = path / "source_code.sh"
@@ -36,5 +38,7 @@ def checking_uniqueness(_text_source_code):
 checking_uniqueness(text_source_code)
 # Записать в итоговый файл
 source_code.write_text(text_source_code)
+# Формируем документацию для `source_code.md`
+create_doc_from()
 # Лог
 print(f"Ok: md5='{hashlib.md5(text_source_code.encode()).hexdigest()}'")

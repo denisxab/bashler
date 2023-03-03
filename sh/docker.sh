@@ -1,5 +1,7 @@
 #!/bin/bash
 
+alias dk="docker"
+
 ####
 # Работа с оброзом
 ###
@@ -39,8 +41,6 @@ dk-imag-rm() {
 ####
 # Работа с контейнером
 ###
-alias dk="docker"
-
 
 dk-run() {
 	# Создать и запустить контейнер из оброза
@@ -135,29 +135,29 @@ dkp-init() {
 	touch docker-compose.yml
 }
 
--docker-compose-select-envfile() {
-	# Сохранить путь к env файлу
-	# -docker-compose-select-env-file ./file/__env.env
-	__write-file $1 .env_path
-}
--docker-compose-build() {
-	# Запустить образы контейнеров
-	if [[ -r .env_path ]]; then
-		docker-compose --env-file $(cat .env_path) build
-	fi
-	docker-compose build
-}
--docker-compose-up() {
-	# Запустить контейнеры а после окончанию отчистить удалить их
-	if [[ -r .env_path ]]; then
-		docker-compose --env-file $(cat .env_path) up && docker-compose --env-file $(cat .env_path) rm -fsv
-	fi
-	docker-compose up && docker-compose rm -fsv
-}
--docker-compose-rm() {
-	# Удалить ненужные контейнеры
-	if [[ -r .env_path ]]; then
-		docker-compose --env-file $(cat .env_path) rm -fsv
-	fi
-	docker-compose rm -fsv
-}
+# -docker-compose-select-envfile() {
+# 	# Сохранить путь к env файлу
+# 	# -docker-compose-select-env-file ./file/__env.env
+# 	__write-file $1 .env_path
+# }
+# -docker-compose-build() {
+# 	# Запустить образы контейнеров
+# 	if [[ -r .env_path ]]; then
+# 		docker-compose --env-file $(cat .env_path) build
+# 	fi
+# 	docker-compose build
+# }
+# -docker-compose-up() {
+# 	# Запустить контейнеры а после окончанию отчистить удалить их
+# 	if [[ -r .env_path ]]; then
+# 		docker-compose --env-file $(cat .env_path) up && docker-compose --env-file $(cat .env_path) rm -fsv
+# 	fi
+# 	docker-compose up && docker-compose rm -fsv
+# }
+# -docker-compose-rm() {
+# 	# Удалить ненужные контейнеры
+# 	if [[ -r .env_path ]]; then
+# 		docker-compose --env-file $(cat .env_path) rm -fsv
+# 	fi
+# 	docker-compose rm -fsv
+# }

@@ -1,6 +1,9 @@
+from collections import deque
 import enum
 import os
+from pathlib import Path
 import re
+import typing
 
 Home: str = os.environ["HOME"]
 BASHLER_PATH: str = os.environ["BASHLER_PATH"]
@@ -82,9 +85,14 @@ def search_func(name_regex_bash_fun: str, text_all_sh: str):
     """
     Ищем похожие функции
     """
+    # Ищем функции по шаблону
     _similar_commands = re.findall(
-        r"([\w\\-_]*%s[\w\-_]*)\(\) *{" % name_regex_bash_fun, text_all_sh
+        r"([\w\d\-_]*%s[\w\d\-_]*)\(\) *{" % name_regex_bash_fun, text_all_sh
     )
+    # Если есть команда которая полностью соответствует шаблону поиска, то показываем только его.
+    _similar_commands_qe = [x for x in _similar_commands if x == name_regex_bash_fun]
+    if _similar_commands_qe:
+        _similar_commands = _similar_commands_qe
     # Если команда не найдена
     if not _similar_commands:
         return []
@@ -95,8 +103,9 @@ def search_full_doc(name_bash_fun: str, _template_comment: str, text_all_sh: str
     """
     Если есть только одна команда то выводим полную документацию о ней
     """
+    # Документация функции
     _docstring: re.Match = re.search(
-        r"%s\(\) *{\s*((%s)+)" % (name_bash_fun, _template_comment), text_all_sh
+        r"\n%s\(\) *{\s*((%s)+)" % (name_bash_fun, _template_comment), text_all_sh
     )
     if _docstring:
         # Убираем лишние отступы
@@ -118,7 +127,7 @@ def search_shot_doc(similar_commands: str, _template_comment: str, text_all_sh: 
     """
     for _name_func in similar_commands:
         _command: re.Match = re.search(
-            r"%s\(\) *{\s((%s)+)" % (_name_func, _template_comment), text_all_sh
+            r"\n%s\(\) *{\s((%s)+)" % (_name_func, _template_comment), text_all_sh
         )
         if _command:
             # Берем первый комментарий
@@ -139,3 +148,69 @@ def search_shot_doc(similar_commands: str, _template_comment: str, text_all_sh: 
                     reset=color.reset.value,
                 )
             )
+
+
+def create_doc_from():
+    # Полный текст `source_code.sh`
+    # text_all_sh: str = read_sh_file(self_bashler_path())
+    # Шаблон для поиска функции и их документации
+    # template = re.compile(
+    # r"(?<=\n)(?P<name>[\w\d_-]+)\(\) {\s*(?P<doc>(?:(?:#.+)\s*)+)?"
+    # )
+    ##
+    # Записываем документацию в отдельный `MarkDown`` файл
+    # doc_func = deque()
+    # for x in template.finditer(text_all_sh):
+    #     name = x["name"]
+    #     # Не документируем системны и вспомогательные функции
+    #     if not re.search(r"\A(?:--|__|-|_)\w?", name):
+    #         # Обрезаем лишнии отступы
+    #         doc = re.sub("[\t#]| {2,}", "", x["doc"] if x["doc"] else "")
+    #         # Формируем строку документации функции
+    #         line_doc_func = "## `{name}`\n\n```\n{doc}\n```".format(
+    #             name=name, doc=doc.strip()
+    #         )
+    #         doc_func.append((name, line_doc_func))
+    ###
+    # Добавить заголовок
+    # doc_func_list = []
+    # doc_func.append(f"# Документация функций `bashler`")
+    # doc_func_list.extend([x[1] for x in doc_func])
+    # Запись файл
+    # doc_source_code.write_text("\n".join(doc_func_list))
+
+    ################
+    doc_func = deque()
+    doc_func.append(f"# Документация функций `bashler`")
+    for x in (Path(self_bashler_path()) / "sh").glob("*.sh"):
+        doc_func.append(f"## Раздел: `{x.name}`")
+        text_all_sh = x.read_text()
+        for doc in create_doc_from_sh_file(text_all_sh):
+            doc_func.append(doc)
+    ###
+    # Путь к документации
+    doc_source_code = Path(self_bashler_path()) / "doc_source_code.md"
+    # Запись файл
+    doc_source_code.write_text("\n".join(doc_func))
+
+
+def create_doc_from_sh_file(text_all_sh: str) -> typing.Iterable[str]:
+    # Шаблон для поиска функции и их документации
+    template = re.compile(
+        r"(?<=\n)(?P<name>[\w\d_-]+)\(\) {\s*(?P<doc>(?:(?:#.+)\s*)+)?"
+    )
+    for x in template.finditer(text_all_sh):
+        name = x["name"]
+        # Не документируем системны и вспомогательные функции
+        if not re.search(r"\A(?:--|__|-|_)\w?", name):
+            # Обрезаем лишнии отступы
+            doc = re.sub("[\t#]| {2,}", "", x["doc"] if x["doc"] else "")
+            # Формируем строку документации функции
+            line_doc_func = "### Функция: `{name}`\n\n```\n{doc}\n```".format(
+                name=name, doc=doc.strip()
+            )
+            yield line_doc_func
+
+
+# if __name__ == "__main__":
+#     create_doc_from()

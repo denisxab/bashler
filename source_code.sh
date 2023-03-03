@@ -294,7 +294,7 @@ test(
 #!/bin/bash
 
 # Find
--find() {
+find() {
 
     # find [ОткудаИскать...] -name "ЧтоИскать"
 
@@ -314,20 +314,20 @@ test(
     # -o 		= ИЛИ
     find $@
 }
--find-e() {
+find-e() {
     # Поиск всех файлов с указаным разширением
     find . -name "*.$1"
 }
--find-f() {
+find-f() {
     # Поиск файла или папки по указаному шаблоному имени
     find . -iname "$1"
 }
--find-tree() {
+find-tree() {
     # Фильтрация вывода
     # > шаблон_слово
     tree -a -F | grep $@
 }
--find-t() {
+find-t() {
     # Поиск текста в файлах по указаному шаблону
     # $1 - Что искать
     # $2 - Где искать
@@ -346,7 +346,7 @@ test(
     eval $res
 }
 
--find-chage-more() {
+find-chage-more() {
     # Поиск файлов в директории `$1` которые изменялись более `$2` дней
     # `$1` Путь к паке в которой искать
     # `$2` Сколько дней назад изменялось, если нужно сегодня то укажите 0
@@ -494,7 +494,7 @@ autorun-bashler-force() {
 
 #!/bin/bash
 
--rsync-server() {
+rsync-server() {
 	# Синхронезировать с сервером по SSH, если в ВЫХОДНОЙ(out) папке отличия, то удалить их
 	#
 	# $1 = localpath
@@ -541,7 +541,7 @@ autorun-bashler-force() {
 	eval $res
 }
 
--rsync-parse-conf() {
+rsync-parse-conf() {
 	# Выполнить синхронизацию из `.bash_remote.json`
 	#
 	# $1 = ПроизвольноеИмяПодключения_RSYNC
@@ -596,80 +596,33 @@ print(";\n".join(res))
 }
 
 #################
-# -rsync-local-folder() {
-# 	# Синхронизировать локальные папки
-# 	# > откуда куда
-# 	# -e папка_1 папка_... 	= Исключить папки или файлы из сихронизации
-# 	# --dry-run			 	= Показать какие файлы будут сихронезированы без выполени программы
-# 	exclud_folder=$(__rsync-exlude-folder $@)
-# 	res="rsync -azvh --progress $1 $2 $exclud_folder"
-# 	echo $res
-# 	eval $res
-# }
-# -rsync-delete-local-folder() {
-# 	# Синхронизировать папки, если в ВЫХОДНОЙ(out) папке отличия, то удалить их
-# 	# -e папка_1 папка_... = Исключить папки или файлы из сихронизации
-# 	exclud_folder=$(__rsync-exlude-folder $@)
-# 	res="rsync -azvh --progress --delete $1 $2 $exclud_folder"
-# 	echo $res
-# 	eval $res
-# }
-# -rsync-server-folder() {
-# 	# Синхронезировать с сервером по SSH
-# 	# > port username@ip:path localpath
-# 	# -e папка_1 папка_... = Исключить папки или файлы из сихронизации
-# 	exclud_folder=$(__rsync-exlude-folder $@)
-# 	SSH_RES="ssh -p $1"
-# 	res="rsync -azvh --progress -e $SSH_RES $2 $3 $exclud_folder"
-# 	echo $res
-# 	eval $res
-# }
+rsync-local-folder() {
+	# Синхронизировать локальные папки
+	# $1 = откуда(ИСТОЧНИК)
+	# $2 = куда
+	# --exclude=папка_1 --exclude=папка_ = Исключить папки или файлы из сихронизации
+	# --dry-run			 				 = Показать какие файлы будут сихронезированы без выполени программы
+	# --delete              			 = Удалить файлы и папки которые не соответвуют ИСТОЧНИКУ
+	res="rsync -azvh --progress $1 $2 $@"
+	echo $res
+	eval $res
+}
 
-##############
-# -rsync-read-file() {
-# 	# Прочитать файл с сохранеными путями синхронизации
-# 	eval $(~py -c "
-# import os.path
-# file = '.rsyncpath'
-# if os.path.exists(file):
-#     with open(file, 'r') as _f:
-#         print(_f.read())
-# 	" $@)
-# }
-# __rsync-exlude-folder() {
-# 	# -e папка_1 папка_... = Исключить папки или файлы из сихронизации
-# 	# можно создать файл .rsyncignore(по типу .gitignore) для хранения исключений
-# 	~py -c "
-# import os.path
-# import sys
-
-# def main(argv:list):
-#     '''
-#     >>> main(['sd', 'in', 'out', '-e', 'ewe', 'edde', 'deed'])
-#     --exclude=ewe --exclude=edde --exclude=deed
-#     '''
-#     file = '.rsyncignore'
-#     exclude = []
-#     # Получаем исключения из консоли
-#     exclude.extend(argv[3:])
-#     if exclude and exclude.pop(0) == '-e':
-#         # Получаем исключения из файла
-#         if os.path.exists(file):
-#             with open(file, 'r') as _f:
-#                 exclude.extend(_f.read().split('\n'))
-#         res = ''
-#         for x in exclude:
-#             res += '--exclude=%s ' % x
-#         # убрать последний пробел
-#         res = res[:-1] if res.endswith(' ') else res
-#         print(res)
-#     else:
-#         print('', end='')
-# main(sys.argv)
-# 	" $@
-# }
+rsync-server-folder() {
+	# Синхронезировать с сервером по SSH
+	# $1 = PORT
+	# $2 = username@ip:path
+	# $3 = Путь к локальнйо папке
+	# --exclude=папка_1 --exclude=папка_ = Исключить папки или файлы из сихронизации
+	SSH_RES="ssh -p $1"
+	res="rsync -azvh --progress -e $SSH_RES $2 $3 $@"
+	echo $res
+	eval $res
+}
 
 #!/bin/bash
+
+alias dk="docker"
 
 ####
 # Работа с оброзом
@@ -710,8 +663,6 @@ dk-imag-rm() {
 ####
 # Работа с контейнером
 ###
-alias dk="docker"
-
 
 dk-run() {
 	# Создать и запустить контейнер из оброза
@@ -806,37 +757,37 @@ dkp-init() {
 	touch docker-compose.yml
 }
 
--docker-compose-select-envfile() {
-	# Сохранить путь к env файлу
-	# -docker-compose-select-env-file ./file/__env.env
-	__write-file $1 .env_path
-}
--docker-compose-build() {
-	# Запустить образы контейнеров
-	if [[ -r .env_path ]]; then
-		docker-compose --env-file $(cat .env_path) build
-	fi
-	docker-compose build
-}
--docker-compose-up() {
-	# Запустить контейнеры а после окончанию отчистить удалить их
-	if [[ -r .env_path ]]; then
-		docker-compose --env-file $(cat .env_path) up && docker-compose --env-file $(cat .env_path) rm -fsv
-	fi
-	docker-compose up && docker-compose rm -fsv
-}
--docker-compose-rm() {
-	# Удалить ненужные контейнеры
-	if [[ -r .env_path ]]; then
-		docker-compose --env-file $(cat .env_path) rm -fsv
-	fi
-	docker-compose rm -fsv
-}
+# -docker-compose-select-envfile() {
+# 	# Сохранить путь к env файлу
+# 	# -docker-compose-select-env-file ./file/__env.env
+# 	__write-file $1 .env_path
+# }
+# -docker-compose-build() {
+# 	# Запустить образы контейнеров
+# 	if [[ -r .env_path ]]; then
+# 		docker-compose --env-file $(cat .env_path) build
+# 	fi
+# 	docker-compose build
+# }
+# -docker-compose-up() {
+# 	# Запустить контейнеры а после окончанию отчистить удалить их
+# 	if [[ -r .env_path ]]; then
+# 		docker-compose --env-file $(cat .env_path) up && docker-compose --env-file $(cat .env_path) rm -fsv
+# 	fi
+# 	docker-compose up && docker-compose rm -fsv
+# }
+# -docker-compose-rm() {
+# 	# Удалить ненужные контейнеры
+# 	if [[ -r .env_path ]]; then
+# 		docker-compose --env-file $(cat .env_path) rm -fsv
+# 	fi
+# 	docker-compose rm -fsv
+# }
 
 #!/bin/bash
 
 # Zsh
--zsh-hotkey() {
+zsh-hotkey() {
 	echo "	
 Ctrl+a = Переместить курсор в начало команды
 Ctrl+e = Переместить курсор в конец команды
@@ -851,11 +802,11 @@ Ctrl+x затем Ctrl+e = Открыть команду в текстовом �
 Ctrl+s =  Поставить на паузу выполение команжы (Ctrl+q возобновить)
 	"
 }
--zsh-edit() {
+zsh-edit() {
 	# Открыть редактирование zsh
 	$EDITOR ~/.zshrc
 }
--zsh-install-plugin() {
+zsh-install-plugin() {
 	# Установить плагины Zsh
 	git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions &&
 		git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting &&
@@ -863,13 +814,13 @@ Ctrl+s =  Поставить на паузу выполение команжы (
 		mkdir $ZSH_CUSTOM/plugins/poetry &&
 		poetry completions zsh >$ZSH_CUSTOM/plugins/poetry/_poetry
 }
--zsh-mount-disk() {
+zsh-mount-disk() {
 	# Примонтировать повседневные  диски
 
 	# Google Disk
 	google-drive-ocamlfuse /mnt/google_disk
 }
--zsh-clean-history() {
+zsh-clean-history() {
 	# Отчистить историю команд
 	history -c
 }
@@ -877,9 +828,12 @@ Ctrl+s =  Поставить на паузу выполение команжы (
 #!/bin/bash
 
 ##################################################
---() {
+doc() {
     # Поиск документции у функции
-    ---dev $@ | less
+    res=$(where $1)
+    res2=$(---dev $@) 
+    res3="$res2\n\n$res"
+    echo $res3 | less
 }
 an() {
     # Поиск алиасов по имени
@@ -925,11 +879,11 @@ search_alias()
 #!/bin/bash
 
 # SSH - Сервер
--ssh-keygen() {
+ssh-keygen() {
     # Сгенерировать ssh ключи
     ssh-keygen
 }
--ssh-restart() {
+ssh-restart() {
     # Перезапутсить SSH сервер
     res=''
     if [[ $BASE_SYSTEM_OS == "termix" ]]; then
@@ -942,7 +896,7 @@ search_alias()
     echo $res
     eval $res
 }
--ssh-start() {
+ssh-start() {
     # Запустить SSH сервер
     res=''
     if [[ $BASE_SYSTEM_OS == "termix" ]]; then
@@ -955,8 +909,7 @@ search_alias()
     echo $res
     eval $res
 }
-
--ssh-stop() {
+ssh-stop() {
     # Остановить SSH сервер
     res=''
     if [[ $BASE_SYSTEM_OS == "termix" ]]; then
@@ -969,9 +922,8 @@ search_alias()
     echo $res
     eval $res
 }
-
 # SSH - Подключение к серверу
--ssh-c() {
+ssh-c() {
     # Поключиться по SSH
     # $1 - Имя пользователя
     # $2 - Host(ip) сервера
@@ -985,29 +937,31 @@ search_alias()
     echo res
     eval res
 }
--ssh-cf() {
+ssh-cf() {
     # Поключиться по SSH. Взять данные для подлючения из файла
     # $1 - ПроизвольноеИмя из файла для ssh
-    res=$(-ssh-parse-conf $1)
+    res=$(--ssh-parse-conf $1)
     user=$(echo $res | cut -d "|" -f 1)
     host=$(echo $res | cut -d "|" -f 2)
     port=$(echo $res | cut -d "|" -f 3)
-    echo "$user@$host:$port"
+    echo "ssh -p $port $user@$host:$port"
     # Подключение по сереру
     ssh -p $port "$user@$host"
 }
--ssh-copy-key-cf() {
+ssh-copy-key-cf() {
     # Скопироввать SSH ключ. Взять данные для подлючения из файла
     # $1 - ПроизвольноеИмя из файла для ssh
-    res=$(-ssh-parse-conf $1)
+    res=$(--ssh-parse-conf $1)
     user=$(echo $res | cut -d "|" -f 1)
     host=$(echo $res | cut -d "|" -f 2)
     port=$(echo $res | cut -d "|" -f 3)
     echo "$user@$host:$port"
     ssh-copy-id -p $port "$user@$host"
 }
+######################################################################
+# Системные команды
 
--ssh-parse-conf() {
+--ssh-parse-conf() {
     # Получаем данные для подключения по `ПроизвольноеИмяПодключения_SSH`
     #
     # $1 = ПроизвольноеИмяПодключения_SSH
@@ -1102,8 +1056,11 @@ d-list-disk() {
 	sudo fdisk -l
 }
 ## Tree
--tree() {
-	# > УровеньВложенности ДиректориюПосмотерть
+tree_() {
+	# Показать дерево катологов
+	# $1 = Уровень вложенности дерева(Например=3)
+	# $2 = Какую директорию посмотерть
+	# 
 	# -a = скрытые файлы
 	# -d = только директории
 	# -f = показать относительный путь для файлов
@@ -1132,7 +1089,7 @@ d-list-disk() {
 
 ## Python
 
--p-joinfile() {
+p-joinfile() {
 	# Объеденить текс всех файлов из указанной директории
 	# 1 - Путь к папке
 	# 2 - Кодировка файлов
@@ -1383,22 +1340,22 @@ export Wireguard_VPN_CONF="wg0"
 ###
 # WireGuard
 #
--vpn-on() {
+vpn-on() {
     # Включить VPN
     sudo wg-quick up $Wireguard_VPN_CONF
 }
--vpn-off() {
+vpn-off() {
     # Выключить VPN
     sudo wg-quick down $Wireguard_VPN_CONF
 }
--vpn-info() {
+vpn-info() {
     # Информация о подключение к VPN
     sudo wg show
 }
 ###
 # OpenVpn
 #
--open-vpn-on() {
+open-vpn-on() {
     printf 'OpenVpn включен\n'
     # Включить OpenVpn
     sudo openvpn /etc/openvpn/client/client.ovpn
@@ -1487,7 +1444,7 @@ pytube-download() {
 ## Рабата с видео и Gif
 #
 
--gifzip() {
+gifzip() {
     # Сжать Gif видео
     e="gifsicle -i \"$1\" -o \"out_$1\" --optimize=3 --colors=256 --lossy=30"
     echo $e
