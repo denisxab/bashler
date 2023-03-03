@@ -139,7 +139,7 @@ source "$BASHLER_PATH/source_code.sh"
 - Пример подключения по `SSH` используя данные из файла `.bashler_remote`
 
 ```bash
--ssh-cf ПроизвольноеИмяПодключения
+ssh-cf ПроизвольноеИмяПодключения
 ```
 
 #### Rsync
@@ -147,7 +147,7 @@ source "$BASHLER_PATH/source_code.sh"
 - Пример удаленной синхронизации файлов через `rsync` используя данные из файла `.bashler_remote`
 
 ```bash
--rsync-parse-conf regПроизвольноеИмяПодключенияru1 
+rsync-parse-conf regПроизвольноеИмяПодключенияru1 
 ```
 
 ## Как модифицировать
