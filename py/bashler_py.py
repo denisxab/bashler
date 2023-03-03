@@ -154,17 +154,12 @@ def create_doc_from():
     """
     Создать документацию `bash` функций
     """
-    ###
-    # Заголовок
     doc_func = deque()
-    doc_func.append("# Документация функций `bashler`")
-    ###
-    # Перебираем все файлы в папке `./sh`, и получаем их документацию функций
-    for x in (Path(self_bashler_path()) / "sh").glob("*.sh"):
-        doc_func.append(f"\n## Раздел: `{x.name}`")
-        text_all_sh = x.read_text()
-        for doc in create_doc_from_sh_file(text_all_sh):
-            doc_func.append(doc)
+    ##
+    # Создать алиасов `bash` функций
+    create_doc_from_alias(doc_func)
+    # Создать документацию `bash` функций
+    create_doc_from_func(doc_func)
     ###
     # Путь к документации
     doc_source_code = Path(self_bashler_path()) / "doc_source_code.md"
@@ -172,12 +167,74 @@ def create_doc_from():
     doc_source_code.write_text("\n".join(doc_func))
 
 
-def create_doc_from_sh_file(text_all_sh: str) -> typing.Iterable[str]:
+def create_doc_from_func(doc_func: deque):
+    """
+    Получить документацию всех функций в `./sh/*.sh`
+    """
+    ###
+    # Заголовок
+    doc_func.append("\n# Документация функций")
+    ###
+    # Перебираем все файлы в папке `./sh`, и получаем их документацию функций
+    for _file in (Path(self_bashler_path()) / "sh").glob("*.sh"):
+        doc_func.append(f"\n## Раздел: `{_file.name}`")
+        text_all_sh = _file.read_text()
+        for doc in create_doc_from_func_sh_file(text_all_sh):
+            doc_func.append(doc)
+
+
+def create_doc_from_alias(doc_func: deque):
+    """
+    Получить документацию всех алиасов в `./sh/*.sh`
+    """
+    ###
+    # Заголовок
+    doc_func.append("\n# Доступные Alias")
+    ###
+    # Добавить текст из файла `alias.sh`
+    _file = Path(self_bashler_path()) / "alias.sh"
+    text_all_sh = _file.read_text()
+    tmp = create_doc_from_alias_sh_file(text_all_sh)
+    if tmp:
+        doc_func.append(f"\n## Раздел: `{_file.name}`\n")
+        doc_func.extend(tmp)
+    ###
+    # Добавить текст из файлов `./sh/*.sh`
+    for _file in (Path(self_bashler_path()) / "sh").glob("*.sh"):
+        # Текст `./sh/*.sh` файла
+        text_all_sh = _file.read_text()
+        tmp = create_doc_from_alias_sh_file(text_all_sh)
+        if tmp:
+            doc_func.append(f"\n## Раздел: `{_file.name}`\n")
+            doc_func.extend(tmp)
+
+
+def create_doc_from_alias_sh_file(text_all_sh: str):
+    """
+    Поиск документации алиасов в `bash` тексте
+    """
+    # Шаблон для поиска алиасов
+    template: re.Pattern = re.compile(search_from_value_alias(".+"))
+    # Документируем только файлы, в которых есть алиасы
+    dq_line = deque()
+    dq_table = deque()
+    # Строка с алиасом
+    for _alias in template.finditer(text_all_sh):
+        line = f"|`{_alias.group(1).strip()}`|`{_alias.group(2)}`|"
+        dq_line.append(line)
+    if dq_line:
+        dq_table.append("| Name | Value |")
+        dq_table.append("| ---- | ----- |")
+        dq_table.extend(dq_line)
+    return dq_table
+
+
+def create_doc_from_func_sh_file(text_all_sh: str) -> typing.Iterable[str]:
     """
     Поиск документации функций в `bash` тексте
     """
     # Шаблон для поиска функции и их документации
-    template = re.compile(
+    template: re.Pattern = re.compile(
         r"(?<=\n)(?P<name>[\w\d_-]+)\(\) {\s*(?P<doc>(?:(?:#.+)\s*)+)?"
     )
     for x in template.finditer(text_all_sh):

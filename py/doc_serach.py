@@ -86,7 +86,6 @@ def search_alias():
         def _search_bashler_file():
             """Поиск в файлах проекта"""
             nonlocal is_text
-
             pattern: str = search_from_name_alias(name_regex)
             for x in re.finditer(pattern, text_all_sh):
                 print_doc(x.group(1), x.group(2))
@@ -102,3 +101,9 @@ def search_alias():
                     reset=color.reset.value,
                 )
             )
+
+
+if __name__ == "__main__":  
+    sys.argv.append('p')
+    sys.argv.append('-v')
+    search_alias()

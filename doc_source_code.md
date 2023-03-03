@@ -1,4 +1,53 @@
-# Документация функций `bashler`
+
+# Доступные Alias
+
+## Раздел: `alias.sh`
+
+| Name | Value |
+| ---- | ----- |
+|`{txt,md,conf,log}`|`micro`|
+|`{js,py,cs,ts,html}`|`code`|
+|`configer`|`"$DISK/MyProject/PycharmProjects/configer/venv/bin/python3.10 $DISK/MyProject/PycharmProjects/configer/configer/main.py"`|
+|`gitclones`|`"$DISK/MyProject/PycharmProjects/git_clons/venv/bin/python3.10 $DISK/MyProject/PycharmProjects/git_clons/git_clons/main.py"`|
+|`pytots`|`"$DISK/MyProject/python_to_ts_type/venv/bin/python3.11 $DISK/MyProject/python_to_ts_type/main.py"`|
+|`showlogsmal`|`"/home/denis/PycharmProjects/showlofsmal/showlogsmal.bin"`|
+|`~py`|`python3.11`|
+|`pip`|`"~py -m pip"`|
+|`~bpy`|`"~py -m bpython"`|
+|`syncthing`|`"$DISK/AlienApp/aplication/other/Syncthing/syncthing-linux-amd64-v1.20.1/syncthing"`|
+|`dbeaver`|`"snap run dbeaver-ce"`|
+|`templaer`|`"~py -m templaer"`|
+|`..`|`"cd .."`|
+|`nnn`|`'nnn -de'`|
+
+## Раздел: `git.sh`
+
+| Name | Value |
+| ---- | ----- |
+|`gst`|`"git status"`|
+|`glog`|`"git log"`|
+|`gbra`|`"git branch"`|
+|`gcd`|`"git checkout $1"`|
+|`gmer`|`"git merge $1"`|
+|`gdif`|`"git diff $1"`|
+|`grst`|`"git reset --hard"`|
+
+## Раздел: `python_pro.sh`
+
+| Name | Value |
+| ---- | ----- |
+|`flake8`|`'~py -m flake8 --extend-ignore E501,W505,C901,F401,W605 --exclude venv'`|
+|`isort`|`'~py -m isort'`|
+|`black`|`'~py -m black'`|
+
+## Раздел: `docker.sh`
+
+| Name | Value |
+| ---- | ----- |
+|`dk`|`"docker"`|
+|`dkp`|`"docker-compose"`|
+
+# Документация функций
 
 ## Раздел: `git.sh`
 
