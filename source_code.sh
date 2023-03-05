@@ -34,7 +34,7 @@ alias showlogsmal="/home/denis/PycharmProjects/showlofsmal/showlogsmal.bin"
 alias ~py=python3.11
 alias pip="~py -m pip"
 alias ~bpy="~py -m bpython"
-alias syncthing="$DISK/AlienApp/aplication/other/Syncthing/syncthing-linux-amd64-v1.20.1/syncthing"
+alias syncthing="$DISK/AlienApp/aplication/other/Syncthing/syncthing-linux-amd64-v1.20.1/syncthing serve --no-browser --logfile=default"
 alias dbeaver="snap run dbeaver-ce"
 alias templaer="~py -m templaer"
 #
@@ -1164,7 +1164,10 @@ pakage = sys.argv[1]
 # Чтение файла `.bashler_pinst`
 home = os.environ["HOME"]
 path_bashler_pinst =  Path(f"{home}/.bashler_pinst")
-text = path_bashler_pinst.read_text()
+
+text = "{}"
+if path_bashler_pinst.exists():
+    text = path_bashler_pinst.read_text()
 if not text:
     text  = "{}"
 dict_app = json.loads(text)

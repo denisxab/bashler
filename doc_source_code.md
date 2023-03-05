@@ -14,7 +14,7 @@
 |`~py`|`python3.11`|
 |`pip`|`"~py -m pip"`|
 |`~bpy`|`"~py -m bpython"`|
-|`syncthing`|`"$DISK/AlienApp/aplication/other/Syncthing/syncthing-linux-amd64-v1.20.1/syncthing"`|
+|`syncthing`|`"$DISK/AlienApp/aplication/other/Syncthing/syncthing-linux-amd64-v1.20.1/syncthing serve --no-browser --logfile=default"`|
 |`dbeaver`|`"snap run dbeaver-ce"`|
 |`templaer`|`"~py -m templaer"`|
 |`..`|`"cd .."`|

@@ -45,7 +45,10 @@ pakage = sys.argv[1]
 # Чтение файла `.bashler_pinst`
 home = os.environ["HOME"]
 path_bashler_pinst =  Path(f"{home}/.bashler_pinst")
-text = path_bashler_pinst.read_text()
+
+text = "{}"
+if path_bashler_pinst.exists():
+    text = path_bashler_pinst.read_text()
 if not text:
     text  = "{}"
 dict_app = json.loads(text)
