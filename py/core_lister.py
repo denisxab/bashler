@@ -1,10 +1,16 @@
 """ 
 Модуль для работы отображения списка файлов в виде TUI
+
+
+TODO:Решить проблему когда возникает ошибка при более 10 фалов .
 """
 
 import curses
 import os
+import sys
 from typing import Literal
+
+encoding = "utf-8"
 
 
 def MainHandler(
@@ -20,8 +26,8 @@ def MainHandler(
 
     def ViewListFile():
         """Выводим спсиок файлов"""
-        extend_str: Literal["", "/"]
-        is_select: Literal["[ ] ", "[X] "]
+        extend_str: Literal["", "/"] = ""
+        is_select: Literal["[ ] ", "[X] "] = "[ ]"
         for i, file in enumerate(files):
             # Файлы или папка
             extend_str = "/" if os.path.isdir(file) else ""
@@ -31,21 +37,28 @@ def MainHandler(
             if selected_states[i]:
                 is_select = "[X] "
                 stdscr.addstr(
-                    i + 1, 0, is_select + file + extend_str, curses.color_pair(1)
+                    i + 1,
+                    0,
+                    f"{is_select}{file}{extend_str}".encode(encoding),
+                    curses.color_pair(1),
+                )
+            # Выделяем файл или папку на которой сейчас находиться курсор
+            if pos == i:
+                stdscr.addstr(
+                    i + 1,
+                    0,
+                    f"{is_select}{file}{extend_str}".encode(encoding),
+                    curses.color_pair(3),
                 )
             # Если файл/директория НЕ выбран
             else:
                 stdscr.addstr(
                     i + 1,
                     0,
-                    is_select + file + extend_str,
-                    curses.color_pair(2 if extend_str == "/" else 0),
+                    f"{is_select}{file}{extend_str}".encode(encoding),
+                    curses.color_pair(2 if extend_str == "/" else 1),
                 )
-            # Выделяем файл или папку на которой сейчас находиться курсор
-            if pos == i:
-                stdscr.addstr(
-                    i + 1, 0, is_select + file + extend_str, curses.color_pair(3)
-                )
+
         ###
         # Обновляем экран
         stdscr.refresh()
@@ -179,6 +192,9 @@ def main_run(stdscr: curses.window, dir_path: str):
 
 
 if __name__ == "__main__":
-    selected_files = curses.wrapper(main_run, dir_path=".")
+    # Путь в котором показывать файлы и папки
+    dir_path: str = sys.argv[1]
+    print(dir_path)
+    selected_files = curses.wrapper(main_run, dir_path=dir_path)
     # Вернуть список выбранных файлов и директорий
     print(" ".join(selected_files))
