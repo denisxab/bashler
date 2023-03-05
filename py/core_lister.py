@@ -2,8 +2,8 @@
 Модуль для работы отображения списка файлов в виде TUI
 """
 
-import os
 import curses
+import os
 from typing import Literal
 
 
