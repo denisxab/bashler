@@ -207,7 +207,7 @@ class Screen(object):
 
 def main():
     # Путь к папке
-    _path = "."  # sys.argv[1]
+    _path = sys.argv[1]
     # Список файлов в папке
     list_dir = list(Path(_path).glob("*"))
     # Преобразованный список файлов и папок. У папок в конце добавиться слеш

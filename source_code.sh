@@ -1119,7 +1119,13 @@ for x in p.glob("*.txt"):
 
 pls() {
 	# Вывести список файлов и деректория, для выбора через TUI.
-	~py $BASHLER_PATH/py/core_lister.py `pwd`
+	res=""
+	if [[ -z $1 ]]; then
+		res=$(pwd)
+	else
+		res="$1"
+	fi
+	~py $BASHLER_PATH/py/core_lister.py $res
 }
 
 #!/bin/bash
