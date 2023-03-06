@@ -52,8 +52,13 @@ class Screen(object):
         self.bottom = len(self.items)
         self.current = 0
         self.page = self.bottom // self.max_lines
+
         # Список выбранных элементов
-        self.selected_states = [False] * len(items)
+        self.selected_states: list[tuple[bool, int, int]] = [
+            (False, 0, it) for it, elm in enumerate(items)
+        ]
+        # Номер выбранного элемента по порядку
+        self.number_pos: int = 0
 
     def init_curses(self):
         """Инициализации curses"""
@@ -114,9 +119,13 @@ class Screen(object):
                 self.paging(self.DOWN)
             # Выбор элемента
             elif ch in (ord(" "), ord("\n")):
-                self.selected_states[
-                    self.top + self.current
-                ] = not self.selected_states[self.top + self.current]
+                tmp = self.selected_states[self.top + self.current]
+                self.number_pos += 1
+                self.selected_states[self.top + self.current] = (
+                    not tmp[0],
+                    self.number_pos,
+                    tmp[2],
+                )
             # Выход их программы
             elif ch in (curses.ascii.ESC, ord("q")):
                 break
@@ -181,7 +190,7 @@ class Screen(object):
         self.window.erase()
         for idx, item in enumerate(self.items[self.top : self.top + self.max_lines]):
             # Выделить выделенные файлы и папки
-            if self.selected_states[self.top + idx]:
+            if self.selected_states[self.top + idx][0]:
                 item = item.replace("[ ]", "[X]")
             # Выделите текущую строку курсора
             if idx == self.current:
@@ -198,7 +207,7 @@ class Screen(object):
 
 def main():
     # Путь к папке
-    _path = sys.argv[1]
+    _path = "."  # sys.argv[1]
     # Список файлов в папке
     list_dir = list(Path(_path).glob("*"))
     # Преобразованный список файлов и папок. У папок в конце добавиться слеш
@@ -209,8 +218,11 @@ def main():
     res = screen.run()
     ###
     # Обработка выбранных файлов и папок
-    f = [str(list_dir[i].name) for i in range(len(list_dir)) if res[i]]
-    print(" ".join(f))
+    f = [(x[1], list_dir[x[2]].name) for x in res if x[0]]
+    # Выводим список файлов и папок в том порядке в которых их выбрали в TUI
+    f.sort()
+    f2 = [x[1] for x in f]
+    print(" ".join(f2))
 
 
 if __name__ == "__main__":
