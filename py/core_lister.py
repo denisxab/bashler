@@ -220,7 +220,7 @@ def main():
     # Обработка выбранных файлов и папок
     f = [(x[1], list_dir[x[2]].name) for x in res if x[0]]
     # Выводим список файлов и папок в том порядке в которых их выбрали в TUI
-    f.sort()
+    f.sort(key=lambda x: x[0])
     f2 = [x[1] for x in f]
     print(" ".join(f2))
 
