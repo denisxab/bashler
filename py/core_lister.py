@@ -1,6 +1,5 @@
 import curses
 import curses.textpad
-import os
 import sys
 from pathlib import Path
 
