@@ -56,12 +56,11 @@ alias gdif="git diff $1"
 alias grst="git reset --hard"
 
 gadd() {
-    # Создать комит всех изменений
+    # Создать коммит всех изменений
     date=$(date +\"%c\")
-    req="git add -A && git commit -m '$date - $1'"
-    echo $req
-    eval $req
+    git add -A && git commit -m "$date - $1"
 }
+
 gaddp() {
     # Создать комит всех изменений и выполнить push
     gadd $@
@@ -70,12 +69,7 @@ gaddp() {
 }
 garch() {
     # Сделать архив текущей ветки
-    req="git archive --format zip --output $1.zip "
-    req+='"'
-    req+=$(git rev-parse --abbrev-ref HEAD)
-    req+='"'
-    echo $req
-    eval $req
+    git archive --format zip --output "$1.zip" "$(git rev-parse --abbrev-ref HEAD)"
 }
 grmh() {
     # Удалить файл из отслеживания
@@ -85,32 +79,24 @@ grmh() {
 }
 
 gitignore() {
-    template='''__pycache__
+    # Создать файл .gitignore
+    cat <<EOF >.gitignore
+__pycache__
 log
 venv
 /html
 .vscode
 /dist
-'''
-    echo $template >'.gitignore'
+EOF
 }
 
 gremot-up-token() {
     # Обновить токен в URL
     # $1 = Токен
     git_url=$(git remote get-url origin)
-    new_token=$1
-    new_url=$(~py -c '''
-import sys
-import re
-gir_url = sys.argv[1]
-new_token = sys.argv[2]
-res=new_token.join(re.search("(.+:).+(@.+)",gir_url).group(1,2))
-print(res)
-    ''' $git_url $new_token)
-    res="git remote set-url origin $new_url"
-    echo $res
-    eval $res
+    new_token="$1"
+    new_url=$(~py -c "import sys,re;gir_url=sys.argv[1];new_token=sys.argv[2];print(new_token.join(re.search('(.+:).+(@.+)',gir_url).group(1,2)))" "$git_url" "$new_token")
+    git remote set-url origin "$new_url"
 }
 
 #!/bin/bash
@@ -1146,190 +1132,114 @@ pls() {
 
 #!/bin/bash
 
+#
 # Работа с пакетными менеджарами
+#
 
+# Функция для установки пакетов
 pinst() {
-	# Установить программу в Linux
-	RES_EXE="$(~py -c '''
-import json
-import sys
-import re
-from pathlib import Path
-import os
+	# Получение имени пакета из аргументов командной строки
+	pakage="$1"
 
-platform = sys.argv[-1]
-pakage = sys.argv[1]
+	# Установка пакета в зависимости от платформы
+	case "$BASE_SYSTEM_OS" in
+	ubuntu)
+		if [[ "$pakage" == *.deb ]]; then
+			# Установка из файла
+			sudo dpkg -i "$pakage"
+		else
+			# Установка из интернета
+			sudo apt install -y "$pakage"
+		fi
+		;;
+	arch)
+		# Установка на Arch Linux
+		sudo pacman -S --noconfirm "$pakage"
+		;;
+	termux)
+		# Установка на Termux
+		pkg install "$pakage"
+		;;
+	*)
+		echo "Unsupported platform"
+		exit 1
+		;;
+	esac
 
-# Установка программы
-if platform == "ubuntu":
-	if re.search(".deb$", pakage): 
-		# Установка из файла
-		print("p-apt-install-file")
-	else:
-		# Установка из интернета
-		print("p-apt-install")
-elif platform == "arch":
-	print("p-packman-install")
-elif platform == "termux":
-	print("p-pkg-install")
-else:
-	print("None")
-''' $1 $BASE_SYSTEM_OS) $@"
+	# Добавление пакета в файл `.bashler_pinst`
+	path_bashler_pinst="$HOME/.bashler_pinst"
 
-	echo $RES_EXE
-	eval $RES_EXE && ~py -c '''
-# Добавить программу в `.bashler_pinst`
-import json
-import sys
-import re
-from pathlib import Path
-import os
+	# Чтение файла `.bashler_pinst`
+	dict_app="$(jq -rcM '{}' "$path_bashler_pinst" 2>/dev/null)"
 
-platform = sys.argv[-1]
-pakage = sys.argv[1]
+	# Добавление пакета в словарь
+	dict_app="$(echo "$dict_app" | jq --arg pakage "$pakage" '.[$pakage]=""')"
 
-# Чтение файла `.bashler_pinst`
-home = os.environ["HOME"]
-path_bashler_pinst =  Path(f"{home}/.bashler_pinst")
-
-text = "{}"
-if path_bashler_pinst.exists():
-    text = path_bashler_pinst.read_text()
-if not text:
-    text  = "{}"
-dict_app = json.loads(text)
-# Добавляем приложение
-dict_app[pakage] = ""
-# Запись в файл `.bashler_pinst`
-with open(path_bashler_pinst, "w") as _jsonFile:
-	json.dump(dict_app, _jsonFile, skipkeys=False, sort_keys=True, indent=4, ensure_ascii=False)
-''' $1 $BASE_SYSTEM_OS
+	# Запись словаря в файл `.bashler_pinst`
+	echo "$dict_app" >"$path_bashler_pinst"
 }
 
+# Функция для удаления пакетов
 prem() {
-	# Удалить указаный пакет
-	RES_EXE="$(~py -c '''
-import sys
-import re
-os = sys.argv[-1]
-pakage = sys.argv[1]
-if os == "ubuntu":
-	if re.search(".deb$", pakage): 
-		# Удалить из файла
-		print("p-apt-remove")
-	else:
-		# Удалить из интернета
-		print("p-apt-remove")
-elif os == "arch":
-	print("p-packman-remove")
-elif os == "termux":
-	print("p-pkg-remove")
-else:
-	print("None")
-''' $1 $BASE_SYSTEM_OS) $@"
+	# Получение имени пакета из аргументов командной строки
+	pakage="$1"
 
-	echo $RES_EXE
-	eval $RES_EXE && ~py -c '''
-# Добавить программу в `.bashler_pinst`
-import json
-import sys
-import re
-from pathlib import Path
-import os
+	# Удаление пакета в зависимости от платформы
+	case "$BASE_SYSTEM_OS" in
+	ubuntu)
+		# Удаление на Ubuntu
+		sudo apt-get remove -y "$pakage"
+		;;
+	arch)
+		# Удаление на Arch Linux
+		sudo pacman -R --noconfirm "$pakage"
+		;;
+	termux)
+		# Удаление на Termux
+		pkg uninstall "$pakage"
+		;;
+	*)
+		echo "Unsupported platform"
+		exit 1
+		;;
+	esac
 
-platform = sys.argv[-1]
-pakage = sys.argv[1]
+	# Удаление пакета из файла `.bashler_pinst`
+	path_bashler_pinst="$HOME/.bashler_pinst"
 
-# Чтение файла `.bashler_pinst`
-home = os.environ["HOME"]
-path_bashler_pinst =  Path(f"{home}/.bashler_pinst")
-text = path_bashler_pinst.read_text()
-if not text:
-    text  = "{}"
-dict_app = json.loads(text)
-# Убрать приложение
-dict_app.pop(pakage)
-# Запись в файл `.bashler_pinst`
-with open(path_bashler_pinst, "w") as _jsonFile:
-	json.dump(dict_app, _jsonFile, skipkeys=False, sort_keys=True, indent=4, ensure_ascii=False)
-''' $1 $BASE_SYSTEM_OS
+	# Чтение файла `.bashler_pinst`
+	dict_app="$(jq -rcM '{}' "$path_bashler_pinst" 2>/dev/null)"
+
+	# Удаление пакета из словаря
+	dict_app="$(echo "$dict_app" | jq "del(.$pakage)")"
+
+	# Запись словаря в файл `.bashler_pinst`
+	echo "$dict_app" >"$path_bashler_pinst"
 }
 
+# Функция для обновления пакетов
 pupd() {
-	# Обновить все пакеты
-	res=''
-	if [[ $BASE_SYSTEM_OS == "termix" ]]; then
-		res="p-pkg-update"
-	elif [[ $BASE_SYSTEM_OS == "ubuntu" ]]; then
-		res="p-apt-update && p-snap-update && p-flatpack-update"
-	elif [[ $BASE_SYSTEM_OS == "ubuntu" ]]; then
-		res="p-packman-update"
-	fi
-	eval $res
+	# Обновление пакетов в зависимости от платформы
+	case "$BASE_SYSTEM_OS" in
+	ubuntu)
+		# Обновление на Ubuntu
+		p-apt-update -y && p-snap-update && p-flatpack-update
+		;;
+	arch)
+		# Обновление на Arch Linux
+		p-packman-update
+		;;
+	termux)
+		# Обновление на Termux
+		p-pkg-update
+		;;
+	*)
+		echo "Unsupported platform"
+		exit 1
+		;;
+	esac
 }
 
-#############
-p-apt-baseinstall() {
-	# Устновить все необходимые программы
-
-	res=~py -c "
-
-import sys
-
-is_server=sys.argv[1]
-
-if is_server = 'yes':
-	print('Server')
-	print('Client')
-
-if input('Установить зависемости ? (y/n)') == 'y':
-	if is_server:
-		os.system(''' 
-	# Обновить пакеты
-	p-apt-update;
-	# Установить пакеты
-	sudo apt install git curl wget vim nginx net-tools make tree;
-		''')
-		
-	else:
-		os.system(''' 
-	# Обновим пакеты apt
-	p-apt-update;
-	# Устоновим пакетный менеджер flatpak и snap
-	sudo apt install flatpak snap
-	# Обновить все пакеты в системе
-	p-full-update;
-	# Установить базовые  пакеты
-	sudo apt install git zsh curl micro keepassx net-tools make krusader;
-	# Программы snap
-	sudo snap install code --classic;
-		'''
-		)	
-else:
-	print('Отставить!')
-	" $IS_SERVER
-}
-# -------------------------
-p-apt-install() {
-	# Установить программу
-	sudo apt install $@
-}
-p-pkg-install() {
-	pkg install $@
-}
-p-apt-install-file() {
-	# Установить из файла
-	# sudo dpkg -i $1
-	p-apt-install $1
-}
-# -------------------------
-p-apt-remove() {
-	# Установить программу
-	sudo apt remove $@
-}
-p-pkg-remove() {
-	pkg uninstall $@
-}
 # -------------------------
 p-apt-update() {
 	# Обновить ссылки, программы, отчистить лишнее
@@ -1352,8 +1262,6 @@ p-flatpack-update() {
 	# Обнавить программы из flatpak
 	flatpak update
 }
-
-# -------------------------
 
 #!/bin/bash
 

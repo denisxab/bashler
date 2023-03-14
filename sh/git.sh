@@ -11,12 +11,11 @@ alias gdif="git diff $1"
 alias grst="git reset --hard"
 
 gadd() {
-    # Создать комит всех изменений
+    # Создать коммит всех изменений
     date=$(date +\"%c\")
-    req="git add -A && git commit -m '$date - $1'"
-    echo $req
-    eval $req
+    git add -A && git commit -m "$date - $1"
 }
+
 gaddp() {
     # Создать комит всех изменений и выполнить push
     gadd $@
@@ -25,12 +24,7 @@ gaddp() {
 }
 garch() {
     # Сделать архив текущей ветки
-    req="git archive --format zip --output $1.zip "
-    req+='"'
-    req+=$(git rev-parse --abbrev-ref HEAD)
-    req+='"'
-    echo $req
-    eval $req
+    git archive --format zip --output "$1.zip" "$(git rev-parse --abbrev-ref HEAD)"
 }
 grmh() {
     # Удалить файл из отслеживания
@@ -40,30 +34,22 @@ grmh() {
 }
 
 gitignore() {
-    template='''__pycache__
+    # Создать файл .gitignore
+    cat <<EOF >.gitignore
+__pycache__
 log
 venv
 /html
 .vscode
 /dist
-'''
-    echo $template >'.gitignore'
+EOF
 }
 
 gremot-up-token() {
     # Обновить токен в URL
     # $1 = Токен
     git_url=$(git remote get-url origin)
-    new_token=$1
-    new_url=$(~py -c '''
-import sys
-import re
-gir_url = sys.argv[1]
-new_token = sys.argv[2]
-res=new_token.join(re.search("(.+:).+(@.+)",gir_url).group(1,2))
-print(res)
-    ''' $git_url $new_token)
-    res="git remote set-url origin $new_url"
-    echo $res
-    eval $res
+    new_token="$1"
+    new_url=$(~py -c "import sys,re;gir_url=sys.argv[1];new_token=sys.argv[2];print(new_token.join(re.search('(.+:).+(@.+)',gir_url).group(1,2)))" "$git_url" "$new_token")
+    git remote set-url origin "$new_url"
 }
