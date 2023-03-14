@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Find
-find() {
+find_() {
 
     # find [ОткудаИскать...] -name "ЧтоИскать"
 

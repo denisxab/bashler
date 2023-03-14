@@ -33,6 +33,7 @@ alias pytots="$DISK/MyProject/python_to_ts_type/venv/bin/python3.11 $DISK/MyProj
 alias showlogsmal="/home/denis/PycharmProjects/showlofsmal/showlogsmal.bin"
 alias ~py=python3.11
 alias pip="~py -m pip"
+alias vg="vagrant"
 alias ~bpy="~py -m bpython"
 alias syncthing="$DISK/AlienApp/aplication/other/Syncthing/syncthing-linux-amd64-v1.20.1/syncthing serve --no-browser --logfile=default"
 alias dbeaver="snap run dbeaver-ce"
@@ -70,18 +71,20 @@ gaddp() {
 garch() {
     # Сделать архив текущей ветки
     req="git archive --format zip --output $1.zip "
+    req+='"'
     req+=$(git rev-parse --abbrev-ref HEAD)
+    req+='"'
     echo $req
     eval $req
 }
 grmh() {
     # Удалить файл из отслеживания
-    res=`git rm --cached -r $1`
+    res=$(git rm --cached -r $1)
     echo $res
     eval $res
 }
 
-gitignore(){
+gitignore() {
     template='''__pycache__
 log
 venv
@@ -89,7 +92,7 @@ venv
 .vscode
 /dist
 '''
-    echo $template > '.gitignore'
+    echo $template >'.gitignore'
 }
 
 gremot-up-token() {
@@ -294,7 +297,7 @@ test(
 #!/bin/bash
 
 # Find
-find() {
+find_() {
 
     # find [ОткудаИскать...] -name "ЧтоИскать"
 

@@ -26,18 +26,20 @@ gaddp() {
 garch() {
     # Сделать архив текущей ветки
     req="git archive --format zip --output $1.zip "
+    req+='"'
     req+=$(git rev-parse --abbrev-ref HEAD)
+    req+='"'
     echo $req
     eval $req
 }
 grmh() {
     # Удалить файл из отслеживания
-    res=`git rm --cached -r $1`
+    res=$(git rm --cached -r $1)
     echo $res
     eval $res
 }
 
-gitignore(){
+gitignore() {
     template='''__pycache__
 log
 venv
@@ -45,7 +47,7 @@ venv
 .vscode
 /dist
 '''
-    echo $template > '.gitignore'
+    echo $template >'.gitignore'
 }
 
 gremot-up-token() {
