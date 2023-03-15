@@ -32,7 +32,7 @@ alias gitclones="$DISK/MyProject/PycharmProjects/git_clons/venv/bin/python3.10 $
 alias pytots="$DISK/MyProject/python_to_ts_type/venv/bin/python3.11 $DISK/MyProject/python_to_ts_type/main.py"
 alias showlogsmal="/home/denis/PycharmProjects/showlofsmal/showlogsmal.bin"
 alias ~py=python3.11
-alias pip="~py -m pip"
+# alias pip="~py -m pip"
 alias vg="vagrant"
 alias ~bpy="~py -m bpython"
 alias syncthing="$DISK/AlienApp/aplication/other/Syncthing/syncthing-linux-amd64-v1.20.1/syncthing serve --no-browser --logfile=default"
@@ -745,33 +745,6 @@ dkp-init() {
 	# Создать файл `docker-compose.yml` в текущем пути
 	touch docker-compose.yml
 }
-
-# -docker-compose-select-envfile() {
-# 	# Сохранить путь к env файлу
-# 	# -docker-compose-select-env-file ./file/__env.env
-# 	__write-file $1 .env_path
-# }
-# -docker-compose-build() {
-# 	# Запустить образы контейнеров
-# 	if [[ -r .env_path ]]; then
-# 		docker-compose --env-file $(cat .env_path) build
-# 	fi
-# 	docker-compose build
-# }
-# -docker-compose-up() {
-# 	# Запустить контейнеры а после окончанию отчистить удалить их
-# 	if [[ -r .env_path ]]; then
-# 		docker-compose --env-file $(cat .env_path) up && docker-compose --env-file $(cat .env_path) rm -fsv
-# 	fi
-# 	docker-compose up && docker-compose rm -fsv
-# }
-# -docker-compose-rm() {
-# 	# Удалить ненужные контейнеры
-# 	if [[ -r .env_path ]]; then
-# 		docker-compose --env-file $(cat .env_path) rm -fsv
-# 	fi
-# 	docker-compose rm -fsv
-# }
 
 #!/bin/bash
 
