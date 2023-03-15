@@ -32,7 +32,6 @@ alias gitclones="$DISK/MyProject/PycharmProjects/git_clons/venv/bin/python3.10 $
 alias pytots="$DISK/MyProject/python_to_ts_type/venv/bin/python3.11 $DISK/MyProject/python_to_ts_type/main.py"
 alias showlogsmal="/home/denis/PycharmProjects/showlofsmal/showlogsmal.bin"
 alias ~py=python3.11
-# alias pip="~py -m pip"
 alias vg="vagrant"
 alias ~bpy="~py -m bpython"
 alias syncthing="$DISK/AlienApp/aplication/other/Syncthing/syncthing-linux-amd64-v1.20.1/syncthing serve --no-browser --logfile=default"

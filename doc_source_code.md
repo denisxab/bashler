@@ -12,7 +12,6 @@
 |`pytots`|`"$DISK/MyProject/python_to_ts_type/venv/bin/python3.11 $DISK/MyProject/python_to_ts_type/main.py"`|
 |`showlogsmal`|`"/home/denis/PycharmProjects/showlofsmal/showlogsmal.bin"`|
 |`~py`|`python3.11`|
-|`pip`|`"~py -m pip"`|
 |`vg`|`"vagrant"`|
 |`~bpy`|`"~py -m bpython"`|
 |`syncthing`|`"$DISK/AlienApp/aplication/other/Syncthing/syncthing-linux-amd64-v1.20.1/syncthing serve --no-browser --logfile=default"`|
