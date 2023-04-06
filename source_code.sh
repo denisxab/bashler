@@ -442,6 +442,19 @@ vg_dk_provision() {
     eval $q1
 }
 
+vg_dk_up(){
+    # Зарустить ВО на оснвоние провайдера Docker
+
+    vagrant up --provider=docker
+}
+
+vg_dk_up_provision(){
+    # Зарустить ВО на оснвоние провайдера Docker и запустить provision
+
+    vg_dk_up && vg_dk_provision
+}
+
+
 vg_dk_enter() {
     # Войти в контейнер
     vagrant docker-exec -it -- /bin/bash
