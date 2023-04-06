@@ -24,8 +24,9 @@ vg_dk_up(){
 
 vg_dk_up_provision(){
     # Зарустить ВО на оснвоние провайдера Docker и запустить provision
+    # $1 Путь к файлу playbook.yml
 
-    vg_dk_up && vg_dk_provision
+    vg_dk_up && vg_dk_provision $1
 }
 
 
