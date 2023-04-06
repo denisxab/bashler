@@ -32,7 +32,6 @@ alias gitclones="$DISK/MyProject/PycharmProjects/git_clons/venv/bin/python3.10 $
 alias pytots="$DISK/MyProject/python_to_ts_type/venv/bin/python3.11 $DISK/MyProject/python_to_ts_type/main.py"
 alias showlogsmal="/home/denis/PycharmProjects/showlofsmal/showlogsmal.bin"
 alias ~py=python3.11
-alias vg="vagrant"
 alias ~bpy="~py -m bpython"
 alias syncthing="$DISK/AlienApp/aplication/other/Syncthing/syncthing-linux-amd64-v1.20.1/syncthing serve --no-browser --logfile=default"
 alias dbeaver="snap run dbeaver-ce"
@@ -425,6 +424,54 @@ b64 = base64.urlsafe_b64encode(by).decode("ascii")
 print(re.sub(r"[\=\-]", "_", b64))
     ''')
 }
+#!/bin/bash
+
+alias vg="vagrant"
+
+vg_dk_provision() {
+    # Выволнить provision для docker
+    # $1 Путь к файлу playbook.yml
+
+    ext="/vagrant/playbook.yml"
+    if [ -n "$1" ]; then
+        ext="$1"
+    fi
+    # Собрать образ
+    q1="vagrant docker-exec -it -- ansible-playbook $ext;"
+    echo $q1
+    eval $q1
+}
+
+vg_dk_enter() {
+    # Войти в контейнер
+    vagrant docker-exec -it -- /bin/bash
+}
+
+######
+#
+# Пример Vagrantfile для docker
+# 
+# Vagrant.configure("2") do |config|
+#   config.vm.define "docker"  do |vm|
+#     vm.vm.provider "docker" do |d|
+#       d.build_dir = "."
+#       d.name = 'vg_test'
+#       d.cmd = ['tail', '-f', '/dev/null']
+#     end
+#   end
+# end
+#
+######
+#
+# Пример Dockerfile для Vagrant
+# 
+# FROM python:3.11
+# 
+# RUN apt-get update && \
+#     apt-get install -y sudo && \
+#     apt-get install -y ansible 
+
+
 #!/bin/bash
 
 autorun-bashler() {

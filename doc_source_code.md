@@ -12,7 +12,6 @@
 |`pytots`|`"$DISK/MyProject/python_to_ts_type/venv/bin/python3.11 $DISK/MyProject/python_to_ts_type/main.py"`|
 |`showlogsmal`|`"/home/denis/PycharmProjects/showlofsmal/showlogsmal.bin"`|
 |`~py`|`python3.11`|
-|`vg`|`"vagrant"`|
 |`~bpy`|`"~py -m bpython"`|
 |`syncthing`|`"$DISK/AlienApp/aplication/other/Syncthing/syncthing-linux-amd64-v1.20.1/syncthing serve --no-browser --logfile=default"`|
 |`dbeaver`|`"snap run dbeaver-ce"`|
@@ -39,6 +38,12 @@
 |`flake8`|`'~py -m flake8 --extend-ignore E501,W505,C901,F401,W605 --exclude venv'`|
 |`isort`|`'~py -m isort'`|
 |`black`|`'~py -m black'`|
+
+## Раздел: `vagrant.sh`
+
+| Name | Value |
+| ---- | ----- |
+|`vg`|`"vagrant"`|
 
 ## Раздел: `docker.sh`
 
@@ -229,6 +234,21 @@ find [ОткудаИскать...] -name "ЧтоИскать"
 ```
 
 ## Раздел: `lib.sh`
+
+## Раздел: `vagrant.sh`
+
+### Функция: `vg_dk_provision`
+
+```bash
+Выволнить provision для docker
+ $1 Путь к файлу playbook.yml
+```
+
+### Функция: `vg_dk_enter`
+
+```bash
+Войти в контейнер
+```
 
 ## Раздел: `autoran.sh`
 
