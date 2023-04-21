@@ -52,7 +52,16 @@ alias gmer="git merge $1"
 # Разница между коммитами или ветками
 alias gdif="git diff $1"
 alias grst="git reset --hard"
+# Создать и переключиться на ветку
+alias gbrac="git branch -c $1 ; gcd $1"
 
+gcom() {
+    # Создать коммит с текущей датой
+    # $1 - Дополнительное сообщеие
+
+    date=$(date +\"%c\")
+    git commit -m "$date - $1"
+}
 gadd() {
     # Создать коммит всех изменений
     date=$(date +\"%c\")
