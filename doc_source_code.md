@@ -16,6 +16,7 @@
 |`syncthing`|`"$DISK/AlienApp/aplication/other/Syncthing/syncthing-linux-amd64-v1.20.1/syncthing serve --no-browser --logfile=default"`|
 |`dbeaver`|`"snap run dbeaver-ce"`|
 |`templaer`|`"~py -m templaer"`|
+|`pgadmin4`|`"/usr/pgadmin4/bin/pgadmin4"`|
 |`..`|`"cd .."`|
 |`nnn`|`'nnn -de'`|
 

@@ -36,6 +36,7 @@ alias ~bpy="~py -m bpython"
 alias syncthing="$DISK/AlienApp/aplication/other/Syncthing/syncthing-linux-amd64-v1.20.1/syncthing serve --no-browser --logfile=default"
 alias dbeaver="snap run dbeaver-ce"
 alias templaer="~py -m templaer"
+alias pgadmin4="/usr/pgadmin4/bin/pgadmin4"
 #
 alias ..="cd .."
 # замена ls на NNN
