@@ -31,7 +31,6 @@
 |`gmer`|`"git merge $1"`|
 |`gdif`|`"git diff $1"`|
 |`grst`|`"git reset --hard"`|
-|`gbrac`|`"git branch -c $1 ; gcd $1"`|
 
 ## Раздел: `python_pro.sh`
 
@@ -57,6 +56,12 @@
 # Документация функций
 
 ## Раздел: `git.sh`
+
+### Функция: `gbrac`
+
+```bash
+Создать и переключиться на ветку
+```
 
 ### Функция: `gcom`
 

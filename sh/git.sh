@@ -9,8 +9,14 @@ alias gmer="git merge $1"
 # Разница между коммитами или ветками
 alias gdif="git diff $1"
 alias grst="git reset --hard"
-# Создать и переключиться на ветку
-alias gbrac="git branch -c $1 ; gcd $1"
+
+gbrac() {
+    # Создать и переключиться на ветку
+
+    res="git branch -c $1 && git checkout $1"
+    echo $res
+    eval $res
+}
 
 gcom() {
     # Создать коммит с текущей датой
