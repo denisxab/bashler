@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # SSH - Сервер
-ssh-keygen() {
-    # Сгенерировать ssh ключи
-    ssh-keygen
-}
+# ssh-keygen() {
+#     # Сгенерировать ssh ключи
+#     ssh-keygen $@
+# }
 ssh-restart() {
     # Перезапутсить SSH сервер
     res=''
