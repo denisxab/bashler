@@ -114,6 +114,7 @@ gremot-up-token() {
     git remote set-url origin "$new_url"
 }
 
+
 #!/bin/bash
 
 ###
@@ -124,11 +125,25 @@ alias flake8='~py -m flake8 --extend-ignore E501,W505,C901,F401,W605 --exclude v
 alias isort='~py -m isort'
 alias black='~py -m black'
 
+black_staged_files() {
+    files=$(git diff --cached --name-only)
+    res=$(python -c '
+files="""'$files'"""
+for file in files.split("\n"):
+    print("python -m black " + file + ";")
+    print("python -m autoflake --in-place --remove-unused-variables " + file + ";")
+    print("python -m isort " + file + ";")
+    print("python -m black " + file + ";")
+    ')
+    echo $res
+    eval $res
+}
+
 # pep 8
 pep() {
     # Форматировать Python код
     # $1 =  путь к файлу или папки, если указана папка то тогда отформатируется вссе файлы в этой папке
-    
+
     # Форматирвоать отстпов
     black $1
     # Удалить неиспользуемые импорты

@@ -68,3 +68,4 @@ gremot-up-token() {
     new_url=$(~py -c "import sys,re;gir_url=sys.argv[1];new_token=sys.argv[2];print(new_token.join(re.search('(.+:).+(@.+)',gir_url).group(1,2)))" "$git_url" "$new_token")
     git remote set-url origin "$new_url"
 }
+
