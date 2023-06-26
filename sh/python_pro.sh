@@ -9,6 +9,8 @@ alias isort='~py -m isort'
 alias black='~py -m black'
 
 gitpep() {
+    # Форматировать файлы которые помечены на коммит
+
     files=$(git diff --cached --name-only)
     res=$(python -c '
 files="""'$files'"""
