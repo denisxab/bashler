@@ -132,10 +132,13 @@ gitpep() {
     res=$(python -c '
 files="""'$files'"""
 for file in files.split("\n"):
-    print("python -m black " + file + ";")
-    print("python -m autoflake --in-place --remove-unused-variables " + file + ";")
-    print("python -m isort " + file + ";")
-    print("python -m black " + file + ";")
+    if file.endswith(".py"):
+        print("python -m black " + file + ";")
+        print("python -m autoflake --in-place --remove-unused-variables " + file + ";")
+        print("python -m isort " + file + ";")
+        print("python -m black " + file + ";")
+
+print("python -m flake8 --exclude venv . ;")
     ')
     echo $res
     eval $res
