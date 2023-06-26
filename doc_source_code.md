@@ -110,7 +110,7 @@
 
 ## Раздел: `python_pro.sh`
 
-### Функция: `black_staged_files`
+### Функция: `gitpep`
 
 ```bash
 

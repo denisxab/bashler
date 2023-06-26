@@ -8,7 +8,7 @@ alias flake8='~py -m flake8 --extend-ignore E501,W505,C901,F401,W605 --exclude v
 alias isort='~py -m isort'
 alias black='~py -m black'
 
-black_staged_files() {
+gitpep() {
     files=$(git diff --cached --name-only)
     res=$(python -c '
 files="""'$files'"""
