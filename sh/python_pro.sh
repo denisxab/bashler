@@ -13,15 +13,18 @@ gitpep() {
 
     files=$(git diff --cached --name-only)
     res=$(python -c '
-files="""'$files'"""
+files="""'$files'""" 
 for file in files.split("\n"):
     if file.endswith(".py"):
+        # Форматирование кода
         print("python -m black " + file + ";")
         print("python -m autoflake --in-place --remove-unused-variables " + file + ";")
         print("python -m isort " + file + ";")
         print("python -m black " + file + ";")
-
-print("python -m flake8 --exclude venv . ;")
+        # Анализаторы кода
+        # print("python -m pylint " + file + ";")
+        # print("python -m vulture " + file + ";")
+        print("python -m flake8  " + file + ";")
     ')
     echo $res
     eval $res
