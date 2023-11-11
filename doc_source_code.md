@@ -114,6 +114,7 @@
 
 ```bash
 Форматировать файлы которые помечены на коммит
+ pip install black autoflake isort pylint vulture flake8
 ```
 
 ### Функция: `pep`
