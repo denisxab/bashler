@@ -18,7 +18,7 @@ for file in files.split("\n"):
     if file.endswith(".py"):
         # Форматирование кода
         print("python -m black " + file + ";")
-        print("python -m autoflake --in-place --remove-unused-variables --remove-all-unused-imports " + file + ";")
+        print("python -m autoflake --in-place --remove-unused-variables --remove-all-unused-imports --ignore-init-module-imports --expand-star-imports " + file + ";")
         print("python -m isort " + file + ";")
         print("python -m black " + file + ";")
         # Анализаторы кода
