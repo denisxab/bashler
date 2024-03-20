@@ -73,7 +73,9 @@ gcom() {
 
 gpusho() {
     # Пушь ветки в origin
-    git push -u origin $(git rev-parse --abbrev-ref HEAD)
+    name_brach=$(git rev-parse --abbrev-ref HEAD)
+    echo "git push -u origin $name_brach"
+    git push -u origin $name_brach
 }
 
 grebmaster(){
