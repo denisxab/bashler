@@ -70,6 +70,17 @@ gcom() {
     date=$(date +\"%c\")
     git commit -m "$date - $1"
 }
+
+gpusho() {
+    # Пушь ветки в origin
+    git push -u origin $(git rev-parse --abbrev-ref HEAD)
+}
+
+grebmaster(){
+    # rebase на мастер
+    git rebase -i master
+}
+
 gadd() {
     # Создать коммит всех изменений
     date=$(date +\"%c\")
