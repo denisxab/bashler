@@ -164,26 +164,31 @@ pavenv() {
     echo $res
     eval $res
 }
-# Деактевировать окружение
+# Деактивировать окружение
 pdvenv() {
     deactivate
 }
 
 # Poetry
 poetry_init() {
-    # Звгрузить poetry
+    # Загрузить poetry
     pip install cachecontrol
     pipupdate
     pip install poetry
     poetry install
 }
 
-rotruff(){
+homeruff() {
     res="~py -m ruff $@ --config=$RUFF_ROOT_CONFIG"
     echo $res
     eval $res
 }
 
+homemypy() {
+    res="~py -m mypy $@ --config-file=$MYPY_ROOT_CONFIG"
+    echo $res
+    eval $res
+}
 
 # -------------------
 

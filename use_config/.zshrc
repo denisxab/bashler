@@ -18,6 +18,8 @@ export AUTORUN_BASHLER="$HOME/.autorun_bashler"
 export BASHLER_REMOTE_PATH="$HOME/.bashler_remote"
 # Путь к конфигурации ruff.toml
 export RUFF_ROOT_CONFIG="$DISK/РАБОТА/Комтек/Док/ruff.toml"
+# Путь к конфигурации mypy.ini
+export MYPY_ROOT_CONFIG="$DISK/РАБОТА/Комтек/Док/mypy.ini"
 ######### Другое ####################################
 
 ######################################################################################

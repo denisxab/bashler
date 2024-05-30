@@ -191,7 +191,19 @@
 ### Функция: `poetry_init`
 
 ```bash
-Звгрузить poetry
+Загрузить poetry
+```
+
+### Функция: `homeruff`
+
+```bash
+
+```
+
+### Функция: `homemypy`
+
+```bash
+
 ```
 
 ### Функция: `phttpserver`
