@@ -308,6 +308,13 @@ poetry_init() {
     poetry install
 }
 
+rotruff(){
+    res="~py -m ruff $@ --config=$RUFF_ROOT_CONFIG"
+    echo $res
+    eval $res
+}
+
+
 # -------------------
 
 phttpserver() {

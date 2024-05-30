@@ -1,9 +1,10 @@
 # Источник: https://gist.github.com/denisxab/7b91e1d09ff8fbe6d8e738a5326e9ced
 ######################################################################################
 
-# Путь к внешенму диску
+# Путь к внешнему диску
 export DISK="/home/denis/DISK"
-
+alias telegram="/home/denis/DISK/AlienApp/aplication/other/Telegram/Telegram"
+alias bruno="snap run bruno"
 ######################################################################################
 # Можем настраивать различные варинты для клиента и сервера
 export IS_SERVER="no"
@@ -13,8 +14,10 @@ export BASHLER_PATH="$DISK/MyProject/bashler"
 export BASE_SYSTEM_OS="ubuntu"
 # Путь к файлу автозапуска
 export AUTORUN_BASHLER="$HOME/.autorun_bashler"
-# Путь к найтрокам удаленного доступа
+# Путь к настроикам удаленного доступа
 export BASHLER_REMOTE_PATH="$HOME/.bashler_remote"
+# Путь к конфигурации ruff.toml
+export RUFF_ROOT_CONFIG="$DISK/РАБОТА/Комтек/Док/ruff.toml"
 ######### Другое ####################################
 
 ######################################################################################
@@ -91,6 +94,8 @@ zsh-reload() {
 # Импортировать зависемотси
 zsh-reload
 ######################################################################################
+
+source ~/.invoke-completion.sh
 
 ######################################################################################
 # C# Автодополнения
