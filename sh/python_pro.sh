@@ -185,10 +185,17 @@ homeruff() {
 }
 
 homemypy() {
-    res="~py -m mypy $@ --config-file=$MYPY_ROOT_CONFIG"
+    res="~py -m mypy $@ --config-file=$MYPY_ROOT_CONFIG --pretty"
     echo $res
     eval $res
 }
+
+homepylint() {
+    res="~py -m pylint $@ --rcfile=$PYLINT_ROOT_CONFIG"
+    echo $res
+    eval $res
+}
+
 
 # -------------------
 

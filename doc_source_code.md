@@ -206,6 +206,12 @@
 
 ```
 
+### Функция: `homepylint`
+
+```bash
+
+```
+
 ### Функция: `phttpserver`
 
 ```bash

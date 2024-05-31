@@ -17,11 +17,13 @@ export AUTORUN_BASHLER="$HOME/.autorun_bashler"
 # Путь к настроикам удаленного доступа
 export BASHLER_REMOTE_PATH="$HOME/.bashler_remote"
 # Путь к конфигурации ruff.toml
-export RUFF_ROOT_CONFIG="$DISK/РАБОТА/Комтек/Док/ruff.toml"
+export RUFF_ROOT_CONFIG="$DISK/MyProject/open_lessen/Python/auto_code_review/ruff.toml"
 # Путь к конфигурации mypy.ini
-export MYPY_ROOT_CONFIG="$DISK/РАБОТА/Комтек/Док/mypy.ini"
+export MYPY_ROOT_CONFIG="$DISK/MyProject/open_lessen/Python/auto_code_review/mypy.ini"
+# Путь к конфигурации .pylintrc 
+export PYLINT_ROOT_CONFIG="$DISK/MyProject/open_lessen/Python/auto_code_review/.pylintrc"
 # Путь к auto_code_review.py  
-export AUTO_CODE_REVIEW="$DISK/РАБОТА/Комтек/Док/auto_code_review.py"
+export AUTO_CODE_REVIEW="$DISK/MyProject/open_lessen/Python/auto_code_review/auto_code_review.py"
 ######### Другое ####################################
 
 ######################################################################################
